@@ -1,54 +1,47 @@
-export default function BlogPage() {
-  const posts = [
-    {
-      date: "November 18, 2025",
-      region: "Everest Region",
-      title: "Why I Keep Returning to the Khumbu",
-      excerpt:
-        "A short reflection on the people, monasteries, and quiet moments that keep me coming back to the Everest region year after year.",
-      slug: "returning-to-khumbu",
-    },
-    {
-      date: "October 04, 2025",
-      region: "Annapurna",
-      title: "Three Days on the Annapurna Trail",
-      excerpt:
-        "A photographer walks through villages, terraced fields, and the quiet rhythms of life on the mountainside.",
-      slug: "annapurna-three-days",
-    },
-    {
-      date: "September 12, 2025",
-      region: "Lumbini",
-      title: "The Stillness of Lumbini at Sunrise",
-      excerpt:
-        "Pilgrims, monks, and the soft chaos of birds at the birthplace of Buddha.",
-      slug: "lumbini-sunrise",
-    },
-    {
-      date: "August 22, 2025",
-      region: "Langtang",
-      title: "A Letter from Langtang",
-      excerpt:
-        "On rebuilding, resilience, and the mountains that never stop giving back to those who walk among them.",
-      slug: "letter-from-langtang",
-    },
-    {
-      date: "July 03, 2025",
-      region: "Upper Mustang",
-      title: "Notes from a Forbidden Kingdom",
-      excerpt:
-        "Crossing the pass into Mustang feels like stepping through a crack in time. Here is what I found there.",
-      slug: "mustang-notes",
-    },
-    {
-      date: "May 18, 2025",
-      region: "Kathmandu Valley",
-      title: "The Old City After the Rains",
-      excerpt:
-        "The temples of Bhaktapur, the prayers of Pashupatinath, and the smell of monsoon over Durbar Square.",
-      slug: "kathmandu-after-rains",
-    },
-  ];
+ import { client, urlForImage } from "@/lib/sanity";
+import Image from "next/image";
+import Link from "next/link";
+
+// This tells Next.js to always fetch fresh data
+export const dynamic = "force-dynamic";
+
+// Define what fields we want from each post
+interface Post {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  excerpt: string;
+  region: string;
+  publishedAt: string;
+  coverImage?: any;
+}
+
+// The actual data fetch
+async function getPosts(): Promise<Post[]> {
+  const query = `*[_type == "post"] | order(publishedAt desc) {
+    _id,
+    title,
+    slug,
+    excerpt,
+    region,
+    publishedAt,
+    coverImage
+  }`;
+  return client.fetch(query);
+}
+
+// Format date nicely
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+export default async function BlogPage() {
+  const posts = await getPosts();
 
   return (
     <main className="min-h-screen bg-stone-50 pt-24 text-slate-700">
@@ -71,43 +64,65 @@ export default function BlogPage() {
         </div>
 
         {/* Posts Grid */}
-        <div className="grid gap-12 md:grid-cols-2">
-          {posts.map((post) => (
-            <article
-              key={post.slug}
-              className="group cursor-pointer border-b border-slate-200 pb-10 transition hover:border-[#8B0000]"
-            >
-              {/* Placeholder image (gradient) */}
-              <div className="mb-6 h-56 overflow-hidden rounded-sm bg-gradient-to-br from-slate-300 to-slate-500 transition group-hover:opacity-90">
-                <div className="flex h-full items-center justify-center text-5xl text-white/70">
-                  🏔️
-                </div>
-              </div>
+        {posts.length === 0 ? (
+          <div className="rounded-sm border border-dashed border-slate-300 bg-white p-12 text-center">
+            <p className="text-lg text-slate-500">
+              No stories yet. The first one is on its way.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-12 md:grid-cols-2">
+            {posts.map((post) => (
+              <article
+                key={post._id}
+                className="group cursor-pointer border-b border-slate-200 pb-10 transition hover:border-[#8B0000]"
+              >
+                {/* Cover Image */}
+                {post.coverImage ? (
+                  <div className="mb-6 h-56 overflow-hidden rounded-sm">
+                    <Image
+                      src={urlForImage(post.coverImage).width(800).height(400).url()}
+                      alt={post.coverImage.alt || post.title}
+                      width={800}
+                      height={400}
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-6 flex h-56 items-center justify-center rounded-sm bg-gradient-to-br from-slate-300 to-slate-500">
+                    <span className="text-5xl text-white/70">🏔️</span>
+                  </div>
+                )}
 
-              {/* Meta */}
-              <p className="mb-2 text-xs uppercase tracking-widest text-slate-500">
-                {post.date} • {post.region}
-              </p>
+                {/* Meta */}
+                <p className="mb-2 text-xs uppercase tracking-widest text-slate-500">
+                  {formatDate(post.publishedAt)}
+                  {post.region && ` • ${post.region}`}
+                </p>
 
-              {/* Title */}
-              <h2 className="text-2xl font-semibold text-slate-800 transition group-hover:text-[#8B0000]">
-                {post.title}
-              </h2>
+                {/* Title */}
+                <h2 className="text-2xl font-semibold text-slate-800 transition group-hover:text-[#8B0000]">
+                  {post.title}
+                </h2>
 
-              {/* Excerpt */}
-              <p className="mt-3 leading-relaxed text-slate-600">
-                {post.excerpt}
-              </p>
+                {/* Excerpt */}
+                <p className="mt-3 leading-relaxed text-slate-600">
+                  {post.excerpt}
+                </p>
 
-              {/* Read more link */}
-              <p className="mt-4 text-sm font-medium uppercase tracking-wider text-[#8B0000]">
-                Read story →
-              </p>
-            </article>
-          ))}
-        </div>
+                {/* Read more link */}
+                <Link
+                  href={`/blog/${post.slug.current}`}
+                  className="mt-4 inline-block text-sm font-medium uppercase tracking-wider text-[#8B0000]"
+                >
+                  Read story →
+                </Link>
+              </article>
+            ))}
+          </div>
+        )}
 
-        {/* Empty state at bottom */}
+        {/* Bottom note */}
         <div className="mt-16 text-center">
           <p className="text-sm text-slate-500">
             More stories coming soon — subscribe to be notified.
