@@ -1,66 +1,40 @@
-export default function DestinationsPage() {
-  const destinations = [
-    {
-      emoji: "🏔️",
-      name: "Everest & Khumbu",
-      region: "Solukhumbu District",
-      elevation: "5,364m base camp",
-      description:
-        "The world highest peak and the legendary Sherpa homeland. Monasteries, prayer wheels, and trails that millions dream of walking.",
-      slug: "everest-khumbu",
-      gradient: "from-[#1e3a8a] to-slate-700",
-    },
-    {
-      emoji: "🌄",
-      name: "Annapurna Region",
-      region: "Gandaki Province",
-      elevation: "4,130m base camp",
-      description:
-        "Diverse landscapes from subtropical forests to the icy amphitheater of the Annapurna Sanctuary. One of the most varied treks on earth.",
-      slug: "annapurna",
-      gradient: "from-emerald-700 to-emerald-900",
-    },
-    {
-      emoji: "🛕",
-      name: "Lumbini & Terai",
-      region: "Rupandehi District",
-      elevation: "150m plains",
-      description:
-        "The birthplace of Buddha, surrounded by monasteries built by nations around the world. Quiet, gentle, deeply spiritual.",
-      slug: "lumbini-terai",
-      gradient: "from-amber-700 to-amber-900",
-    },
-    {
-      emoji: "🦌",
-      name: "Chitwan National Park",
-      region: "Subtropical lowlands",
-      elevation: "100–815m",
-      description:
-        "Jungle safaris, one-horned rhinos, and the bird-rich rivers of the Terai. A perfect counterpoint to the high mountains.",
-      slug: "chitwan",
-      gradient: "from-orange-700 to-red-900",
-    },
-    {
-      emoji: "🏯",
-      name: "Upper Mustang",
-      region: "Rain shadow desert",
-      elevation: "3,840m capital",
-      description:
-        "A forbidden kingdom until 1992, Mustang feels like Tibet without the crowds. Cave monasteries and ochre cliffs.",
-      slug: "mustang",
-      gradient: "from-stone-600 to-stone-900",
-    },
-    {
-      emoji: "⛰️",
-      name: "Langtang Valley",
-      region: "Rasuwa District",
-      elevation: "3,870m valley",
-      description:
-        "Close to Kathmandu, deeply traditional, and rebuilt with extraordinary resilience after the 2015 earthquake.",
-      slug: "langtang",
-      gradient: "from-sky-700 to-sky-900",
-    },
-  ];
+import { client, urlForImage } from "@/lib/sanity";
+import Image from "next/image";
+import Link from "next/link";
+
+export const dynamic = "force-dynamic";
+
+interface Destination {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  excerpt: string;
+  region: string;
+  coverImage: any;
+  duration?: string;
+  maxAltitude?: string;
+  difficulty?: string;
+  startingCost?: number;
+}
+
+async function getDestinations(): Promise<Destination[]> {
+  const query = `*[_type == "destination"] | order(startingCost asc) {
+    _id,
+    title,
+    slug,
+    excerpt,
+    region,
+    coverImage,
+    duration,
+    maxAltitude,
+    difficulty,
+    startingCost
+  }`;
+  return client.fetch(query);
+}
+
+export default async function DestinationsPage() {
+  const destinations = await getDestinations();
 
   return (
     <main className="min-h-screen bg-stone-50 pt-24 text-slate-700">
@@ -74,9 +48,9 @@ export default function DestinationsPage() {
             Where to Go in Nepal
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
-            From the highest mountains to the deepest jungles — an honest
-            guide to the regions I have walked through, written for travelers
-            who want the real picture.
+            Complete travel guides with maps, day-by-day itineraries, cost
+            breakdowns, and practical tips. Written for solo travelers who
+            want the real picture.
           </p>
           <div className="mt-8 flex justify-center">
             <div className="h-px w-24 bg-[#8B0000]" />
@@ -84,48 +58,81 @@ export default function DestinationsPage() {
         </div>
 
         {/* Destinations Grid */}
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-          {destinations.map((dest) => (
-            <article
-              key={dest.slug}
-              className="group cursor-pointer overflow-hidden rounded-sm bg-white shadow-sm transition hover:shadow-xl"
-            >
-              {/* Image Header (gradient placeholder) */}
-              <div
-                className={`relative flex h-44 items-end overflow-hidden bg-gradient-to-br ${dest.gradient} p-6 transition group-hover:opacity-95`}
+        {destinations.length === 0 ? (
+          <div className="rounded-sm border border-dashed border-slate-300 bg-white p-12 text-center">
+            <p className="text-lg text-slate-500">
+              No destinations yet. Guides coming soon.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+            {destinations.map((dest) => (
+              <Link
+                key={dest._id}
+                href={`/destinations/${dest.slug.current}`}
+                className="group block overflow-hidden rounded-sm bg-white shadow-sm transition hover:shadow-xl"
               >
-                <span className="text-6xl">{dest.emoji}</span>
-              </div>
+                {/* Cover Image */}
+                {dest.coverImage ? (
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={urlForImage(dest.coverImage).width(800).height(400).url()}
+                      alt={dest.coverImage.alt || dest.title}
+                      width={800}
+                      height={400}
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-48 items-center justify-center bg-gradient-to-br from-slate-300 to-slate-500">
+                    <span className="text-6xl text-white/70">🏔️</span>
+                  </div>
+                )}
 
-              {/* Content */}
-              <div className="p-6">
-                <p className="mb-1 text-xs uppercase tracking-widest text-slate-500">
-                  {dest.region}
-                </p>
-                <h2 className="text-xl font-semibold text-slate-800 transition group-hover:text-[#8B0000]">
-                  {dest.name}
-                </h2>
-                <p className="mt-1 text-xs text-slate-500">
-                  {dest.elevation}
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                  {dest.description}
-                </p>
-                <p className="mt-4 text-sm font-medium uppercase tracking-wider text-[#8B0000]">
-                  Explore →
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
+                {/* Content */}
+                <div className="p-6">
+                  <p className="mb-1 text-xs uppercase tracking-widest text-slate-500">
+                    {dest.region || "Nepal"}
+                  </p>
+                  <h2 className="text-xl font-semibold text-slate-800 transition group-hover:text-[#8B0000]">
+                    {dest.title}
+                  </h2>
+                  <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                    {dest.excerpt}
+                  </p>
 
-        {/* Bottom note */}
-        <div className="mt-20 text-center">
-          <p className="text-sm text-slate-500">
-            More destinations coming soon. Each one is added only after I have
-            walked the trails myself.
-          </p>
-        </div>
+                  {/* Quick Facts */}
+                  <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                    {dest.duration && (
+                      <span className="rounded-full bg-stone-100 px-3 py-1 text-slate-700">
+                        🕐 {dest.duration}
+                      </span>
+                    )}
+                    {dest.difficulty && (
+                      <span className="rounded-full bg-stone-100 px-3 py-1 text-slate-700">
+                        📊 {dest.difficulty}
+                      </span>
+                    )}
+                    {dest.maxAltitude && (
+                      <span className="rounded-full bg-stone-100 px-3 py-1 text-slate-700">
+                        📍 {dest.maxAltitude}
+                      </span>
+                    )}
+                    {dest.startingCost !== undefined && (
+                      <span className="rounded-full bg-[#8B0000]/10 px-3 py-1 font-medium text-[#8B0000]">
+                        💰 from ${dest.startingCost}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="mt-5 text-sm font-medium uppercase tracking-wider text-[#8B0000]">
+                    View Full Guide →
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );

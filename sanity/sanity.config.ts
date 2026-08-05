@@ -1,4 +1,4 @@
-import { defineConfig } from "sanity";
+ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schemas";
 import { apiVersion, dataset, projectId } from "./env";
@@ -20,6 +20,9 @@ export default defineConfig({
             S.listItem()
               .title("Stories")
               .child(S.documentTypeList("post").title("Stories")),
+            S.listItem()
+              .title("Destinations")
+              .child(S.documentTypeList("destination").title("Destinations")),
           ]),
     }),
   ],
