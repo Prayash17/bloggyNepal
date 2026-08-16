@@ -7,7 +7,7 @@ export const client = createClient({
   useCdn: false,
 });
 
-const builder = imageUrlBuilder(client);
+const builder = createImageUrlBuilder(client);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function urlForImage(source: any) {

@@ -1,4 +1,4 @@
- import { config } from "dotenv";
+import { config } from "dotenv";
 config({ path: ".env.local" });
 import { createClient } from "@sanity/client";
 
@@ -10,7 +10,7 @@ const client = createClient({
   useCdn: false,
 });
 
-// List of all 77 real Nepal districts (correct slugs)
+// List of all 77 real Nepal districts (the correct ones)
 const REAL_DISTRICTS = [
   // Koshi (14)
   "taplejung", "panchthar", "ilam", "jhapa", "morang", "sunsari",
@@ -46,96 +46,71 @@ async function findExtras() {
     }
   `);
 
-  console.log(`\n📊 Total districts in database: ${allDistricts.length}`);
+  console.log(`\n📊 Total districts in database: ${allDistricts.length}\n`);
   console.log("Expected: 77\n");
+
+  console.log("🔍 Checking each district:\n");
 
   const realDistricts = [];
   const extras = [];
-  const drafts = [];
+  const duplicates = [];
+  const seen = new Map();
 
   for (const d of allDistricts) {
-    // Handle null/undefined values safely
-    const name = d.name || "(no name)";
     const slug = d.slug || "";
-    const isDraft = d._id.startsWith("drafts.");
+    const nameLower = d.name.toLowerCase().trim();
 
-    if (isDraft) {
-      drafts.push(d);
-    }
-
+    // Check if it's in the real list (by slug)
     if (REAL_DISTRICTS.includes(slug)) {
       realDistricts.push(d);
     } else {
-      extras.push({ ...d, name, slug });
+      // It's either a fake district OR a duplicate
+      if (seen.has(slug) && slug !== "") {
+        duplicates.push({ ...d, originalId: seen.get(slug) });
+      } else if (slug === "") {
+        extras.push({ ...d, reason: "No slug" });
+      } else {
+        extras.push({ ...d, reason: "Not in real list" });
+        seen.set(slug, d._id);
+      }
     }
   }
 
-  // Check for duplicates by slug
-  const slugCount = new Map();
-  for (const d of allDistricts) {
-    const slug = d.slug || "";
-    if (slug) {
-      slugCount.set(slug, (slugCount.get(slug) || 0) + 1);
-    }
-  }
-
-  const duplicateSlugs = [];
-  for (const [slug, count] of slugCount.entries()) {
-    if (count > 1) {
-      const dups = allDistricts.filter((d) => d.slug === slug);
-      duplicateSlugs.push({ slug, dups });
-    }
-  }
-
-  // Check for duplicates by name
+  // Check for duplicates by name too
   const nameCount = new Map();
   for (const d of allDistricts) {
-    const nameLower = (d.name || "").toLowerCase().trim();
-    if (nameLower) {
-      nameCount.set(nameLower, (nameCount.get(nameLower) || 0) + 1);
-    }
+    const key = d.name.toLowerCase().trim();
+    nameCount.set(key, (nameCount.get(key) || 0) + 1);
   }
 
   const duplicateNames = [];
   for (const [name, count] of nameCount.entries()) {
     if (count > 1) {
       const dups = allDistricts.filter(
-        (d) => (d.name || "").toLowerCase().trim() === name
+        (d) => d.name.toLowerCase().trim() === name
       );
       duplicateNames.push({ name, dups });
     }
   }
 
   console.log("=".repeat(70));
-  console.log("📋 RESULTS");
+  console.log("📋 RESULTS:");
   console.log("=".repeat(70));
-  console.log(`✅ Real districts: ${realDistricts.length}`);
-  console.log(`❌ Fake/Unknown districts: ${extras.length}`);
-  console.log(`📝 Drafts: ${drafts.length}`);
-  console.log(`🔁 Duplicate slugs: ${duplicateSlugs.length}`);
-  console.log(`🔁 Duplicate names: ${duplicateNames.length}`);
 
-  if (drafts.length > 0) {
-    console.log("\n📝 DRAFT DOCUMENTS (not published):");
-    drafts.forEach((d, i) => {
-      console.log(`   ${i + 1}. "${d.name}" (ID: ${d._id}, slug: ${d.slug || "none"})`);
-    });
-  }
+  console.log(`\n✅ Real districts: ${realDistricts.length}`);
+  console.log(`❌ Fake/Unknown districts: ${extras.length}`);
 
   if (extras.length > 0) {
-    console.log("\n❌ FAKE/UNKNOWN DISTRICTS:");
+    console.log("\n🚫 FAKE DISTRICTS FOUND:");
     extras.forEach((d, i) => {
-      console.log(`   ${i + 1}. "${d.name}" (ID: ${d._id}, slug: "${d.slug || "none"}")`);
+      console.log(`   ${i + 1}. "${d.name}" (ID: ${d._id}, slug: ${d.slug})`);
     });
   }
 
-  if (duplicateSlugs.length > 0) {
-    console.log("\n🔁 DUPLICATE SLUGS:");
-    duplicateSlugs.forEach((d) => {
-      console.log(`\n   Slug: "${d.slug}" appears ${d.dups.length} times:`);
-      d.dups.forEach((dup) => {
-        console.log(`      - ID: ${dup._id}, name: "${dup.name}"`);
-      });
+  if (duplicates.length > 0) {
+    console.log("\n🔁 DUPLICATES FOUND:");
+    duplicates.forEach((d, i) => {
+      console.log(`   ${i + 1}. "${d.name}" (ID: ${d._id})`);
     });
   }
 
@@ -144,21 +119,17 @@ async function findExtras() {
     duplicateNames.forEach((d) => {
       console.log(`\n   Name: "${d.name}" appears ${d.dups.length} times:`);
       d.dups.forEach((dup) => {
-        console.log(`      - ID: ${dup._id}, slug: "${dup.slug || "none"}"`);
+        console.log(`      - ID: ${dup._id}, slug: ${dup.slug}`);
       });
     });
   }
 
   console.log("\n" + "=".repeat(70));
-  console.log("📋 ALL DISTRICTS:");
-  console.log("=".repeat(70));
+  console.log("\n📝 Full list of all 80 districts:");
   allDistricts.forEach((d, i) => {
     const isReal = REAL_DISTRICTS.includes(d.slug || "");
-    const isDraft = d._id.startsWith("drafts.");
-    const marker = isReal ? "✅" : isDraft ? "📝" : "❌";
-    console.log(
-      `   ${marker} ${(i + 1).toString().padStart(2)}. ${(d.name || "(no name)").padEnd(25)} | ${(d.slug || "no-slug").padEnd(20)} | ${d._id}`
-    );
+    const marker = isReal ? "✅" : "❌";
+    console.log(`   ${marker} ${(i + 1).toString().padStart(2)}. ${d.name} (${d.slug})`);
   });
 }
 
