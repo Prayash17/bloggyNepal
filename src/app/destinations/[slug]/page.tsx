@@ -12,21 +12,26 @@ interface Destination {
   slug: { current: string };
   excerpt: string;
   region: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coverImage: any;
   duration?: string;
   maxAltitude?: string;
   difficulty?: string;
   bestSeason?: string;
   startingCost?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mapImage?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   howToGetThere?: any[];
   itinerary?: Array<{ day: number; title: string; description: string }>;
   costBreakdown?: Array<{ item: string; amount: string; notes?: string }>;
   permits?: string[];
   packingList?: string[];
   safetyTips?: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   accommodation?: any[];
   proTips?: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gallery?: any[];
 }
 
@@ -334,6 +339,7 @@ export default async function DestinationPage({
               📸 Gallery
             </h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {destination.gallery.map((image: any, idx: number) => (
                 <div
                   key={idx}

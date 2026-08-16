@@ -15,10 +15,7 @@ export const destination = defineType({
       name: "slug",
       title: "Slug",
       type: "slug",
-      options: {
-        source: "title",
-        maxLength: 96,
-      },
+      options: { source: "title", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -91,6 +88,13 @@ export const destination = defineType({
       description: "Approximate minimum budget for solo traveler",
       type: "number",
     }),
+    // 👇 NEW FIELD
+    defineField({
+      name: "featured",
+      title: "Featured on Homepage",
+      type: "boolean",
+      initialValue: false,
+    }),
     defineField({
       name: "mapImage",
       title: "Map Image",
@@ -104,7 +108,6 @@ export const destination = defineType({
       title: "How to Get There",
       type: "array",
       of: [{ type: "block" }],
-      description: "Bus routes, flights, starting points",
     }),
     defineField({
       name: "itinerary",
@@ -143,7 +146,6 @@ export const destination = defineType({
       title: "Permits Required",
       type: "array",
       of: [{ type: "string" }],
-      description: "e.g., TIMS Card, ACAP Permit",
     }),
     defineField({
       name: "packingList",
@@ -162,14 +164,12 @@ export const destination = defineType({
       title: "Accommodation Info",
       type: "array",
       of: [{ type: "block" }],
-      description: "Tea houses, lodges, camping details",
     }),
     defineField({
       name: "proTips",
       title: "Pro Tips",
       type: "array",
       of: [{ type: "string" }],
-      description: "Insider advice for travelers",
     }),
     defineField({
       name: "gallery",
@@ -185,18 +185,10 @@ export const destination = defineType({
     }),
   ],
   preview: {
-    select: {
-      title: "title",
-      region: "region",
-      media: "coverImage",
-    },
+    select: { title: "title", region: "region", media: "coverImage" },
     prepare(selection) {
       const { title, region, media } = selection;
-      return {
-        title,
-        subtitle: region ? `📍 ${region}` : "📍 No region",
-        media,
-      };
+      return { title, subtitle: region ? `📍 ${region}` : "📍 No region", media };
     },
   },
 });

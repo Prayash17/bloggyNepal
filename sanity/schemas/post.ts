@@ -15,10 +15,7 @@ export const post = defineType({
       name: "slug",
       title: "Slug",
       type: "slug",
-      options: {
-        source: "title",
-        maxLength: 96,
-      },
+      options: { source: "title", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -26,7 +23,6 @@ export const post = defineType({
       title: "Short Excerpt",
       type: "text",
       rows: 3,
-      description: "A 2-3 sentence summary that appears in blog list",
       validation: (Rule) => Rule.required().max(300),
     }),
     defineField({
@@ -46,6 +42,13 @@ export const post = defineType({
         ],
       },
     }),
+    // 👇 NEW FIELD
+    defineField({
+      name: "featured",
+      title: "Featured on Homepage",
+      type: "boolean",
+      initialValue: false,
+    }),
     defineField({
       name: "publishedAt",
       title: "Published At",
@@ -57,17 +60,8 @@ export const post = defineType({
       name: "coverImage",
       title: "Cover Image",
       type: "image",
-      options: {
-        hotspot: true,
-      },
-      fields: [
-        {
-          name: "alt",
-          type: "string",
-          title: "Alt Text",
-          description: "Important for SEO and accessibility",
-        },
-      ],
+      options: { hotspot: true },
+      fields: [{ name: "alt", type: "string", title: "Alt Text" }],
     }),
     defineField({
       name: "body",
@@ -84,18 +78,10 @@ export const post = defineType({
     }),
   ],
   preview: {
-    select: {
-      title: "title",
-      region: "region",
-      media: "coverImage",
-    },
+    select: { title: "title", region: "region", media: "coverImage" },
     prepare(selection) {
       const { title, region, media } = selection;
-      return {
-        title,
-        subtitle: region ? `📍 ${region}` : "📝 No region",
-        media,
-      };
+      return { title, subtitle: region ? `📍 ${region}` : "📝 No region", media };
     },
   },
 });

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-stone-50 pt-24 text-slate-700">
@@ -95,12 +97,12 @@ export default function AboutPage() {
 
         {/* CTA */}
         <div className="mt-16 border-t border-slate-200 pt-10 text-center">
-          <a
+          <Link
             href="/blog"
             className="inline-block rounded-sm border-2 border-[#8B0000] px-10 py-3 font-medium text-[#8B0000] transition hover:bg-[#8B0000] hover:text-white"
           >
             Read the Stories →
-          </a>
+          </Link>
         </div>
       </section>
     </main>

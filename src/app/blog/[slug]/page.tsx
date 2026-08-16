@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 // Custom components for rich text rendering
 const portableTextComponents = {
   types: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     image: ({ value }: any) => (
       <div className="my-8 overflow-hidden rounded-sm">
         <Image
@@ -22,6 +23,7 @@ const portableTextComponents = {
     ),
   },
   marks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     link: ({ children, value }: any) => (
       <a
         href={value.href}
@@ -34,26 +36,31 @@ const portableTextComponents = {
     ),
   },
   block: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     h1: ({ children }: any) => (
       <h1 className="mb-6 mt-12 text-4xl font-semibold text-slate-800">
         {children}
       </h1>
     ),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     h2: ({ children }: any) => (
       <h2 className="mb-4 mt-10 text-3xl font-semibold text-slate-800">
         {children}
       </h2>
     ),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     h3: ({ children }: any) => (
       <h3 className="mb-3 mt-8 text-2xl font-semibold text-slate-800">
         {children}
       </h3>
     ),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     blockquote: ({ children }: any) => (
       <blockquote className="my-6 border-l-4 border-[#8B0000] bg-stone-100 px-6 py-4 italic text-slate-700">
         {children}
       </blockquote>
     ),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     normal: ({ children }: any) => (
       <p className="mb-5 text-lg leading-relaxed text-slate-700">{children}</p>
     ),
@@ -67,7 +74,9 @@ interface Post {
   excerpt: string;
   region: string;
   publishedAt: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coverImage?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body?: any[];
 }
 

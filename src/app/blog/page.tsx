@@ -13,6 +13,7 @@ interface Post {
   excerpt: string;
   region: string;
   publishedAt: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coverImage?: any;
 }
 

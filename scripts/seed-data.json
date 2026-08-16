@@ -1,0 +1,1196 @@
+ {
+  "provinces": [
+    {
+      "_id": "province-koshi",
+      "_type": "province",
+      "name": "Koshi",
+      "officialName": "Province 1 (Koshi Province)",
+      "slug": { "_type": "slug", "current": "koshi" },
+      "number": 1,
+      "capital": "Biratnagar",
+      "headquarters": "Biratnagar",
+      "population": 4961412,
+      "area": 25905,
+      "noOfDistricts": 14,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "p1body1",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Koshi Province (formerly Province No. 1) is the easternmost province of Nepal, home to Mount Everest, lush tea gardens, and diverse ethnic communities. It borders India to the south and Tibet (China) to the north."
+            }
+          ]
+        }
+      ],
+      "geography": [
+        {
+          "_type": "block",
+          "_key": "p1geo1",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Koshi Province stretches from the Terai plains in the south to the world's highest peaks including Everest, Kanchenjunga, and Makalu in the north."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_id": "province-madhesh",
+      "_type": "province",
+      "name": "Madhesh",
+      "officialName": "Province 2 (Madhesh Province)",
+      "slug": { "_type": "slug", "current": "madhesh" },
+      "number": 2,
+      "capital": "Janakpur",
+      "headquarters": "Janakpur",
+      "population": 6116600,
+      "area": 9661,
+      "noOfDistricts": 8,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "p2body1",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Madhesh Province lies in the southern Terai region of Nepal. It is the most densely populated province and is known for its rich Maithili culture, Janakpur's mythological significance, and fertile agricultural land."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_id": "province-bagmati",
+      "_type": "province",
+      "name": "Bagmati",
+      "officialName": "Province 3 (Bagmati Province)",
+      "slug": { "_type": "slug", "current": "bagmati" },
+      "number": 3,
+      "capital": "Hetauda",
+      "headquarters": "Hetauda",
+      "population": 6084045,
+      "area": 20300,
+      "noOfDistricts": 13,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "p3body1",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Bagmati Province is the most developed province of Nepal, home to the capital city Kathmandu. It houses UNESCO World Heritage Sites and major economic hubs."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_id": "province-gandaki",
+      "_type": "province",
+      "name": "Gandaki",
+      "officialName": "Province 4 (Gandaki Province)",
+      "slug": { "_type": "slug", "current": "gandaki" },
+      "number": 4,
+      "capital": "Pokhara",
+      "headquarters": "Pokhara",
+      "population": 2403757,
+      "area": 21504,
+      "noOfDistricts": 11,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "p4body1",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Gandaki Province is famous for the Annapurna and Manaslu mountain ranges, the sacred Muktinath temple, and the beautiful city of Pokhara — Nepal's tourism capital."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_id": "province-lumbini",
+      "_type": "province",
+      "name": "Lumbini",
+      "officialName": "Province 5 (Lumbini Province)",
+      "slug": { "_type": "slug", "current": "lumbini" },
+      "number": 5,
+      "capital": "Deukhuri",
+      "headquarters": "Butwal",
+      "population": 5122078,
+      "area": 22288,
+      "noOfDistricts": 12,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "p5body1",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Lumbini Province is the birthplace of Lord Buddha and home to the Lumbini UNESCO World Heritage Site. Features diverse geography from Terai plains to mid-hills."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_id": "province-karnali",
+      "_type": "province",
+      "name": "Karnali",
+      "officialName": "Province 6 (Karnali Province)",
+      "slug": { "_type": "slug", "current": "karnali" },
+      "number": 6,
+      "capital": "Birendranagar",
+      "headquarters": "Birendranagar",
+      "population": 1688412,
+      "area": 27984,
+      "noOfDistricts": 10,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "p6body1",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Karnali Province is the largest province by area and the least populated. Home to Shey-Phoksundo National Park and Rara Lake — the largest lake in Nepal."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_id": "province-sudurpashchim",
+      "_type": "province",
+      "name": "Sudurpashchim",
+      "officialName": "Province 7 (Sudurpashchim Province)",
+      "slug": { "_type": "slug", "current": "sudurpashchim" },
+      "number": 7,
+      "capital": "Dhangadhi",
+      "headquarters": "Dhangadhi",
+      "population": 2714270,
+      "area": 19539,
+      "noOfDistricts": 9,
+      "body": [
+        {
+          "_type": "block",
+          "_key": "p7body1",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Sudurpashchim (Far-Western) Province lies in the far-western region of Nepal. Known for Khaptad National Park and rich Tharu culture."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "districts": [
+    {
+      "_id": "district-taplejung",
+      "_type": "district",
+      "name": "Taplejung",
+      "slug": { "_type": "slug", "current": "taplejung" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Taplejung",
+      "population": 120359,
+      "area": 3646,
+      "elevation": 1442,
+      "density": 33,
+      "coordinates": { "lat": 27.3544, "lng": 87.6675 }
+    },
+    {
+      "_id": "district-panchthar",
+      "_type": "district",
+      "name": "Panchthar",
+      "slug": { "_type": "slug", "current": "panchthar" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Phidim",
+      "population": 191817,
+      "area": 1241,
+      "elevation": 1200,
+      "density": 155,
+      "coordinates": { "lat": 27.1333, "lng": 87.9667 }
+    },
+    {
+      "_id": "district-ilam",
+      "_type": "district",
+      "name": "Ilam",
+      "slug": { "_type": "slug", "current": "ilam" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Ilam",
+      "population": 290254,
+      "area": 1703,
+      "elevation": 1210,
+      "density": 170,
+      "coordinates": { "lat": 26.9083, "lng": 87.9265 }
+    },
+    {
+      "_id": "district-jhapa",
+      "_type": "district",
+      "name": "Jhapa",
+      "slug": { "_type": "slug", "current": "jhapa" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Bhadrapur",
+      "population": 994290,
+      "area": 1606,
+      "elevation": 70,
+      "density": 619,
+      "coordinates": { "lat": 26.5433, "lng": 87.9998 }
+    },
+    {
+      "_id": "district-morang",
+      "_type": "district",
+      "name": "Morang",
+      "slug": { "_type": "slug", "current": "morang" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Biratnagar",
+      "population": 1145606,
+      "area": 1855,
+      "elevation": 76,
+      "density": 617,
+      "coordinates": { "lat": 26.4525, "lng": 87.2718 }
+    },
+    {
+      "_id": "district-sunsari",
+      "_type": "district",
+      "name": "Sunsari",
+      "slug": { "_type": "slug", "current": "sunsari" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Inaruwa",
+      "population": 926962,
+      "area": 1257,
+      "elevation": 76,
+      "density": 737,
+      "coordinates": { "lat": 26.6000, "lng": 87.1500 }
+    },
+    {
+      "_id": "district-dhankuta",
+      "_type": "district",
+      "name": "Dhankuta",
+      "slug": { "_type": "slug", "current": "dhankuta" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Dhankuta",
+      "population": 163412,
+      "area": 891,
+      "elevation": 1210,
+      "density": 183,
+      "coordinates": { "lat": 26.9833, "lng": 87.3333 }
+    },
+    {
+      "_id": "district-terhathum",
+      "_type": "district",
+      "name": "Terhathum",
+      "slug": { "_type": "slug", "current": "terhathum" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Myanglung",
+      "population": 88695,
+      "area": 679,
+      "elevation": 1640,
+      "density": 131,
+      "coordinates": { "lat": 27.1333, "lng": 87.5500 }
+    },
+    {
+      "_id": "district-sankhuwasabha",
+      "_type": "district",
+      "name": "Sankhuwasabha",
+      "slug": { "_type": "slug", "current": "sankhuwasabha" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Khandbari",
+      "population": 159046,
+      "area": 3480,
+      "elevation": 1438,
+      "density": 46,
+      "coordinates": { "lat": 27.6167, "lng": 87.2167 }
+    },
+    {
+      "_id": "district-bhojpur",
+      "_type": "district",
+      "name": "Bhojpur",
+      "slug": { "_type": "slug", "current": "bhojpur" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Bhojpur",
+      "population": 157922,
+      "area": 1507,
+      "elevation": 1530,
+      "density": 105,
+      "coordinates": { "lat": 27.1744, "lng": 87.0517 }
+    },
+    {
+      "_id": "district-solukhumbu",
+      "_type": "district",
+      "name": "Solukhumbu",
+      "slug": { "_type": "slug", "current": "solukhumbu" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Salleri",
+      "population": 104851,
+      "area": 3312,
+      "elevation": 2800,
+      "density": 32,
+      "coordinates": { "lat": 27.8333, "lng": 86.7167 }
+    },
+    {
+      "_id": "district-okhaldhunga",
+      "_type": "district",
+      "name": "Okhaldhunga",
+      "slug": { "_type": "slug", "current": "okhaldhunga" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Okhaldhunga",
+      "population": 139552,
+      "area": 1075,
+      "elevation": 1600,
+      "density": 130,
+      "coordinates": { "lat": 27.3167, "lng": 86.5000 }
+    },
+    {
+      "_id": "district-khotang",
+      "_type": "district",
+      "name": "Khotang",
+      "slug": { "_type": "slug", "current": "khotang" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Diktel",
+      "population": 175298,
+      "area": 1591,
+      "elevation": 1520,
+      "density": 110,
+      "coordinates": { "lat": 27.2000, "lng": 86.7833 }
+    },
+    {
+      "_id": "district-udayapur",
+      "_type": "district",
+      "name": "Udayapur",
+      "slug": { "_type": "slug", "current": "udayapur" },
+      "provinceRef": "province-koshi",
+      "headquarter": "Gaighat",
+      "population": 340721,
+      "area": 2063,
+      "elevation": 350,
+      "density": 165,
+      "coordinates": { "lat": 26.9167, "lng": 86.6667 }
+    },
+    {
+      "_id": "district-saptari",
+      "_type": "district",
+      "name": "Saptari",
+      "slug": { "_type": "slug", "current": "saptari" },
+      "provinceRef": "province-madhesh",
+      "headquarter": "Rajbiraj",
+      "population": 706255,
+      "area": 1363,
+      "elevation": 80,
+      "density": 518,
+      "coordinates": { "lat": 26.6333, "lng": 86.7500 }
+    },
+    {
+      "_id": "district-siraha",
+      "_type": "district",
+      "name": "Siraha",
+      "slug": { "_type": "slug", "current": "siraha" },
+      "provinceRef": "province-madhesh",
+      "headquarter": "Siraha",
+      "population": 739953,
+      "area": 1188,
+      "elevation": 80,
+      "density": 623,
+      "coordinates": { "lat": 26.6500, "lng": 86.2167 }
+    },
+    {
+      "_id": "district-dhanusha",
+      "_type": "district",
+      "name": "Dhanusha",
+      "slug": { "_type": "slug", "current": "dhanusha" },
+      "provinceRef": "province-madhesh",
+      "headquarter": "Janakpur",
+      "population": 873274,
+      "area": 1180,
+      "elevation": 80,
+      "density": 740,
+      "coordinates": { "lat": 26.7271, "lng": 85.9243 }
+    },
+    {
+      "_id": "district-mahottari",
+      "_type": "district",
+      "name": "Mahottari",
+      "slug": { "_type": "slug", "current": "mahottari" },
+      "provinceRef": "province-madhesh",
+      "headquarter": "Jaleshwar",
+      "population": 705512,
+      "area": 1002,
+      "elevation": 80,
+      "density": 704,
+      "coordinates": { "lat": 26.7167, "lng": 85.9167 }
+    },
+    {
+      "_id": "district-sarlahi",
+      "_type": "district",
+      "name": "Sarlahi",
+      "slug": { "_type": "slug", "current": "sarlahi" },
+      "provinceRef": "province-madhesh",
+      "headquarter": "Malangwa",
+      "population": 862470,
+      "area": 1259,
+      "elevation": 80,
+      "density": 685,
+      "coordinates": { "lat": 26.9667, "lng": 85.5667 }
+    },
+    {
+      "_id": "district-rautahat",
+      "_type": "district",
+      "name": "Rautahat",
+      "slug": { "_type": "slug", "current": "rautahat" },
+      "provinceRef": "province-madhesh",
+      "headquarter": "Gaur",
+      "population": 825623,
+      "area": 1126,
+      "elevation": 80,
+      "density": 733,
+      "coordinates": { "lat": 26.9667, "lng": 85.3000 }
+    },
+    {
+      "_id": "district-bara",
+      "_type": "district",
+      "name": "Bara",
+      "slug": { "_type": "slug", "current": "bara" },
+      "provinceRef": "province-madhesh",
+      "headquarter": "Kalaiya",
+      "population": 763137,
+      "area": 1190,
+      "elevation": 90,
+      "density": 641,
+      "coordinates": { "lat": 27.0333, "lng": 85.0833 }
+    },
+    {
+      "_id": "district-parsa",
+      "_type": "district",
+      "name": "Parsa",
+      "slug": { "_type": "slug", "current": "parsa" },
+      "provinceRef": "province-madhesh",
+      "headquarter": "Birgunj",
+      "population": 654471,
+      "area": 1353,
+      "elevation": 90,
+      "density": 484,
+      "coordinates": { "lat": 27.1500, "lng": 84.8667 }
+    },
+    {
+      "_id": "district-dolakha",
+      "_type": "district",
+      "name": "Dolakha",
+      "slug": { "_type": "slug", "current": "dolakha" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Charikot",
+      "population": 173236,
+      "area": 2191,
+      "elevation": 1660,
+      "density": 79,
+      "coordinates": { "lat": 27.8500, "lng": 86.0500 }
+    },
+    {
+      "_id": "district-sindhupalchowk",
+      "_type": "district",
+      "name": "Sindhupalchowk",
+      "slug": { "_type": "slug", "current": "sindhupalchowk" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Chautara",
+      "population": 287798,
+      "area": 2542,
+      "elevation": 1370,
+      "density": 113,
+      "coordinates": { "lat": 27.9167, "lng": 85.7167 }
+    },
+    {
+      "_id": "district-rasuwa",
+      "_type": "district",
+      "name": "Rasuwa",
+      "slug": { "_type": "slug", "current": "rasuwa" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Dhunche",
+      "population": 44871,
+      "area": 1544,
+      "elevation": 2400,
+      "density": 29,
+      "coordinates": { "lat": 28.1167, "lng": 85.3000 }
+    },
+    {
+      "_id": "district-kathmandu",
+      "_type": "district",
+      "name": "Kathmandu",
+      "slug": { "_type": "slug", "current": "kathmandu" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Kathmandu",
+      "population": 2041587,
+      "area": 395,
+      "elevation": 1400,
+      "density": 5169,
+      "coordinates": { "lat": 27.7172, "lng": 85.3240 }
+    },
+    {
+      "_id": "district-bhaktapur",
+      "_type": "district",
+      "name": "Bhaktapur",
+      "slug": { "_type": "slug", "current": "bhaktapur" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Bhaktapur",
+      "population": 432132,
+      "area": 119,
+      "elevation": 1401,
+      "density": 3631,
+      "coordinates": { "lat": 27.6710, "lng": 85.4298 }
+    },
+    {
+      "_id": "district-lalitpur",
+      "_type": "district",
+      "name": "Lalitpur",
+      "slug": { "_type": "slug", "current": "lalitpur" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Lalitpur",
+      "population": 551667,
+      "area": 385,
+      "elevation": 1400,
+      "density": 1433,
+      "coordinates": { "lat": 27.6588, "lng": 85.3247 }
+    },
+    {
+      "_id": "district-kavrepalanchowk",
+      "_type": "district",
+      "name": "Kavrepalanchowk",
+      "slug": { "_type": "slug", "current": "kavrepalanchowk" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Dhulikhel",
+      "population": 366879,
+      "area": 1396,
+      "elevation": 1554,
+      "density": 263,
+      "coordinates": { "lat": 27.6167, "lng": 85.5500 }
+    },
+    {
+      "_id": "district-sindhuli",
+      "_type": "district",
+      "name": "Sindhuli",
+      "slug": { "_type": "slug", "current": "sindhuli" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Kamalamai",
+      "population": 296192,
+      "area": 2491,
+      "elevation": 660,
+      "density": 119,
+      "coordinates": { "lat": 27.2333, "lng": 85.9667 }
+    },
+    {
+      "_id": "district-makawanpur",
+      "_type": "district",
+      "name": "Makawanpur",
+      "slug": { "_type": "slug", "current": "makawanpur" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Hetauda",
+      "population": 420477,
+      "area": 2426,
+      "elevation": 500,
+      "density": 173,
+      "coordinates": { "lat": 27.4333, "lng": 85.0333 }
+    },
+    {
+      "_id": "district-chitwan",
+      "_type": "district",
+      "name": "Chitwan",
+      "slug": { "_type": "slug", "current": "chitwan" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Bharatpur",
+      "population": 719859,
+      "area": 2218,
+      "elevation": 208,
+      "density": 325,
+      "coordinates": { "lat": 27.6833, "lng": 84.4333 }
+    },
+    {
+      "_id": "district-ramechhap",
+      "_type": "district",
+      "name": "Ramechhap",
+      "slug": { "_type": "slug", "current": "ramechhap" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Manthali",
+      "population": 202646,
+      "area": 1546,
+      "elevation": 1680,
+      "density": 131,
+      "coordinates": { "lat": 27.6500, "lng": 86.0833 }
+    },
+    {
+      "_id": "district-nuwakot",
+      "_type": "district",
+      "name": "Nuwakot",
+      "slug": { "_type": "slug", "current": "nuwakot" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Bidur",
+      "population": 277471,
+      "area": 1121,
+      "elevation": 1100,
+      "density": 248,
+      "coordinates": { "lat": 27.9167, "lng": 85.1667 }
+    },
+    {
+      "_id": "district-dhading",
+      "_type": "district",
+      "name": "Dhading",
+      "slug": { "_type": "slug", "current": "dhading" },
+      "provinceRef": "province-bagmati",
+      "headquarter": "Nilkantha",
+      "population": 325710,
+      "area": 1926,
+      "elevation": 770,
+      "density": 169,
+      "coordinates": { "lat": 27.8833, "lng": 84.9000 }
+    },
+    {
+      "_id": "district-gorkha",
+      "_type": "district",
+      "name": "Gorkha",
+      "slug": { "_type": "slug", "current": "gorkha" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Gorkha",
+      "population": 252201,
+      "area": 3610,
+      "elevation": 1130,
+      "density": 70,
+      "coordinates": { "lat": 28.0000, "lng": 84.6333 }
+    },
+    {
+      "_id": "district-lamjung",
+      "_type": "district",
+      "name": "Lamjung",
+      "slug": { "_type": "slug", "current": "lamjung" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Besisahar",
+      "population": 155696,
+      "area": 1692,
+      "elevation": 830,
+      "density": 92,
+      "coordinates": { "lat": 28.2833, "lng": 84.3667 }
+    },
+    {
+      "_id": "district-tanahun",
+      "_type": "district",
+      "name": "Tanahun",
+      "slug": { "_type": "slug", "current": "tanahun" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Damauli",
+      "population": 322498,
+      "area": 1546,
+      "elevation": 470,
+      "density": 209,
+      "coordinates": { "lat": 27.9333, "lng": 84.2500 }
+    },
+    {
+      "_id": "district-kaski",
+      "_type": "district",
+      "name": "Kaski",
+      "slug": { "_type": "slug", "current": "kaski" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Pokhara",
+      "population": 600051,
+      "area": 2017,
+      "elevation": 827,
+      "density": 297,
+      "coordinates": { "lat": 28.2096, "lng": 83.9856 }
+    },
+    {
+      "_id": "district-manang",
+      "_type": "district",
+      "name": "Manang",
+      "slug": { "_type": "slug", "current": "manang" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Chame",
+      "population": 5658,
+      "area": 2246,
+      "elevation": 3500,
+      "density": 3,
+      "coordinates": { "lat": 28.6667, "lng": 84.0000 }
+    },
+    {
+      "_id": "district-mustang",
+      "_type": "district",
+      "name": "Mustang",
+      "slug": { "_type": "slug", "current": "mustang" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Jomsom",
+      "population": 14452,
+      "area": 3573,
+      "elevation": 3800,
+      "density": 4,
+      "coordinates": { "lat": 28.9983, "lng": 83.8467 }
+    },
+    {
+      "_id": "district-myagdi",
+      "_type": "district",
+      "name": "Myagdi",
+      "slug": { "_type": "slug", "current": "myagdi" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Beni",
+      "population": 105519,
+      "area": 2297,
+      "elevation": 1800,
+      "density": 46,
+      "coordinates": { "lat": 28.5833, "lng": 83.5833 }
+    },
+    {
+      "_id": "district-parbat",
+      "_type": "district",
+      "name": "Parbat",
+      "slug": { "_type": "slug", "current": "parbat" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Kusma",
+      "population": 130882,
+      "area": 494,
+      "elevation": 1270,
+      "density": 265,
+      "coordinates": { "lat": 28.2167, "lng": 83.7167 }
+    },
+    {
+      "_id": "district-syangja",
+      "_type": "district",
+      "name": "Syangja",
+      "slug": { "_type": "slug", "current": "syangja" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Putalibazar",
+      "population": 253402,
+      "area": 1164,
+      "elevation": 1080,
+      "density": 218,
+      "coordinates": { "lat": 28.0833, "lng": 83.8667 }
+    },
+    {
+      "_id": "district-nawalpur",
+      "_type": "district",
+      "name": "Nawalpur",
+      "slug": { "_type": "slug", "current": "nawalpur" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Kawasoti",
+      "population": 366807,
+      "area": 1043,
+      "elevation": 180,
+      "density": 352,
+      "coordinates": { "lat": 27.6500, "lng": 84.0833 }
+    },
+    {
+      "_id": "district-baglung",
+      "_type": "district",
+      "name": "Baglung",
+      "slug": { "_type": "slug", "current": "baglung" },
+      "provinceRef": "province-gandaki",
+      "headquarter": "Baglung",
+      "population": 268593,
+      "area": 1784,
+      "elevation": 1027,
+      "density": 151,
+      "coordinates": { "lat": 28.2667, "lng": 83.5833 }
+    },
+    {
+      "_id": "district-rukum-east",
+      "_type": "district",
+      "name": "Rukum East",
+      "slug": { "_type": "slug", "current": "rukum-east" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Rukumkot",
+      "population": 119377,
+      "area": 1213,
+      "elevation": 1500,
+      "density": 98,
+      "coordinates": { "lat": 28.6500, "lng": 82.4833 }
+    },
+    {
+      "_id": "district-rolpa",
+      "_type": "district",
+      "name": "Rolpa",
+      "slug": { "_type": "slug", "current": "rolpa" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Liwang",
+      "population": 234793,
+      "area": 1879,
+      "elevation": 1450,
+      "density": 125,
+      "coordinates": { "lat": 28.2333, "lng": 82.4500 }
+    },
+    {
+      "_id": "district-pyuthan",
+      "_type": "district",
+      "name": "Pyuthan",
+      "slug": { "_type": "slug", "current": "pyuthan" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Pyuthan",
+      "population": 232540,
+      "area": 1309,
+      "elevation": 1290,
+      "density": 178,
+      "coordinates": { "lat": 28.0833, "lng": 82.8500 }
+    },
+    {
+      "_id": "district-gulmi",
+      "_type": "district",
+      "name": "Gulmi",
+      "slug": { "_type": "slug", "current": "gulmi" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Tamghas",
+      "population": 246694,
+      "area": 1149,
+      "elevation": 1070,
+      "density": 215,
+      "coordinates": { "lat": 28.0667, "lng": 83.2833 }
+    },
+    {
+      "_id": "district-arghakhanchi",
+      "_type": "district",
+      "name": "Arghakhanchi",
+      "slug": { "_type": "slug", "current": "arghakhanchi" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Sandhikharka",
+      "population": 188164,
+      "area": 1193,
+      "elevation": 1230,
+      "density": 158,
+      "coordinates": { "lat": 27.9500, "lng": 83.1333 }
+    },
+    {
+      "_id": "district-palpa",
+      "_type": "district",
+      "name": "Palpa",
+      "slug": { "_type": "slug", "current": "palpa" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Tansen",
+      "population": 246975,
+      "area": 1373,
+      "elevation": 1280,
+      "density": 180,
+      "coordinates": { "lat": 27.8667, "lng": 83.5500 }
+    },
+    
+    {
+      "_id": "district-kapilvastu",
+      "_type": "district",
+      "name": "Kapilvastu",
+      "slug": { "_type": "slug", "current": "kapilvastu" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Taulihawa",
+      "population": 695575,
+      "area": 1738,
+      "elevation": 100,
+      "density": 400,
+      "coordinates": { "lat": 27.5333, "lng": 83.0500 }
+    },
+    {
+      "_id": "district-nawalparasi-west",
+      "_type": "district",
+      "name": "Nawalparasi West",
+      "slug": { "_type": "slug", "current": "nawalparasi-west" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Parasi",
+      "population": 387025,
+      "area": 634,
+      "elevation": 110,
+      "density": 610,
+      "coordinates": { "lat": 27.5500, "lng": 83.6833 }
+    },
+    {
+      "_id": "district-rupandehi",
+      "_type": "district",
+      "name": "Rupandehi",
+      "slug": { "_type": "slug", "current": "rupandehi" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Siddharthanagar",
+      "population": 1121957,
+      "area": 1360,
+      "elevation": 110,
+      "density": 825,
+      "coordinates": { "lat": 27.5000, "lng": 83.4500 }
+    },
+    {
+      "_id": "district-dang",
+      "_type": "district",
+      "name": "Dang",
+      "slug": { "_type": "slug", "current": "dang" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Ghorahi",
+      "population": 674993,
+      "area": 2955,
+      "elevation": 700,
+      "density": 228,
+      "coordinates": { "lat": 28.0500, "lng": 82.3000 }
+    },
+    {
+      "_id": "district-banke",
+      "_type": "district",
+      "name": "Banke",
+      "slug": { "_type": "slug", "current": "banke" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Nepalgunj",
+      "population": 603194,
+      "area": 2337,
+      "elevation": 150,
+      "density": 258,
+      "coordinates": { "lat": 28.0500, "lng": 81.6167 }
+    },
+    {
+      "_id": "district-bardiya",
+      "_type": "district",
+      "name": "Bardiya",
+      "slug": { "_type": "slug", "current": "bardiya" },
+      "provinceRef": "province-lumbini",
+      "headquarter": "Gulariya",
+      "population": 459900,
+      "area": 2025,
+      "elevation": 130,
+      "density": 227,
+      "coordinates": { "lat": 28.3167, "lng": 81.3500 }
+    },
+    {
+      "_id": "district-dolpa",
+      "_type": "district",
+      "name": "Dolpa",
+      "slug": { "_type": "slug", "current": "dolpa" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Dunai",
+      "population": 36507,
+      "area": 7889,
+      "elevation": 3650,
+      "density": 5,
+      "coordinates": { "lat": 28.9333, "lng": 82.8167 }
+    },
+    {
+      "_id": "district-mugu",
+      "_type": "district",
+      "name": "Mugu",
+      "slug": { "_type": "slug", "current": "mugu" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Gamgadhi",
+      "population": 64549,
+      "area": 3535,
+      "elevation": 3050,
+      "density": 18,
+      "coordinates": { "lat": 29.5333, "lng": 82.0833 }
+    },
+    {
+      "_id": "district-humla",
+      "_type": "district",
+      "name": "Humla",
+      "slug": { "_type": "slug", "current": "humla" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Simikot",
+      "population": 55287,
+      "area": 5655,
+      "elevation": 3500,
+      "density": 10,
+      "coordinates": { "lat": 29.9667, "lng": 81.8333 }
+    },
+    {
+      "_id": "district-jumla",
+      "_type": "district",
+      "name": "Jumla",
+      "slug": { "_type": "slug", "current": "jumla" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Chandannath",
+      "population": 119314,
+      "area": 2531,
+      "elevation": 2900,
+      "density": 47,
+      "coordinates": { "lat": 29.2744, "lng": 82.1833 }
+    },
+    {
+      "_id": "district-kalikot",
+      "_type": "district",
+      "name": "Kalikot",
+      "slug": { "_type": "slug", "current": "kalikot" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Manma",
+      "population": 144919,
+      "area": 1741,
+      "elevation": 2400,
+      "density": 83,
+      "coordinates": { "lat": 29.1667, "lng": 81.7333 }
+    },
+    {
+      "_id": "district-dailekh",
+      "_type": "district",
+      "name": "Dailekh",
+      "slug": { "_type": "slug", "current": "dailekh" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Dullu",
+      "population": 252313,
+      "area": 1502,
+      "elevation": 1440,
+      "density": 168,
+      "coordinates": { "lat": 28.8500, "lng": 81.7167 }
+    },
+    {
+      "_id": "district-jajarkot",
+      "_type": "district",
+      "name": "Jajarkot",
+      "slug": { "_type": "slug", "current": "jajarkot" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Khalanga",
+      "population": 189360,
+      "area": 2230,
+      "elevation": 1740,
+      "density": 85,
+      "coordinates": { "lat": 28.7000, "lng": 82.2000 }
+    },
+    {
+      "_id": "district-rukum-west",
+      "_type": "district",
+      "name": "Rukum West",
+      "slug": { "_type": "slug", "current": "rukum-west" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Musikot",
+      "population": 166353,
+      "area": 1213,
+      "elevation": 1500,
+      "density": 137,
+      "coordinates": { "lat": 28.6333, "lng": 82.3833 }
+    },
+    {
+      "_id": "district-salyan",
+      "_type": "district",
+      "name": "Salyan",
+      "slug": { "_type": "slug", "current": "salyan" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Salyan",
+      "population": 213500,
+      "area": 1462,
+      "elevation": 1530,
+      "density": 146,
+      "coordinates": { "lat": 28.3500, "lng": 82.1667 }
+    },
+    {
+      "_id": "district-surkhet",
+      "_type": "district",
+      "name": "Surkhet",
+      "slug": { "_type": "slug", "current": "surkhet" },
+      "provinceRef": "province-karnali",
+      "headquarter": "Birendranagar",
+      "population": 415126,
+      "area": 2491,
+      "elevation": 720,
+      "density": 167,
+      "coordinates": { "lat": 28.6000, "lng": 81.6333 }
+    },
+    {
+      "_id": "district-bajura",
+      "_type": "district",
+      "name": "Bajura",
+      "slug": { "_type": "slug", "current": "bajura" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Martadi",
+      "population": 134912,
+      "area": 2188,
+      "elevation": 1900,
+      "density": 62,
+      "coordinates": { "lat": 29.5500, "lng": 81.5500 }
+    },
+    {
+      "_id": "district-bajhang",
+      "_type": "district",
+      "name": "Bajhang",
+      "slug": { "_type": "slug", "current": "bajhang" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Chainpur",
+      "population": 195159,
+      "area": 3422,
+      "elevation": 1800,
+      "density": 57,
+      "coordinates": { "lat": 29.5333, "lng": 81.1833 }
+    },
+    {
+      "_id": "district-darchula",
+      "_type": "district",
+      "name": "Darchula",
+      "slug": { "_type": "slug", "current": "darchula" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Darchula",
+      "population": 132174,
+      "area": 2322,
+      "elevation": 2200,
+      "density": 57,
+      "coordinates": { "lat": 29.8500, "lng": 80.5500 }
+    },
+    {
+      "_id": "district-baitadi",
+      "_type": "district",
+      "name": "Baitadi",
+      "slug": { "_type": "slug", "current": "baitadi" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Dasharathchand",
+      "population": 232556,
+      "area": 1519,
+      "elevation": 1430,
+      "density": 153,
+      "coordinates": { "lat": 29.5167, "lng": 80.5833 }
+    },
+    {
+      "_id": "district-dadeldhura",
+      "_type": "district",
+      "name": "Dadeldhura",
+      "slug": { "_type": "slug", "current": "dadeldhura" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Amargadhi",
+      "population": 132621,
+      "area": 1538,
+      "elevation": 1790,
+      "density": 86,
+      "coordinates": { "lat": 29.3000, "lng": 80.5833 }
+    },
+    {
+      "_id": "district-doti",
+      "_type": "district",
+      "name": "Doti",
+      "slug": { "_type": "slug", "current": "doti" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Dipayal",
+      "population": 204983,
+      "area": 2025,
+      "elevation": 1300,
+      "density": 101,
+      "coordinates": { "lat": 29.2667, "lng": 80.9500 }
+    },
+    {
+      "_id": "district-achham",
+      "_type": "district",
+      "name": "Achham",
+      "slug": { "_type": "slug", "current": "achham" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Mangalsen",
+      "population": 221916,
+      "area": 1680,
+      "elevation": 1330,
+      "density": 132,
+      "coordinates": { "lat": 29.1167, "lng": 81.2833 }
+    },
+    {
+      "_id": "district-kailali",
+      "_type": "district",
+      "name": "Kailali",
+      "slug": { "_type": "slug", "current": "kailali" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Dhangadhi",
+      "population": 911155,
+      "area": 3235,
+      "elevation": 120,
+      "density": 282,
+      "coordinates": { "lat": 28.6833, "lng": 80.6000 }
+    },
+    {
+      "_id": "district-kanchanpur",
+      "_type": "district",
+      "name": "Kanchanpur",
+      "slug": { "_type": "slug", "current": "kanchanpur" },
+      "provinceRef": "province-sudurpashchim",
+      "headquarter": "Bhimdatta",
+      "population": 512207,
+      "area": 1610,
+      "elevation": 100,
+      "density": 318,
+      "coordinates": { "lat": 28.8333, "lng": 80.3333 }
+    }
+  ]
+}

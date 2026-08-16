@@ -10,6 +10,7 @@ interface Destination {
   slug: { current: string };
   excerpt: string;
   region: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coverImage: any;
   duration?: string;
   maxAltitude?: string;

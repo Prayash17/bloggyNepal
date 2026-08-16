@@ -9,7 +9,7 @@ export default defineConfig({
   dataset,
   apiVersion,
   schema: {
-    types: schemaTypes,
+    types: schemaTypes, // ✅ This must exist and contain 'district'
   },
   plugins: [
     structureTool({
@@ -23,6 +23,9 @@ export default defineConfig({
             S.listItem()
               .title("Destinations")
               .child(S.documentTypeList("destination").title("Destinations")),
+            S.listItem()
+              .title("Districts")
+              .child(S.documentTypeList("district").title("Districts")),
           ]),
     }),
   ],
