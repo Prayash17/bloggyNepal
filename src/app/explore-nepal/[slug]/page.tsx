@@ -1,48 +1,62 @@
- import { notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import { PortableText } from "@portabletext/react";
+
 import { client } from "@/sanity/lib/client";
 import {
   districtBySlugQuery,
   districtSlugsQuery,
 } from "@/sanity/lib/queries";
 import { urlForImage } from "@/sanity/lib/image";
-import type { District } from "@/types/district";
+
+import type { District, Place } from "@/types/district";
+
 import { StatCard } from "@/components/StatCard";
 import { PlaceCard } from "@/components/PlaceCard";
 import { Gallery } from "@/components/Gallery";
-import { Map } from "@/components/Map";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { DistrictMap } from "@/components/DistrictMap";
 
 // ============ STATIC PARAMS (SSG) ============
 export async function generateStaticParams() {
   const slugs = await client.fetch<string[]>(districtSlugsQuery);
-  return slugs.map((slug) => ({ slug }));
+
+  return slugs.map((slug) => ({
+    slug,
+  }));
 }
 
 // ============ METADATA ============
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;  // 👈 Next.js 15+ requires Promise
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;  // 👈 await params first
-  const district: District = await client.fetch(districtBySlugQuery, { slug });
+  const { slug } = await params;
 
-  if (!district) return {};
+  const district: District | null = await client.fetch(
+    districtBySlugQuery,
+    { slug }
+  );
+
+  if (!district) {
+    return {};
+  }
 
   return {
-    title: district.seo?.metaTitle || `${district.name} District - Travel Guide`,
+    title:
+      district.seo?.metaTitle ||
+      `${district.name} District - Travel Guide`,
+
     description:
       district.seo?.metaDescription ||
       `Explore ${district.name} district. Population, places to visit, travel tips, and more.`,
+
     openGraph: {
       images: district.seo?.ogImage
         ? [urlForImage(district.seo.ogImage).url()]
         : district.coverImage
-        ? [urlForImage(district.coverImage).url()]
-        : [],
+          ? [urlForImage(district.coverImage).url()]
+          : [],
     },
   };
 }
@@ -51,24 +65,37 @@ export async function generateMetadata({
 export default async function ExploreNepalPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;  // 👈 Next.js 15+ requires Promise
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;  // 👈 await params first
-  const district: District = await client.fetch(districtBySlugQuery, { slug });
+  const { slug } = await params;
 
-  if (!district) notFound();
+  const district: District | null = await client.fetch(
+    districtBySlugQuery,
+    { slug }
+  );
 
-  // Province info (now a reference, expanded by GROQ)
+  if (!district) {
+    notFound();
+  }
+
+  // Province info
   const province =
     typeof district.province === "object" && district.province
       ? district.province
       : null;
+
   const provinceSlug = province?.slug?.current;
 
+  // Cover image
   const coverUrl = district.coverImage
-    ? urlForImage(district.coverImage).width(1920).quality(85).url()
+    ? urlForImage(district.coverImage)
+        .width(1920)
+        .quality(85)
+        .url()
     : null;
-  const coverAlt = district.coverImage?.alt || `${district.name} district`;
+
+  const coverAlt =
+    district.coverImage?.alt || `${district.name} district`;
 
   return (
     <main className="bg-white">
@@ -86,7 +113,9 @@ export default async function ExploreNepalPage({
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-emerald-600 to-blue-700" />
         )}
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
         <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
           <div className="mx-auto max-w-6xl">
             {province && (
@@ -94,7 +123,11 @@ export default async function ExploreNepalPage({
                 {province.name} Province
               </p>
             )}
-            <h1 className="text-5xl font-bold md:text-7xl">{district.name}</h1>
+
+            <h1 className="text-5xl font-bold md:text-7xl">
+              {district.name}
+            </h1>
+
             {district.headquarter && (
               <p className="mt-3 text-lg text-gray-200">
                 Headquarters: {district.headquarter}
@@ -111,6 +144,7 @@ export default async function ExploreNepalPage({
             items={[
               { label: "Home", href: "/" },
               { label: "Provinces", href: "/provinces" },
+
               ...(province && provinceSlug
                 ? [
                     {
@@ -119,6 +153,7 @@ export default async function ExploreNepalPage({
                     },
                   ]
                 : []),
+
               { label: district.name },
             ]}
           />
@@ -129,18 +164,31 @@ export default async function ExploreNepalPage({
           <StatCard
             icon="👥"
             label="Population"
-            value={district.population?.toLocaleString() || "N/A"}
+            value={
+              district.population?.toLocaleString() || "N/A"
+            }
           />
+
           <StatCard
             icon="📏"
             label="Area"
-            value={district.area ? `${district.area} km²` : "N/A"}
+            value={
+              district.area
+                ? `${district.area} km²`
+                : "N/A"
+            }
           />
+
           <StatCard
             icon="⛰️"
             label="Elevation"
-            value={district.elevation ? `${district.elevation} m` : "N/A"}
+            value={
+              district.elevation
+                ? `${district.elevation} m`
+                : "N/A"
+            }
           />
+
           <StatCard
             icon="🏙️"
             label="Density"
@@ -148,51 +196,60 @@ export default async function ExploreNepalPage({
               district.density
                 ? `${district.density}/km²`
                 : district.population && district.area
-                ? `${Math.round(district.population / district.area)}/km²`
-                : "N/A"
+                  ? `${Math.round(
+                      district.population / district.area
+                    )}/km²`
+                  : "N/A"
             }
           />
         </section>
 
-   {/* ============ MAP ============ */}
-{(district.mapImage || district.mapEmbedUrl) && (
-  <Section title="Location & Map" icon="🗺️">
-    <div className="grid gap-6 md:grid-cols-2">
-      {district.mapImage && (
-        <div className="overflow-hidden rounded-lg shadow-md">
-          <Image
-            src={urlForImage(district.mapImage).width(800).url()}
-            alt={district.mapImage.alt || `${district.name} map`}
-            width={800}
-            height={600}
-            className="h-auto w-full"
-          />
-        </div>
-      )}
+        {/* ============ MAP ============ */}
+        {(district.mapImage || district.mapEmbedUrl) && (
+          <Section title="Location & Map" icon="🗺️">
+            <div className="grid gap-6 md:grid-cols-2">
+              {district.mapImage && (
+                <div className="overflow-hidden rounded-lg shadow-md">
+                  <Image
+                    src={urlForImage(district.mapImage)
+                      .width(800)
+                      .url()}
+                    alt={
+                      district.mapImage.alt ||
+                      `${district.name} map`
+                    }
+                    width={800}
+                    height={600}
+                    className="h-auto w-full"
+                  />
+                </div>
+              )}
 
-      {district.mapEmbedUrl && (
-        <iframe
-          src={district.mapEmbedUrl}
-          width="100%"
-          height="450"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title={`Map of ${district.name}`}
-        />
-      )}
-    </div>
-  </Section>
-)}
-
+              {district.mapEmbedUrl && (
+                <iframe
+                  src={district.mapEmbedUrl}
+                  width="100%"
+                  height="450"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={`Map of ${district.name}`}
+                />
+              )}
+            </div>
+          </Section>
+        )}
 
         {/* ============ PLACES TO VISIT ============ */}
         {district.places && district.places.length > 0 && (
           <Section title="Places to Visit" icon="✨">
             <div className="grid gap-6 md:grid-cols-2">
-              {district.places.map((place) => (
-                <PlaceCard key={place._key} place={place} />
+              {district.places.map((place: Place) => (
+                <PlaceCard
+                  key={place._key}
+                  place={place}
+                />
               ))}
             </div>
           </Section>
@@ -230,6 +287,7 @@ export default async function ExploreNepalPage({
   );
 }
 
+// ============ SECTION COMPONENT ============
 function Section({
   title,
   icon,
@@ -245,7 +303,10 @@ function Section({
         {icon && <span>{icon}</span>}
         {title}
       </h2>
-      <div className="prose prose-lg max-w-none text-gray-700">{children}</div>
+
+      <div className="prose prose-lg max-w-none text-gray-700">
+        {children}
+      </div>
     </section>
   );
 }

@@ -1,14 +1,24 @@
+ import Link from "next/link";
+
 import { client } from "@/sanity/lib/client";
 import { allDistrictsQuery } from "@/sanity/lib/queries";
-import { DistrictCard } from "@/components/DistrictCard";
+
 import type { District } from "@/types/district";
+
+import { DistrictCard } from "@/components/DistrictCard";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import Link from "next/link";
 
 export const revalidate = 3600;
 
 export default async function AllDistrictsPage() {
-  const districts: District[] = await client.fetch(allDistrictsQuery);
+  const districts: District[] = await client.fetch(
+    allDistrictsQuery
+  );
+
+  const totalPopulation = districts.reduce(
+    (sum, district) => sum + (district.population || 0),
+    0
+  );
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-blue-50">
@@ -22,6 +32,7 @@ export default async function AllDistrictsPage() {
       >
         <div className="absolute inset-0 opacity-20">
           <div className="h-full w-full bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.4),transparent_50%)]" />
+
           <div className="h-full w-full bg-[radial-gradient(circle_at_80%_70%,rgba(255,255,255,0.3),transparent_50%)]" />
         </div>
 
@@ -29,9 +40,14 @@ export default async function AllDistrictsPage() {
           <p className="mb-3 text-sm font-medium uppercase tracking-[0.3em] text-yellow-200">
             Explore Nepal
           </p>
-          <h1 className="text-5xl font-bold md:text-6xl">All Districts</h1>
+
+          <h1 className="text-5xl font-bold md:text-6xl">
+            All Districts
+          </h1>
+
           <p className="mt-4 text-lg text-white/90">
-            77 districts across 7 provinces — discover the diversity of Nepal
+            77 districts across 7 provinces — discover the
+            diversity of Nepal
           </p>
         </div>
 
@@ -41,6 +57,7 @@ export default async function AllDistrictsPage() {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1440 60"
             className="w-full"
+            aria-hidden="true"
           >
             <path
               fill="#fafaf9"
@@ -64,23 +81,32 @@ export default async function AllDistrictsPage() {
       <section className="mx-auto max-w-7xl px-6 py-8">
         <div className="grid grid-cols-3 gap-4 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
           <div className="text-center">
-            <p className="text-3xl font-bold text-red-600 md:text-4xl">7</p>
+            <p className="text-3xl font-bold text-red-600 md:text-4xl">
+              7
+            </p>
+
             <p className="mt-1 text-xs uppercase tracking-wider text-slate-500 md:text-sm">
               Provinces
             </p>
           </div>
+
           <div className="border-x border-stone-200 text-center">
-            <p className="text-3xl font-bold text-blue-600 md:text-4xl">77</p>
+            <p className="text-3xl font-bold text-blue-600 md:text-4xl">
+              77
+            </p>
+
             <p className="mt-1 text-xs uppercase tracking-wider text-slate-500 md:text-sm">
               Districts
             </p>
           </div>
+
           <div className="text-center">
             <p className="text-3xl font-bold text-slate-800 md:text-4xl">
-              {districts
-                .reduce((sum, d) => sum + (d.population || 0), 0)
-                .toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              {totalPopulation.toLocaleString(undefined, {
+                maximumFractionDigits: 0,
+              })}
             </p>
+
             <p className="mt-1 text-xs uppercase tracking-wider text-slate-500 md:text-sm">
               Total Population
             </p>
@@ -93,6 +119,7 @@ export default async function AllDistrictsPage() {
         <p className="mb-3 text-sm font-medium uppercase tracking-wider text-slate-600">
           Browse by Province:
         </p>
+
         <div className="flex flex-wrap gap-2">
           {[
             { name: "Koshi", num: 1 },
@@ -102,13 +129,13 @@ export default async function AllDistrictsPage() {
             { name: "Lumbini", num: 5 },
             { name: "Karnali", num: 6 },
             { name: "Sudurpashchim", num: 7 },
-          ].map((p) => (
+          ].map((province) => (
             <Link
-              key={p.num}
-              href={`/provinces/${p.name.toLowerCase()}`}
+              key={province.num}
+              href={`/provinces/${province.name.toLowerCase()}`}
               className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-red-600 hover:bg-red-50 hover:text-red-700"
             >
-              #{p.num} {p.name}
+              #{province.num} {province.name}
             </Link>
           ))}
         </div>
@@ -124,7 +151,10 @@ export default async function AllDistrictsPage() {
 
         <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {districts.map((district) => (
-            <DistrictCard key={district._id} district={district} />
+            <DistrictCard
+              key={district._id}
+              district={district}
+            />
           ))}
         </div>
       </section>

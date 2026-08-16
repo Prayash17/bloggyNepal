@@ -7,6 +7,7 @@ import { urlForImage } from "@/sanity/lib/image";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { DistrictCard } from "@/components/DistrictCard";
 import { StatCard } from "@/components/StatCard";
+import { ProvinceMap } from "@/components/ProvinceMap";
 import type { Province } from "@/types/province";
 
 // ============ STATIC PARAMS ============

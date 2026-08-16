@@ -1,4 +1,4 @@
-import type { PortableTextBlock } from "@portabletext/react";
+ import type { PortableTextBlock } from "@portabletext/react";
 
 export interface SanityImage {
   _type: "image";
@@ -33,26 +33,34 @@ export interface District {
   _createdAt: string;
   name: string;
   slug: { current: string };
+
   province?: {
     _ref: string;
     _type: "reference";
     name?: string;
     slug?: { current: string };
   };
+
   headquarter?: string;
   population?: number;
   area?: number;
   elevation?: number;
   density?: number;
   coordinates?: Coordinates;
+
   coverImage?: SanityImage;
   mapImage?: SanityImage;
+  mapEmbedUrl?: string;
+
   gallery?: SanityImage[];
+
   body?: PortableTextBlock[];
   howToGetThere?: PortableTextBlock[];
   cultureAndHistory?: PortableTextBlock[];
   bestTimeToVisit?: PortableTextBlock[];
+
   places?: Place[];
+
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
