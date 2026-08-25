@@ -4,208 +4,345 @@ export const district = defineType({
   name: "district",
   title: "District",
   type: "document",
+
   fields: [
-    // ============ BASIC INFO ============
+    // =========================================================
+    // BASIC INFO
+    // =========================================================
     defineField({
       name: "name",
       title: "District Name",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
-      options: { source: "name", maxLength: 96 },
+      options: {
+        source: "name",
+        maxLength: 96,
+      },
       validation: (Rule) => Rule.required(),
     }),
 
-    // 🔗 REFERENCE TO PROVINCE (replaces old string)
     defineField({
       name: "province",
       title: "Province",
       type: "reference",
       to: [{ type: "province" }],
       validation: (Rule) => Rule.required(),
-      description: "Which province does this district belong to?",
+      description:
+        "Which province does this district belong to?",
     }),
 
     defineField({
       name: "headquarter",
       title: "District Headquarters",
       type: "string",
-      description: "e.g., Kathmandu, Pokhara, Biratnagar",
+      description:
+        "e.g. Kathmandu, Pokhara, Biratnagar",
     }),
 
-    // ============ STATS (NEW) ============
+    defineField({
+      name: "category",
+      title: "Tourism Category",
+      type: "string",
+      description:
+        "Comma-separated tourism categories, e.g. lakes, trekking, pilgrimage, culture.",
+    }),
+
+    // =========================================================
+    // STATISTICS
+    // =========================================================
     defineField({
       name: "population",
       title: "Total Population",
       type: "number",
-      description: "Latest census data or estimate",
+      description:
+        "Latest census data or estimate",
       validation: (Rule) => Rule.min(0),
     }),
+
     defineField({
       name: "area",
       title: "Area (sq km)",
       type: "number",
-      description: "Total area in square kilometers",
+      description:
+        "Total area in square kilometers",
       validation: (Rule) => Rule.min(0),
     }),
+
     defineField({
       name: "elevation",
       title: "Elevation (meters)",
       type: "number",
-      description: "Average elevation in meters above sea level",
+      description:
+        "Average elevation above sea level",
     }),
+
     defineField({
       name: "density",
       title: "Population Density (per sq km)",
       type: "number",
-      description: "Auto-calculated or manual override",
+      description:
+        "Population density",
     }),
 
-    // ============ LOCATION (NEW) ============
-   defineField({
-  name: "coordinates",
-  title: "Coordinates",
-  type: "object",
-  description: "Latitude and longitude of the headquarters",
-  fields: [
-    { name: "lat", type: "number", title: "Latitude" },
-    { name: "lng", type: "number", title: "Longitude" },
-  ],
-}),
+    // =========================================================
+    // LOCATION
+    // =========================================================
+    defineField({
+      name: "coordinates",
+      title: "Coordinates",
+      type: "object",
+      description:
+        "Latitude and longitude of the headquarters",
+      fields: [
+        defineField({
+          name: "lat",
+          title: "Latitude",
+          type: "number",
+        }),
 
+        defineField({
+          name: "lng",
+          title: "Longitude",
+          type: "number",
+        }),
+      ],
+    }),
 
-defineField({
-  name: "mapEmbedUrl",
-  title: "Google Maps Embed URL (Auto-generated)",
-  type: "url",
-  description: "Auto-generated Google Maps embed URL. Edit only if you want a custom map.",
-  readOnly: true, //  Makes it auto-filled, you don't need to touch it
-}),
+    defineField({
+      name: "mapEmbedUrl",
+      title: "Google Maps Embed URL",
+      type: "url",
+      description:
+        "Google Maps embed URL for this district.",
+    }),
 
-
-  defineField({
-  name: "coverImage",
-  title: "Cover Image",
-  type: "image",
-  options: { hotspot: true },
-  fields: [
-    { name: "alt", type: "string", title: "Alternative Text" },
-    // 👇 NEW
-    {
-      name: "credit",
-      type: "string",
-      title: "Photo Credit",
-    },
-    {
-      name: "license",
-      type: "string",
-      title: "License",
+    // =========================================================
+    // COVER IMAGE
+    // =========================================================
+    defineField({
+      name: "coverImage",
+      title: "Cover Image",
+      type: "image",
       options: {
-        list: [
-          { title: "Public Domain", value: "public-domain" },
-          { title: "CC0", value: "cc0" },
-          { title: "CC BY", value: "cc-by" },
-          { title: "CC BY-SA", value: "cc-by-sa" },
-          { title: "Own Photo", value: "own" },
-          { title: "Purchased/Stock", value: "stock" },
-        ],
+        hotspot: true,
       },
-    },
-  ],
-}),
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+        }),
 
+        defineField({
+          name: "credit",
+          title: "Photo Credit",
+          type: "string",
+        }),
+
+        defineField({
+          name: "license",
+          title: "License",
+          type: "string",
+          options: {
+            list: [
+              {
+                title: "Public Domain",
+                value: "public-domain",
+              },
+              {
+                title: "CC0",
+                value: "cc0",
+              },
+              {
+                title: "CC BY",
+                value: "cc-by",
+              },
+              {
+                title: "CC BY-SA",
+                value: "cc-by-sa",
+              },
+              {
+                title: "Own Photo",
+                value: "own",
+              },
+              {
+                title: "Purchased/Stock",
+                value: "stock",
+              },
+            ],
+          },
+        }),
+      ],
+    }),
+
+    // =========================================================
+    // DISTRICT MAP
+    // =========================================================
     defineField({
       name: "mapImage",
       title: "District Map",
       type: "image",
-      options: { hotspot: true },
+      options: {
+        hotspot: true,
+      },
       fields: [
-        { name: "alt", type: "string", title: "Alternative Text" },
+        defineField({
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+        }),
       ],
-      description: "Upload a map showing the district's location within Nepal",
+      description:
+        "Upload a map showing the district's location within Nepal.",
     }),
-   // Add these fields inside the gallery object definition:
 
-defineField({
-  name: "gallery",
-  title: "Image Gallery",
-  type: "array",
-  of: [
-    {
-      type: "image",
-      options: { hotspot: true },
-      fields: [
-        { name: "alt", type: "string", title: "Alternative Text" },
-        { name: "caption", type: "string", title: "Caption" },
-        // 👇 NEW FIELDS FOR ATTRIBUTION
+    // =========================================================
+    // IMAGE GALLERY
+    // =========================================================
+    defineField({
+      name: "gallery",
+      title: "Image Gallery",
+      type: "array",
+      of: [
         {
-          name: "credit",
-          type: "string",
-          title: "Photo Credit / Attribution",
-          description: 'e.g., "Photo by Mark Pokers, CC BY 2.0"',
-        },
-        {
-          name: "source",
-          type: "url",
-          title: "Source URL",
-          description: "Link to original image (Wikipedia Commons, etc.)",
-        },
-        {
-          name: "license",
-          type: "string",
-          title: "License",
+          type: "image",
           options: {
-            list: [
-              { title: "Public Domain", value: "public-domain" },
-              { title: "CC0", value: "cc0" },
-              { title: "CC BY", value: "cc-by" },
-              { title: "CC BY-SA", value: "cc-by-sa" },
-              { title: "Own Photo", value: "own" },
-              { title: "Purchased/Stock", value: "stock" },
-            ],
+            hotspot: true,
           },
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+            }),
+
+            defineField({
+              name: "caption",
+              title: "Caption",
+              type: "string",
+            }),
+
+            defineField({
+              name: "credit",
+              title:
+                "Photo Credit / Attribution",
+              type: "string",
+              description:
+                'e.g. "Photo by Mark Pokers, CC BY 2.0"',
+            }),
+
+            defineField({
+              name: "source",
+              title: "Source URL",
+              type: "url",
+              description:
+                "Link to original image, such as Wikimedia Commons.",
+            }),
+
+            defineField({
+              name: "license",
+              title: "License",
+              type: "string",
+              options: {
+                list: [
+                  {
+                    title: "Public Domain",
+                    value: "public-domain",
+                  },
+                  {
+                    title: "CC0",
+                    value: "cc0",
+                  },
+                  {
+                    title: "CC BY",
+                    value: "cc-by",
+                  },
+                  {
+                    title: "CC BY-SA",
+                    value: "cc-by-sa",
+                  },
+                  {
+                    title: "Own Photo",
+                    value: "own",
+                  },
+                  {
+                    title: "Purchased/Stock",
+                    value: "stock",
+                  },
+                ],
+              },
+            }),
+          ],
         },
       ],
-    },
-  ],
-}),
+    }),
 
-
-    // ============ RICH TEXT SECTIONS ============
+    // =========================================================
+    // RICH TEXT
+    // =========================================================
     defineField({
       name: "body",
       title: "District Overview",
       type: "array",
       of: [{ type: "block" }],
-      description: "Write an engaging introduction about this district.",
+      description:
+        "Write an engaging introduction about this district.",
     }),
+
     defineField({
       name: "howToGetThere",
       title: "How to Get There",
       type: "array",
       of: [{ type: "block" }],
-      description: "Bus routes, flights, and travel tips.",
+      description:
+        "Bus routes, flights, and travel tips.",
     }),
+
+    defineField({
+      name: "thingsToDo",
+      title: "Things to Do",
+      type: "array",
+      of: [{ type: "block" }],
+      description:
+        "Major activities and experiences travelers can enjoy in this district.",
+    }),
+
     defineField({
       name: "cultureAndHistory",
       title: "Culture & History",
       type: "array",
       of: [{ type: "block" }],
-      description: "Local traditions, festivals, and historical significance.",
+      description:
+        "Local traditions, festivals, and historical significance.",
     }),
+
     defineField({
       name: "bestTimeToVisit",
       title: "Best Time to Visit",
       type: "array",
       of: [{ type: "block" }],
-      description: "Seasonal advice and weather tips.",
+      description:
+        "Seasonal advice and weather information.",
     }),
 
-    // ============ PLACES TO VISIT ============
+    defineField({
+      name: "nearbyAttractions",
+      title: "Nearby Attractions",
+      type: "text",
+      rows: 4,
+      description:
+        "Nearby districts, attractions, or route ideas.",
+    }),
+
+    // =========================================================
+    // PLACES TO VISIT
+    // =========================================================
     defineField({
       name: "places",
       title: "Places to Visit",
@@ -213,56 +350,112 @@ defineField({
       of: [
         {
           type: "object",
+
           fields: [
-            { name: "name", type: "string", title: "Place Name" },
-            {
+            defineField({
+              name: "name",
+              title: "Place Name",
+              type: "string",
+            }),
+
+            defineField({
+              name: "slug",
+              title: "Slug",
+              type: "slug",
+              options: {
+                source: "name",
+                maxLength: 96,
+              },
+            }),
+
+            defineField({
               name: "description",
               title: "Description",
               type: "array",
               of: [{ type: "block" }],
-            },
-            {
+            }),
+
+            defineField({
               name: "image",
-              type: "image",
               title: "Place Image",
-              options: { hotspot: true },
+              type: "image",
+              options: {
+                hotspot: true,
+              },
               fields: [
-                { name: "alt", type: "string", title: "Alternative Text" },
+                defineField({
+                  name: "alt",
+                  title: "Alternative Text",
+                  type: "string",
+                }),
               ],
-            },
+            }),
           ],
+
+          preview: {
+            select: {
+              title: "name",
+              media: "image",
+            },
+          },
         },
       ],
-      description: "Add 3-4 must-visit places in this district with rich descriptions.",
+      description:
+        "Add 3-4 must-visit places in this district with rich descriptions.",
     }),
 
-    // ============ SEO ============
+    // =========================================================
+    // SEO
+    // =========================================================
     defineField({
       name: "seo",
       title: "SEO",
       type: "object",
       fields: [
-        { name: "metaTitle", type: "string", title: "Meta Title" },
-        { name: "metaDescription", type: "text", title: "Meta Description" },
-        {
+        defineField({
+          name: "metaTitle",
+          title: "Meta Title",
+          type: "string",
+        }),
+
+        defineField({
+          name: "metaDescription",
+          title: "Meta Description",
+          type: "text",
+        }),
+
+        defineField({
           name: "ogImage",
-          type: "image",
           title: "Social Share Image",
-          options: { hotspot: true },
-        },
+          type: "image",
+          options: {
+            hotspot: true,
+          },
+        }),
       ],
     }),
   ],
+
+  // ===========================================================
+  // PREVIEW
+  // ===========================================================
   preview: {
     select: {
       title: "name",
       province: "province.name",
       media: "coverImage",
     },
-    prepare({ title, province, media }) {
+
+    prepare({
+      title,
+      province,
+      media,
+    }) {
       return {
         title,
-        subtitle: province ? `📍 ${province}` : "No province assigned",
+        subtitle: province
+          ? `Province: ${province}`
+          : "No province assigned",
         media,
       };
     },

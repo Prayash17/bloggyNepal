@@ -3,7 +3,9 @@ import path from "node:path";
 import process from "node:process";
 import mammoth from "mammoth";
 import { createClient } from "@sanity/client";
-import "dotenv/config";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
 
 type ImageMeta = {
   url: string;
@@ -16,6 +18,7 @@ type ImageMeta = {
 
 type ParsedPlace = {
   name: string;
+  slug?: string;
   description: string;
   image?: ImageMeta;
 };
@@ -28,6 +31,7 @@ type ParsedDistrict = {
   population?: number;
   area?: number;
   elevation?: number;
+  elevationText?: string;
   density?: number;
   coordinates?: { lat: number; lng: number };
   mapEmbedUrl?: string;
@@ -47,13 +51,13 @@ type ParsedDistrict = {
 };
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2026-01-01";
-const token = process.env.SANITY_API_TOKEN;
+const token = process.env.SANITY_WRITE_TOKEN || process.env.SANITY_API_TOKEN;
 
 if (!projectId || !dataset || !token) {
   throw new Error(
-    "Missing Sanity environment variables. Required: NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET, SANITY_API_TOKEN",
+    "Missing Sanity environment variables. Required: NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET, SANITY_WRITE_TOKEN (or SANITY_API_TOKEN)",
   );
 }
 
@@ -63,30 +67,70 @@ const client = createClient({
   apiVersion,
   token,
   useCdn: false,
-  perspective: "published",
 });
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 function clean(value: string | undefined): string {
-  return (value || "").replace(/\uFEFF/g, "").trim();
+  return (value || "")
+    .replace(/\uFEFF/g, "")
+    .replace(/\u00ad/g, "")
+    .trim();
 }
 
 function normalizeLines(text: string): string[] {
   return text
     .split(/\r?\n/)
-    .map((line) => line.trim())
+    .map((line) => line.replace(/\u00ad/g, "").trim())
     .filter(Boolean);
 }
 
 function findLine(lines: string[], label: string): number {
-  return lines.findIndex((line) => line.toLowerCase() === label.toLowerCase());
+  const target = label.trim().toLowerCase();
+  return lines.findIndex((line) => line.trim().toLowerCase() === target);
 }
+
+const FIELD_LABELS = new Set([
+  "District Name",
+  "Slug",
+  "Province",
+  "District Headquarters",
+  "Total Population",
+  "Area (sq km)",
+  "Elevation (meters)",
+  "Population Density (per sq km)",
+  "Latitude",
+  "Longitude",
+  "Google Maps Embed URL",
+  "Image URL",
+  "Alternative Text",
+  "Photo Credit",
+  "Photo Credit / Attribution",
+  "Source URL",
+  "License",
+  "Caption",
+  "Place Name",
+  "Description",
+  "Place Image URL",
+  "Meta Title",
+  "Meta Description",
+  "Social Share Image URL",
+  "Social Share Image Alt Text",
+]);
 
 function valueAfterLabel(lines: string[], label: string): string | undefined {
   const index = findLine(lines, label);
   if (index === -1) return undefined;
-  return clean(lines[index + 1]);
+
+  for (let i = index + 1; i < lines.length; i++) {
+    const value = clean(lines[i]);
+    if (!value) continue;
+
+    // If the next meaningful line is another known field label,
+    // the original field was intentionally left blank.
+    if (FIELD_LABELS.has(value)) return undefined;
+    return value;
+  }
+
+  return undefined;
 }
 
 function numberFromText(value?: string): number | undefined {
@@ -98,244 +142,264 @@ function numberFromText(value?: string): number | undefined {
 function exactNumberFromText(value?: string): number | undefined {
   if (!value) return undefined;
   const normalized = value.replace(/,/g, "").trim();
-  const match = normalized.match(/^-?\d+(?:\.\d+)?$/);
-  return match ? Number(match[0]) : undefined;
+  return /^-?\d+(?:\.\d+)?$/.test(normalized)
+    ? Number(normalized)
+    : undefined;
 }
 
-function provinceSlugFromName(name: string): string {
-  return name
-    .replace(/province/gi, "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-");
+function isUrl(value?: string): boolean {
+  return !!value && /^https?:\/\//i.test(value);
 }
 
-function splitSection(
+function sectionRange(
   lines: string[],
   startLabel: string,
   endLabels: string[],
-): string[] {
+): [number, number] | null {
   const start = findLine(lines, startLabel);
-  if (start === -1) return [];
+  if (start === -1) return null;
 
   const endIndexes = endLabels
     .map((label) => findLine(lines, label))
     .filter((index) => index > start);
 
   const end = endIndexes.length ? Math.min(...endIndexes) : lines.length;
-  return lines.slice(start + 1, end);
+  return [start + 1, end];
 }
 
-function sectionParagraphs(
+function cleanRichText(lines: string[]): string {
+  return lines
+    .map(clean)
+    .filter(Boolean)
+    .join("\n\n")
+    .trim();
+}
+
+function parseImageBlock(
   lines: string[],
-  startLabel: string,
-  endLabels: string[],
-): string {
-  return splitSection(lines, startLabel, endLabels).join("\n\n").trim();
-}
+  heading: string,
+  nextHeadings: string[],
+): ImageMeta | undefined {
+  const range = sectionRange(lines, heading, nextHeadings);
+  if (!range) return undefined;
 
-function parseUrlImageBlock(lines: string[], heading: string): ImageMeta | undefined {
-  const start = findLine(lines, heading);
-  if (start === -1) return undefined;
-
-  const nextHeadings = [
-    "Cover Image",
-    "District Map",
-    "Image Gallery",
-    "Places",
-    "SEO",
-  ].filter((label) => label.toLowerCase() !== heading.toLowerCase());
-
-  const nextIndexes = nextHeadings
-    .map((label) => findLine(lines, label))
-    .filter((index) => index > start);
-  const end = nextIndexes.length ? Math.min(...nextIndexes) : lines.length;
-
-  const block = lines.slice(start + 1, end);
+  const block = lines.slice(range[0], range[1]);
   const url = valueAfterLabel(block, "Image URL");
-  if (!url || !/^https?:\/\//i.test(url)) return undefined;
+  if (!isUrl(url)) return undefined;
 
   return {
-    url,
+    url: url!,
     alt: valueAfterLabel(block, "Alternative Text"),
-    credit: valueAfterLabel(block, "Photo Credit"),
+    caption: valueAfterLabel(block, "Caption"),
+    credit: valueAfterLabel(block, "Photo Credit") ||
+      valueAfterLabel(block, "Photo Credit / Attribution"),
+    sourceUrl: valueAfterLabel(block, "Source URL"),
     license: valueAfterLabel(block, "License"),
-    sourceUrl: url,
   };
 }
 
 function parseGallery(lines: string[]): ImageMeta[] {
-  const start = findLine(lines, "Image Gallery");
-  if (start === -1) return [];
+  const range = sectionRange(lines, "Image Gallery", ["District Overview"]);
+  if (!range) return [];
 
-  const end = findLine(lines, "Places");
-  const block = lines.slice(start + 1, end === -1 ? lines.length : end);
-  const entryStarts: number[] = [];
-
+  const block = lines.slice(range[0], range[1]);
+  const starts: number[] = [];
   block.forEach((line, index) => {
-    if (/^Gallery Image \d+/i.test(line)) entryStarts.push(index);
+    if (/^Gallery Image \d+$/i.test(line)) starts.push(index);
   });
 
-  return entryStarts.map((entryStart, i) => {
-    const entryEnd = entryStarts[i + 1] ?? block.length;
-    const entry = block.slice(entryStart + 1, entryEnd);
+  const images: ImageMeta[] = [];
+  starts.forEach((start, i) => {
+    const end = starts[i + 1] ?? block.length;
+    const entry = block.slice(start + 1, end);
     const url = valueAfterLabel(entry, "Image URL");
-    return {
-      url: url || "",
-      alt: valueAfterLabel(entry, "Alternative Text"),
-      credit: valueAfterLabel(entry, "Photo Credit"),
-      license: valueAfterLabel(entry, "License"),
-      sourceUrl: url,
-    };
-  }).filter((image) => /^https?:\/\//i.test(image.url));
-}
+    if (!isUrl(url)) return;
 
-function extractBetweenLines(
-  lines: string[],
-  startIndex: number,
-  endIndex: number,
-): string[] {
-  return lines.slice(startIndex, endIndex).filter(Boolean);
+    images.push({
+      url: url!,
+      alt: valueAfterLabel(entry, "Alternative Text"),
+      caption: valueAfterLabel(entry, "Caption"),
+      credit:
+        valueAfterLabel(entry, "Photo Credit / Attribution") ||
+        valueAfterLabel(entry, "Photo Credit"),
+      sourceUrl: valueAfterLabel(entry, "Source URL"),
+      license: valueAfterLabel(entry, "License"),
+    });
+  });
+
+  return images;
 }
 
 function parsePlaces(lines: string[]): ParsedPlace[] {
-  const start = findLine(lines, "Places");
-  if (start === -1) return [];
+  const range = sectionRange(lines, "Places to Visit", ["SEO"]);
+  if (!range) return [];
 
-  const end = findLine(lines, "SEO");
-  const block = lines.slice(start + 1, end === -1 ? lines.length : end);
-
-  const entryStarts: number[] = [];
+  const block = lines.slice(range[0], range[1]);
+  const starts: number[] = [];
   block.forEach((line, index) => {
-    if (/^\d+\.\s+/.test(line)) entryStarts.push(index);
+    if (/^Place \d+$/i.test(line)) starts.push(index);
   });
 
-  return entryStarts.map((entryStart, i) => {
-    const entryEnd = entryStarts[i + 1] ?? block.length;
-    const rawName = block[entryStart].replace(/^\d+\.\s+/, "").trim();
-    const entry = block.slice(entryStart + 1, entryEnd);
+  const places: ParsedPlace[] = [];
+  starts.forEach((start, i) => {
+    const end = starts[i + 1] ?? block.length;
+    const entry = block.slice(start + 1, end);
 
-    const descStart = findLine(entry, "Description");
-    const descEndCandidates = [
-      findLine(entry, "Image URL"),
-      findLine(entry, "Alternative Text"),
-      findLine(entry, "Photo Credit"),
-      findLine(entry, "License"),
-    ].filter((index) => index > descStart);
-    const descEnd = descEndCandidates.length
-      ? Math.min(...descEndCandidates)
+    const name = valueAfterLabel(entry, "Place Name") || "";
+    const slug = valueAfterLabel(entry, "Slug");
+
+    const descriptionStart = findLine(entry, "Description");
+    const imageStart = findLine(entry, "Place Image URL");
+    const altStart = findLine(entry, "Alternative Text");
+    const descriptionEndCandidates = [imageStart, altStart].filter(
+      (idx) => idx > descriptionStart,
+    );
+    const descriptionEnd = descriptionEndCandidates.length
+      ? Math.min(...descriptionEndCandidates)
       : entry.length;
 
     const description =
-      descStart === -1
+      descriptionStart === -1
         ? ""
-        : entry.slice(descStart + 1, descEnd).join("\n\n").trim();
+        : cleanRichText(entry.slice(descriptionStart + 1, descriptionEnd));
 
-    const imageUrl = valueAfterLabel(entry, "Image URL");
-    const imageAlt = valueAfterLabel(entry, "Alternative Text");
+    const imageUrl = valueAfterLabel(entry, "Place Image URL");
+    const image = isUrl(imageUrl)
+      ? {
+          url: imageUrl!,
+          alt: valueAfterLabel(entry, "Alternative Text"),
+          caption: valueAfterLabel(entry, "Caption"),
+          credit:
+            valueAfterLabel(entry, "Photo Credit / Attribution") ||
+            valueAfterLabel(entry, "Photo Credit"),
+          sourceUrl: valueAfterLabel(entry, "Source URL"),
+          license: valueAfterLabel(entry, "License"),
+        }
+      : undefined;
 
-    return {
-      name: rawName,
-      description,
-      image:
-        imageUrl && /^https?:\/\//i.test(imageUrl)
-          ? {
-              url: imageUrl,
-              alt: imageAlt,
-              credit: valueAfterLabel(entry, "Photo Credit"),
-              license: valueAfterLabel(entry, "License"),
-              sourceUrl: imageUrl,
-            }
-          : undefined,
-    };
+    if (name) {
+      places.push({ name, slug, description, image });
+    }
   });
+
+  return places;
 }
 
 function parseDistrict(lines: string[]): ParsedDistrict {
-  const name = clean(valueAfterLabel(lines, "Name")) || clean(lines[0]);
-  const slug = clean(valueAfterLabel(lines, "Slug")) || name.toLowerCase().replace(/\s+/g, "-");
+  const name = clean(valueAfterLabel(lines, "District Name")) || clean(lines[0]);
+  const slug =
+    clean(valueAfterLabel(lines, "Slug")) ||
+    name.toLowerCase().replace(/\s+district$/i, "").replace(/\s+/g, "-");
   const provinceName = clean(valueAfterLabel(lines, "Province"));
 
-  const elevationText = valueAfterLabel(lines, "Elevation");
+  const elevationText = valueAfterLabel(lines, "Elevation (meters)");
   const elevation = exactNumberFromText(elevationText);
   if (elevationText && elevation === undefined) {
     console.warn(
-      `⚠️ Elevation for ${name} is a range/text (${JSON.stringify(elevationText)}). It will be left empty instead of guessing a number.`,
+      `⚠️ Elevation for ${name} is a range/text (${JSON.stringify(
+        elevationText,
+      )}). It will be preserved as text for review and omitted from the numeric field.`,
     );
   }
 
-  const lat = numberFromText(valueAfterLabel(lines, "Latitude"));
-  const lng = numberFromText(valueAfterLabel(lines, "Longitude"));
+  const latitude = numberFromText(valueAfterLabel(lines, "Latitude"));
+  const longitude = numberFromText(valueAfterLabel(lines, "Longitude"));
+
+  const coverImage = parseImageBlock(lines, "Cover Image", [
+    "District Map",
+    "Image Gallery",
+  ]);
+
+  const mapImage = parseImageBlock(lines, "District Map", ["Image Gallery"]);
 
   const gallery = parseGallery(lines);
+  const places = parsePlaces(lines);
+
+  const overviewRange = sectionRange(lines, "District Overview", [
+    "How to Get There",
+  ]);
+  const gettingThereRange = sectionRange(lines, "How to Get There", [
+    "Culture & History",
+  ]);
+  const cultureRange = sectionRange(lines, "Culture & History", [
+    "Best Time to Visit",
+  ]);
+  const bestTimeRange = sectionRange(lines, "Best Time to Visit", [
+    "Places to Visit",
+  ]);
+
+  const socialUrl = valueAfterLabel(lines, "Social Share Image URL");
+  const socialImage = isUrl(socialUrl)
+    ? {
+        url: socialUrl!,
+        alt: valueAfterLabel(lines, "Social Share Image Alt Text"),
+        sourceUrl: socialUrl,
+      }
+    : undefined;
 
   return {
     name,
     slug,
     provinceName,
-    headquarter: valueAfterLabel(lines, "Headquarters"),
-    population: numberFromText(valueAfterLabel(lines, "Population")),
-    area: numberFromText(valueAfterLabel(lines, "Area")),
+    headquarter: valueAfterLabel(lines, "District Headquarters"),
+    population: numberFromText(valueAfterLabel(lines, "Total Population")),
+    area: numberFromText(valueAfterLabel(lines, "Area (sq km)")),
     elevation,
-    density: numberFromText(valueAfterLabel(lines, "Population Density")),
+    elevationText,
+    density: numberFromText(valueAfterLabel(lines, "Population Density (per sq km)")),
     coordinates:
-      lat !== undefined && lng !== undefined ? { lat, lng } : undefined,
-    mapEmbedUrl: valueAfterLabel(lines, "Google Maps Embed"),
-    overview: sectionParagraphs(lines, "Overview", ["Getting There"]),
-    howToGetThere: sectionParagraphs(lines, "Getting There", [
-      "Culture and History",
-    ]),
-    cultureAndHistory: sectionParagraphs(lines, "Culture and History", [
-      "Best Time to Visit",
-    ]),
-    bestTimeToVisit: sectionParagraphs(lines, "Best Time to Visit", [
-      "Main Images",
-    ]),
-    coverImage: parseUrlImageBlock(lines, "Cover Image"),
-    mapImage: parseUrlImageBlock(lines, "District Map"),
+      latitude !== undefined && longitude !== undefined
+        ? { lat: latitude, lng: longitude }
+        : undefined,
+    mapEmbedUrl: valueAfterLabel(lines, "Google Maps Embed URL"),
+    overview: overviewRange
+      ? cleanRichText(lines.slice(overviewRange[0], overviewRange[1]))
+      : "",
+    howToGetThere: gettingThereRange
+      ? cleanRichText(lines.slice(gettingThereRange[0], gettingThereRange[1]))
+      : "",
+    cultureAndHistory: cultureRange
+      ? cleanRichText(lines.slice(cultureRange[0], cultureRange[1]))
+      : "",
+    bestTimeToVisit: bestTimeRange
+      ? cleanRichText(lines.slice(bestTimeRange[0], bestTimeRange[1]))
+      : "",
+    coverImage,
+    mapImage,
     gallery,
-    places: parsePlaces(lines),
+    places,
     seo: {
       metaTitle: valueAfterLabel(lines, "Meta Title"),
       metaDescription: valueAfterLabel(lines, "Meta Description"),
-      socialImage: (() => {
-        const url = valueAfterLabel(lines, "Social Image");
-        if (!url || !/^https?:\/\//i.test(url)) return undefined;
-        return {
-          url,
-          alt: valueAfterLabel(lines, "Social Image Alt Text"),
-          sourceUrl: url,
-        };
-      })(),
+      socialImage,
     },
   };
 }
 
+function makeKey(prefix = "k") {
+  return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 function toPortableText(value: string | undefined) {
   if (!value) return [];
-
   return value
     .split(/\n\n+/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
     .map((paragraph) => ({
       _type: "block",
-      _key: `block-${Math.random().toString(36).slice(2, 10)}`,
+      _key: makeKey("block"),
       style: "normal",
       markDefs: [],
       children: [
         {
           _type: "span",
-          _key: `span-${Math.random().toString(36).slice(2, 10)}`,
+          _key: makeKey("span"),
           text: paragraph.replace(/\s+/g, " "),
           marks: [],
         },
       ],
     }));
-}
-
-function randomKey() {
-  return Math.random().toString(36).slice(2, 12);
 }
 
 function extensionFromContentType(contentType: string | null) {
@@ -359,45 +423,38 @@ const assetCache = new Map<string, string>();
 
 async function uploadImage(image: ImageMeta | undefined, label: string) {
   if (!image?.url) return undefined;
-
   if (assetCache.has(image.url)) {
-    const ref = assetCache.get(image.url)!;
     return {
       _type: "image",
-      asset: { _type: "reference", _ref: ref },
-      alt: image.alt,
-      caption: image.caption,
-      credit: image.credit,
-      sourceUrl: image.sourceUrl || image.url,
-      license: image.license,
+      asset: { _type: "reference", _ref: assetCache.get(image.url)! },
+      ...(image.alt ? { alt: image.alt } : {}),
+      ...(image.caption ? { caption: image.caption } : {}),
+      ...(image.credit ? { credit: image.credit } : {}),
+      ...(image.sourceUrl ? { sourceUrl: image.sourceUrl } : {}),
+      ...(image.license ? { license: image.license } : {}),
     };
   }
 
   try {
-    console.log(`⬇️  Downloading ${label}: ${image.url}`);
+    console.log(`⬇️ Downloading ${label}: ${image.url}`);
     const response = await fetch(image.url, {
       redirect: "follow",
-      headers: {
-        "User-Agent": "BloggyNepal Content Importer/1.0",
-      },
+      headers: { "User-Agent": "BloggyNepal Content Importer/1.0" },
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const contentType = response.headers.get("content-type");
     if (!contentType?.startsWith("image/")) {
-      throw new Error(`Expected image content, received ${contentType || "unknown"}`);
+      throw new Error(
+        `Expected image content, received ${contentType || "unknown"}`,
+      );
     }
 
     const buffer = Buffer.from(await response.arrayBuffer());
     const extension = extensionFromContentType(contentType);
-    const filename = `${safeFilename(label)}.${extension}`;
-
-    console.log(`⬆️  Uploading ${label} to Sanity...`);
     const asset = await client.assets.upload("image", buffer, {
-      filename,
+      filename: `${safeFilename(label)}.${extension}`,
       contentType,
     });
 
@@ -406,36 +463,59 @@ async function uploadImage(image: ImageMeta | undefined, label: string) {
     return {
       _type: "image",
       asset: { _type: "reference", _ref: asset._id },
-      alt: image.alt,
-      caption: image.caption,
-      credit: image.credit,
-      sourceUrl: image.sourceUrl || image.url,
-      license: image.license,
+      ...(image.alt ? { alt: image.alt } : {}),
+      ...(image.caption ? { caption: image.caption } : {}),
+      ...(image.credit ? { credit: image.credit } : {}),
+      ...(image.sourceUrl ? { sourceUrl: image.sourceUrl } : {}),
+      ...(image.license ? { license: image.license } : {}),
     };
   } catch (error) {
     console.warn(
-      `⚠️  Could not import image ${label}: ${(error as Error).message}`,
+      `⚠️ Could not import image ${label}: ${(error as Error).message}`,
     );
     return undefined;
   }
 }
 
 async function findProvinceId(provinceName: string) {
-  const slug = provinceSlugFromName(provinceName);
+  const cleanName = provinceName.replace(/\s+Province$/i, "").trim();
+  const slug = cleanName.toLowerCase().replace(/\s+/g, "-");
 
-  const bySlug = await client.fetch<{ _id: string } | null>(
+  const result = await client.fetch<{ _id: string } | null>(
     `*[_type == "province" && slug.current == $slug][0]{_id}`,
     { slug },
   );
 
-  if (bySlug?._id) return bySlug._id;
+  if (result?._id) return result._id;
 
-  const byName = await client.fetch<{ _id: string } | null>(
+  return client.fetch<{ _id: string } | null>(
     `*[_type == "province" && lower(name) == lower($name)][0]{_id}`,
-    { name: provinceName.replace(/\s+Province$/i, "") },
-  );
+    { name: cleanName },
+  ).then((doc) => doc?._id);
+}
 
-  return byName?._id;
+function printValidation(district: ParsedDistrict) {
+  console.log("\n📋 Import validation");
+  console.log("────────────────────────────");
+  console.log(`${district.name} → ${district.slug}`);
+  console.log(`Province: ${district.provinceName || "❌ missing"}`);
+  console.log(`Headquarters: ${district.headquarter || "❌ missing"}`);
+  console.log(`Population: ${district.population ?? "❌ missing"}`);
+  console.log(`Area: ${district.area ?? "❌ missing"}`);
+  console.log(`Elevation: ${district.elevation ?? (district.elevationText ? `⚠️ ${district.elevationText}` : "❌ missing")}`);
+  console.log(`Density: ${district.density ?? "❌ missing"}`);
+  console.log(`Coordinates: ${district.coordinates ? `${district.coordinates.lat}, ${district.coordinates.lng}` : "❌ missing"}`);
+  console.log(`Map URL: ${district.mapEmbedUrl ? "✅" : "❌ missing"}`);
+  console.log(`Cover image: ${district.coverImage ? "✅" : "❌ missing"}`);
+  console.log(`District map: ${district.mapImage ? "✅" : "❌ missing"}`);
+  console.log(`Gallery: ${district.gallery.length}`);
+  console.log(`Places: ${district.places.length}`);
+  console.log(`Overview: ${district.overview ? "✅" : "❌ missing"}`);
+  console.log(`How to Get There: ${district.howToGetThere ? "✅" : "❌ missing"}`);
+  console.log(`Culture & History: ${district.cultureAndHistory ? "✅" : "❌ missing"}`);
+  console.log(`Best Time: ${district.bestTimeToVisit ? "✅" : "❌ missing"}`);
+  console.log(`SEO title: ${district.seo.metaTitle ? "✅" : "❌ missing"}`);
+  console.log(`SEO description: ${district.seo.metaDescription ? "✅" : "❌ missing"}`);
 }
 
 async function main() {
@@ -461,9 +541,10 @@ async function main() {
   console.log(`   places: ${district.places.length}`);
   console.log(`   gallery: ${district.gallery.length}`);
 
+  printValidation(district);
+
   if (dryRun) {
     console.log("\n✅ Dry run only. Nothing was written to Sanity.");
-    console.dir(district, { depth: null });
     return;
   }
 
@@ -479,55 +560,33 @@ async function main() {
 
   const gallery = [];
   for (const [index, image] of district.gallery.entries()) {
-    const uploaded = await uploadImage(
-      image,
-      `${district.slug}-gallery-${index + 1}`,
-    );
-    if (uploaded) {
-      gallery.push({ _key: randomKey(), ...uploaded });
-    }
-    await sleep(150);
+    const uploaded = await uploadImage(image, `${district.slug}-gallery-${index + 1}`);
+    if (uploaded) gallery.push({ _key: makeKey("gallery"), ...uploaded });
   }
 
   const places = [];
   for (const [index, place] of district.places.entries()) {
-    const image = await uploadImage(
-      place.image,
-      `${district.slug}-${place.name}-${index + 1}`,
-    );
-
+    const image = await uploadImage(place.image, `${district.slug}-place-${index + 1}`);
     places.push({
-      _key: randomKey(),
+      _key: makeKey("place"),
       name: place.name,
       description: toPortableText(place.description),
       ...(image ? { image } : {}),
     });
-
-    await sleep(150);
   }
 
-  const socialImage = await uploadImage(
-    district.seo.socialImage,
-    `${district.slug}-social`,
-  );
+  const socialImage = await uploadImage(district.seo.socialImage, `${district.slug}-social`);
 
   const document: Record<string, unknown> = {
     _id: `district-${district.slug}`,
     _type: "district",
     name: district.name,
     slug: { _type: "slug", current: district.slug },
-    province: {
-      _type: "reference",
-      _ref: provinceId,
-    },
+    province: { _type: "reference", _ref: provinceId },
     ...(district.headquarter ? { headquarter: district.headquarter } : {}),
-    ...(district.population !== undefined
-      ? { population: district.population }
-      : {}),
+    ...(district.population !== undefined ? { population: district.population } : {}),
     ...(district.area !== undefined ? { area: district.area } : {}),
-    ...(district.elevation !== undefined
-      ? { elevation: district.elevation }
-      : {}),
+    ...(district.elevation !== undefined ? { elevation: district.elevation } : {}),
     ...(district.density !== undefined ? { density: district.density } : {}),
     ...(district.coordinates ? { coordinates: district.coordinates } : {}),
     ...(district.mapEmbedUrl ? { mapEmbedUrl: district.mapEmbedUrl } : {}),
@@ -535,32 +594,26 @@ async function main() {
     ...(mapImage ? { mapImage } : {}),
     ...(gallery.length ? { gallery } : {}),
     ...(district.overview ? { body: toPortableText(district.overview) } : {}),
-    ...(district.howToGetThere
-      ? { howToGetThere: toPortableText(district.howToGetThere) }
-      : {}),
-    ...(district.cultureAndHistory
-      ? { cultureAndHistory: toPortableText(district.cultureAndHistory) }
-      : {}),
-    ...(district.bestTimeToVisit
-      ? { bestTimeToVisit: toPortableText(district.bestTimeToVisit) }
-      : {}),
+    ...(district.howToGetThere ? { howToGetThere: toPortableText(district.howToGetThere) } : {}),
+    ...(district.cultureAndHistory ? { cultureAndHistory: toPortableText(district.cultureAndHistory) } : {}),
+    ...(district.bestTimeToVisit ? { bestTimeToVisit: toPortableText(district.bestTimeToVisit) } : {}),
     ...(places.length ? { places } : {}),
-    seo: {
-      ...(district.seo.metaTitle
-        ? { metaTitle: district.seo.metaTitle }
-        : {}),
-      ...(district.seo.metaDescription
-        ? { metaDescription: district.seo.metaDescription }
-        : {}),
-      ...(socialImage ? { ogImage: socialImage } : {}),
-    },
+    ...(district.seo.metaTitle || district.seo.metaDescription || socialImage
+      ? {
+          seo: {
+            ...(district.seo.metaTitle ? { metaTitle: district.seo.metaTitle } : {}),
+            ...(district.seo.metaDescription ? { metaDescription: district.seo.metaDescription } : {}),
+            ...(socialImage ? { ogImage: socialImage } : {}),
+          },
+        }
+      : {}),
   };
 
   const resultDoc = await client.createOrReplace(document);
 
   console.log(`\n✅ Imported ${district.name}`);
   console.log(`   Sanity document ID: ${resultDoc._id}`);
-  console.log(`   https://${projectId}.api.sanity.io (project API endpoint)`);
+  console.log("👉 Refresh Sanity Studio and open Districts.");
 }
 
 main().catch((error) => {

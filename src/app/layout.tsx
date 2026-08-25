@@ -3,16 +3,19 @@ import "@/app/globals.css";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "bloggyNepal - Honest Travel Guides",
-  description: "Explore Nepal with real maps, itineraries, and stories.",
+  title: "bloggyNepal | Honest Travel Guides",
+  description:
+    "Thoughtful Nepal travel guides, itineraries, destination ideas, and real stories.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="bg-stone-50 text-slate-700">
+      <body className="overflow-x-hidden bg-[#fbfaf7] text-slate-800 antialiased">
         <Navbar />
-        <main className="pt-20">{children}</main>
+        <div className="pt-20">{children}</div>
       </body>
     </html>
   );

@@ -1,19 +1,27 @@
 import { groq } from "next-sanity";
 
-/* ==================== DISTRICT ==================== */
+/* =========================================================
+   DISTRICT
+========================================================= */
 
 export const districtBySlugQuery = groq`
-  *[_type == "district" && slug.current == $slug][0] {
+  *[
+    _type == "district" &&
+    slug.current == $slug
+  ][0] {
     _id,
     _createdAt,
     name,
     slug,
     headquarter,
+    category,
     population,
     area,
     elevation,
     density,
     coordinates,
+    mapEmbedUrl,
+
     "province": province->{
       _id,
       name,
@@ -21,48 +29,85 @@ export const districtBySlugQuery = groq`
       number,
       capital
     },
-    coverImage { ..., asset->{ _id, url } },
-    mapImage { ..., asset->{ _id, url } },
-    gallery[] { ..., asset->{ _id, url } },
+
+    coverImage,
+    mapImage,
+    gallery,
+
     body,
     howToGetThere,
+    thingsToDo,
     cultureAndHistory,
     bestTimeToVisit,
+    nearbyAttractions,
+
     places[] {
       _key,
       name,
+      slug,
       description,
-      image { ..., asset->{ _id, url } }
+      image
     },
-    seo
+
+    seo {
+      metaTitle,
+      metaDescription,
+      ogImage
+    }
   }
 `;
 
+/* =========================================================
+   ALL DISTRICTS
+========================================================= */
+
 export const allDistrictsQuery = groq`
-  *[_type == "district"] | order(name asc) {
+  *[
+    _type == "district"
+  ]
+  | order(name asc) {
     _id,
+    _createdAt,
     name,
     slug,
     headquarter,
+    category,
     population,
+    area,
+    elevation,
+    density,
+
     "province": province->{
       _id,
       name,
       slug,
       number
     },
-    coverImage { ..., asset->{ _id, url } }
+
+    coverImage
   }
 `;
 
+/* =========================================================
+   DISTRICT SLUGS
+========================================================= */
+
 export const districtSlugsQuery = groq`
-  *[_type == "district" && defined(slug.current)][].slug.current
+  *[
+    _type == "district" &&
+    defined(slug.current)
+  ][].slug.current
 `;
 
-/* ==================== PROVINCE ==================== */
+/* =========================================================
+   PROVINCES
+========================================================= */
 
 export const allProvincesQuery = groq`
-  *[_type == "province"] | order(number asc) {
+  *[
+    _type == "province"
+  ]
+  | order(number asc) {
     _id,
     name,
     officialName,
@@ -74,12 +119,16 @@ export const allProvincesQuery = groq`
     area,
     noOfDistricts,
     "districtCount": count(districts),
-    coverImage { ..., asset->{ _id, url } }
+
+    coverImage
   }
 `;
 
 export const provinceBySlugQuery = groq`
-  *[_type == "province" && slug.current == $slug][0] {
+  *[
+    _type == "province" &&
+    slug.current == $slug
+  ][0] {
     _id,
     _createdAt,
     name,
@@ -91,11 +140,14 @@ export const provinceBySlugQuery = groq`
     population,
     area,
     noOfDistricts,
-    coverImage { ..., asset->{ _id, url } },
-    mapImage { ..., asset->{ _id, url } },
+
+    coverImage,
+    mapImage,
+
     body,
     cultureAndHistory,
     geography,
+
     "districts": districts[]->{
       _id,
       name,
@@ -103,12 +155,20 @@ export const provinceBySlugQuery = groq`
       headquarter,
       population,
       area,
-      coverImage { ..., asset->{ _id, url } }
+      coverImage
     },
-    seo
+
+    seo {
+      metaTitle,
+      metaDescription,
+      ogImage
+    }
   }
 `;
 
 export const provinceSlugsQuery = groq`
-  *[_type == "province" && defined(slug.current)][].slug.current
+  *[
+    _type == "province" &&
+    defined(slug.current)
+  ][].slug.current
 `;

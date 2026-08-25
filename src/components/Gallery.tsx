@@ -1,82 +1,158 @@
-"use client";
-import { useState } from "react";
 import Image from "next/image";
 import { urlForImage } from "@/sanity/lib/image";
-import type { SanityImage } from "@/types/district";
+interface GalleryImage {
+  _key?: string;
+  _type?: string;
 
-export function Gallery({ images }: { images: SanityImage[] }) {
-  const [selected, setSelected] = useState<number | null>(null);
+  name?: string;
+  alt?: string;
+  caption?: string;
+
+  imageUrl?: string;
+
+  image?: {
+    _type?: string;
+    asset?: {
+      _ref?: string;
+      _id?: string;
+    } | null;
+  } | null;
+
+  asset?: {
+    _ref?: string;
+    _id?: string;
+  } | null;
+}
+
+interface GalleryProps {
+  images?: GalleryImage[];
+}
+
+export function Gallery({
+  images = [],
+}: GalleryProps) {
+  if (!images.length) {
+    return null;
+  }
+
+  const validImages = images.filter(
+    (img) =>
+      Boolean(img?.imageUrl) ||
+      Boolean(img?.image?.asset?._ref) ||
+      Boolean(img?.asset?._ref)
+  );
+
+  if (!validImages.length) {
+    return null;
+  }
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-        {images.map((img, idx) => (
-          <button
-            key={idx}
-            onClick={() => setSelected(idx)}
-            className="group relative aspect-square overflow-hidden rounded-lg"
-          >
-            <Image
-              src={urlForImage(img).width(400).height(400).url()}
-              alt={img.alt || `Gallery image ${idx + 1}`}
-              fill
-              className="object-cover transition duration-300 group-hover:scale-110"
-              sizes="(max-width: 768px) 50vw, 25vw"
-            />
-            {img.caption && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 text-xs text-white opacity-0 transition group-hover:opacity-100">
-                {img.caption}
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
+    <section className="mt-10">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {validImages.map((img, idx) => {
+          /*
+           * --------------------------------------------------
+           * LOCAL / URL-BASED IMAGE
+           * Example:
+           * /images/achham-1.jpg
+           * --------------------------------------------------
+           */
+          if (img.imageUrl) {
+            return (
+              <div
+                key={
+                  img._key ||
+                  `${img.imageUrl}-${idx}`
+                }
+                className="group relative overflow-hidden rounded-xl"
+              >
+                <Image
+                  src={img.imageUrl}
+                  alt={
+                    img.alt ||
+                    img.name ||
+                    `Gallery image ${idx + 1}`
+                  }
+                  width={400}
+                  height={400}
+                  className="h-64 w-full object-cover transition duration-300 group-hover:scale-110"
+                />
 
-      {selected !== null && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-          onClick={() => setSelected(null)}
-        >
-          <button
-            className="absolute right-4 top-4 text-4xl text-white"
-            onClick={() => setSelected(null)}
-          >
-            ×
-          </button>
-          <button
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-4xl text-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelected((s) => (s! > 0 ? s! - 1 : images.length - 1));
-            }}
-          >
-            ‹
-          </button>
-          <button
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-4xl text-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelected((s) => (s! < images.length - 1 ? s! + 1 : 0));
-            }}
-          >
-            ›
-          </button>
-          <div className="relative max-h-[90vh] max-w-[90vw]">
-            <Image
-              src={urlForImage(images[selected]).width(1600).url()}
-              alt={images[selected].alt || ""}
-              width={1600}
-              height={1200}
-              className="h-auto max-h-[90vh] w-auto object-contain"
-            />
-            {images[selected].caption && (
-              <p className="mt-4 text-center text-white">
-                {images[selected].caption}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-    </>
+                {img.caption && (
+                  <div className="absolute inset-x-0 bottom-0 bg-black/60 p-3 text-sm text-white">
+                    {img.caption}
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          /*
+           * --------------------------------------------------
+           * SANITY IMAGE
+           * --------------------------------------------------
+           */
+
+          const imageSource =
+            img.image ||
+            (img.asset
+              ? {
+                  _type: "image",
+                  asset: img.asset,
+                }
+              : null);
+
+          if (!imageSource) {
+            return null;
+          }
+
+          let imageUrl: string | null = null;
+
+          try {
+            imageUrl =
+              urlForImage(imageSource)
+                .width(400)
+                .height(400)
+                .url();
+          } catch {
+            imageUrl = null;
+          }
+
+          if (!imageUrl) {
+            return null;
+          }
+
+          return (
+            <div
+              key={
+                img._key ||
+                `gallery-${idx}`
+              }
+              className="group relative overflow-hidden rounded-xl"
+            >
+              <Image
+                src={imageUrl}
+                alt={
+                  img.alt ||
+                  img.name ||
+                  `Gallery image ${idx + 1}`
+                }
+                width={400}
+                height={400}
+                className="h-64 w-full object-cover transition duration-300 group-hover:scale-110"
+              />
+
+              {img.caption && (
+                <div className="absolute inset-x-0 bottom-0 bg-black/60 p-3 text-sm text-white">
+                  {img.caption}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
+
+export default Gallery;

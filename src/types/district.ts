@@ -1,4 +1,4 @@
- import type { PortableTextBlock } from "@portabletext/react";
+import type { PortableTextBlock } from "@portabletext/react";
 
 export interface SanityImage {
   _type: "image";
@@ -8,6 +8,9 @@ export interface SanityImage {
   };
   alt?: string;
   caption?: string;
+  credit?: string;
+  source?: string;
+  license?: string;
   hotspot?: {
     x: number;
     y: number;
@@ -19,6 +22,9 @@ export interface SanityImage {
 export interface Place {
   _key: string;
   name: string;
+  slug?: {
+    current: string;
+  };
   description?: PortableTextBlock[];
   image?: SanityImage;
 }
@@ -28,36 +34,63 @@ export interface Coordinates {
   lng: number;
 }
 
+export interface DistrictProvince {
+  _id?: string;
+  _ref?: string;
+  _type?: "reference";
+  name?: string;
+  slug?: {
+    current: string;
+  };
+  number?: number;
+  capital?: string;
+}
+
 export interface District {
   _id: string;
   _createdAt: string;
-  name: string;
-  slug: { current: string };
 
-  province?: {
-    _ref: string;
-    _type: "reference";
-    name?: string;
-    slug?: { current: string };
+  name: string;
+
+  slug: {
+    current: string;
   };
 
+  province?: DistrictProvince | null;
+
   headquarter?: string;
+
+  category?: string;
+
   population?: number;
+
   area?: number;
+
   elevation?: number;
+
   density?: number;
+
   coordinates?: Coordinates;
 
   coverImage?: SanityImage;
+
   mapImage?: SanityImage;
+
   mapEmbedUrl?: string;
 
   gallery?: SanityImage[];
 
   body?: PortableTextBlock[];
+
   howToGetThere?: PortableTextBlock[];
+
+  thingsToDo?: PortableTextBlock[];
+
   cultureAndHistory?: PortableTextBlock[];
+
   bestTimeToVisit?: PortableTextBlock[];
+
+  nearbyAttractions?: string;
 
   places?: Place[];
 
