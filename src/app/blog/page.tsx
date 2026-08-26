@@ -6,6 +6,8 @@ import {
   urlForImage,
 } from "@/lib/sanity";
 
+import NewsletterSignup from "@/components/NewsletterSignup";
+
 export const revalidate = 60;
 
 /* =========================================================
@@ -93,11 +95,15 @@ function hasValidImage(
     _id?: string;
   };
 } {
-  if (!image || typeof image !== "object") {
+  if (
+    !image ||
+    typeof image !== "object"
+  ) {
     return false;
   }
 
-  const value = image as StoryImage;
+  const value =
+    image as StoryImage;
 
   return Boolean(
     value.asset?._ref ||
@@ -142,7 +148,11 @@ function formatDate(
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
     return "";
   }
 
@@ -161,7 +171,8 @@ function formatDate(
 ========================================================= */
 
 export default async function BlogPage() {
-  const stories = await getStories();
+  const stories =
+    await getStories();
 
   const featuredStory =
     stories.find(
@@ -204,9 +215,10 @@ export default async function BlogPage() {
           </h1>
 
           <p className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-white/75 sm:text-xl">
-            First-hand journeys, quiet discoveries, local
-            encounters and stories that reveal another side
-            of Nepal.
+            First-hand journeys, quiet
+            discoveries, local encounters
+            and stories that reveal another
+            side of Nepal.
           </p>
 
           {stories.length > 0 && (
@@ -274,6 +286,7 @@ export default async function BlogPage() {
                   className="group grid overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm transition duration-500 hover:-translate-y-1 hover:border-amber-300 hover:shadow-2xl lg:grid-cols-2"
                 >
                   {/* IMAGE */}
+
                   <div className="relative min-h-[380px] overflow-hidden bg-slate-900 lg:min-h-[560px]">
                     {hasValidImage(
                       featuredStory.coverImage
@@ -311,26 +324,34 @@ export default async function BlogPage() {
 
                     {featuredStory.category && (
                       <span className="absolute left-6 top-6 rounded-full border border-white/20 bg-black/25 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white backdrop-blur-md">
-                        {featuredStory.category}
+                        {
+                          featuredStory.category
+                        }
                       </span>
                     )}
 
                     <div className="absolute bottom-6 left-6 right-6 flex flex-wrap gap-2">
                       {featuredStory.region && (
                         <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-slate-800">
-                          {featuredStory.region}
+                          {
+                            featuredStory.region
+                          }
                         </span>
                       )}
 
                       {featuredStory.readingTime && (
                         <span className="rounded-full bg-black/30 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
-                          {featuredStory.readingTime} min read
+                          {
+                            featuredStory.readingTime
+                          }{" "}
+                          min read
                         </span>
                       )}
                     </div>
                   </div>
 
                   {/* CONTENT */}
+
                   <div className="flex flex-col justify-center p-8 sm:p-12 lg:p-14">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
                       {featuredStory.publishedAt && (
@@ -358,7 +379,9 @@ export default async function BlogPage() {
                     </div>
 
                     <h3 className="mt-5 font-serif text-4xl font-bold leading-tight text-slate-900 transition-colors group-hover:text-red-800 sm:text-5xl">
-                      {featuredStory.title}
+                      {
+                        featuredStory.title
+                      }
                     </h3>
 
                     {featuredStory.subtitle && (
@@ -371,24 +394,30 @@ export default async function BlogPage() {
 
                     {featuredStory.excerpt && (
                       <p className="mt-5 text-lg leading-8 text-slate-600">
-                        {featuredStory.excerpt}
+                        {
+                          featuredStory.excerpt
+                        }
                       </p>
                     )}
 
                     {featuredStory.tags &&
-                      featuredStory.tags.length >
-                        0 && (
+                      featuredStory.tags
+                        .length > 0 && (
                         <div className="mt-7 flex flex-wrap gap-2">
                           {featuredStory.tags
                             .slice(0, 4)
                             .map(
-                              (tag) => (
+                              (
+                                tag
+                              ) => (
                                 <span
                                   key={tag}
                                   className="rounded-full bg-stone-100 px-3 py-1.5 text-xs font-medium text-slate-600"
                                 >
                                   #
-                                  {tag}
+                                  {
+                                    tag
+                                  }
                                 </span>
                               )
                             )}
@@ -411,7 +440,8 @@ export default async function BlogPage() {
                 STORY GRID
             ================================================ */}
 
-            {remainingStories.length > 0 && (
+            {remainingStories.length >
+              0 && (
               <section>
                 <div className="mb-9">
                   <p className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.2em] text-red-800">
@@ -433,6 +463,7 @@ export default async function BlogPage() {
                         className="group flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:border-amber-300 hover:shadow-xl"
                       >
                         {/* IMAGE */}
+
                         <div className="relative h-64 overflow-hidden bg-slate-900">
                           {hasValidImage(
                             story.coverImage
@@ -445,10 +476,13 @@ export default async function BlogPage() {
                                 .height(700)
                                 .quality(85)
                                 .fit("crop")
-                                .auto("format")
+                                .auto(
+                                  "format"
+                                )
                                 .url()}
                               alt={
-                                story.coverImage
+                                story
+                                  .coverImage
                                   ?.alt ||
                                 story.title
                               }
@@ -487,11 +521,14 @@ export default async function BlogPage() {
                         </div>
 
                         {/* CARD CONTENT */}
+
                         <div className="flex flex-1 flex-col p-7">
                           <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
                             {story.region && (
                               <span>
-                                {story.region}
+                                {
+                                  story.region
+                                }
                               </span>
                             )}
 
@@ -511,7 +548,9 @@ export default async function BlogPage() {
                           </div>
 
                           <h3 className="mt-3 font-serif text-2xl font-bold leading-tight text-slate-900 transition-colors group-hover:text-red-800">
-                            {story.title}
+                            {
+                              story.title
+                            }
                           </h3>
 
                           {story.subtitle && (
@@ -524,7 +563,9 @@ export default async function BlogPage() {
 
                           {story.excerpt && (
                             <p className="mt-3 line-clamp-3 leading-7 text-slate-600">
-                              {story.excerpt}
+                              {
+                                story.excerpt
+                              }
                             </p>
                           )}
 
@@ -549,6 +590,16 @@ export default async function BlogPage() {
       </section>
 
       {/* =====================================================
+          NEWSLETTER
+      ====================================================== */}
+
+      <section className="bg-[#fbfaf7] px-6 py-20 sm:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl">
+          <NewsletterSignup />
+        </div>
+      </section>
+
+      {/* =====================================================
           STORY PHILOSOPHY
       ====================================================== */}
 
@@ -560,14 +611,17 @@ export default async function BlogPage() {
             </p>
 
             <h2 className="mt-4 font-serif text-3xl font-bold leading-tight sm:text-5xl">
-              Nepal is more than the places on a map.
+              Nepal is more than the
+              places on a map.
             </h2>
 
             <p className="mt-6 max-w-3xl text-lg leading-8 text-white/70">
-              A journey is also the people you meet, the food
-              you remember, the roads that surprise you, the
-              silence of a mountain morning, and the moments
-              that stay with you long after you return home.
+              A journey is also the people you
+              meet, the food you remember, the roads
+              that surprise you, the silence of a
+              mountain morning, and the moments that
+              stay with you long after you return
+              home.
             </p>
 
             <Link
@@ -605,8 +659,9 @@ function EmptyState() {
       </h2>
 
       <p className="mx-auto mt-4 max-w-lg leading-7 text-slate-600">
-        New journeys, encounters and experiences from
-        Nepal will appear here as they are published.
+        New journeys, encounters and experiences
+        from Nepal will appear here as they are
+        published.
       </p>
 
       <Link

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PortableText } from "@portabletext/react";
-
 import { client } from "@/sanity/lib/client";
 import {
   allDistrictsQuery,
@@ -18,7 +17,10 @@ import type { District, Place } from "@/types/district";
 import { StatCard } from "@/components/StatCard";
 import { PlaceCard } from "@/components/PlaceCard";
 import { Breadcrumb } from "@/components/Breadcrumb";
-
+import ReactionBar from "@/components/ReactionBar";
+import Comments from "@/components/Comments";
+import FeedbackForm from "@/components/FeedbackForm";
+import NewsletterSignup from "@/components/NewsletterSignup";
 export const revalidate = 3600;
 
 /* =========================================================
@@ -51,7 +53,6 @@ function hasValidImageAsset(
 
   return Boolean(value.asset && value.asset._ref);
 }
-
 
 /**
  * Build a Sanity image URL safely.
@@ -603,16 +604,17 @@ export default async function ExploreNepalDistrictPage({
 
               <nav className="mt-6 space-y-1">
                 {[
-                  ["overview", "Overview"],
-                  ["map", "Location & Map"],
-                  ["places", "Places to Visit"],
-                  ["things", "Things to Do"],
-                  ["transport", "How to Get There"],
-                  ["culture", "Culture & History"],
-                  ["season", "Best Time to Visit"],
-                  ["nearby", "Nearby Attractions"],
-                  ["gallery", "Gallery"],
-                ].map(([id, label]) => (
+  ["overview", "Overview"],
+  ["map", "Location & Map"],
+  ["places", "Places to Visit"],
+  ["things", "Things to Do"],
+  ["transport", "How to Get There"],
+  ["culture", "Culture & History"],
+  ["season", "Best Time to Visit"],
+  ["nearby", "Nearby Attractions"],
+  ["gallery", "Gallery"],
+  ["community", "Community"],
+].map(([id, label]) => (
                   <a
                     key={id}
                     href={`#${id}`}
@@ -659,16 +661,17 @@ export default async function ExploreNepalDistrictPage({
             <div className="mb-12 overflow-x-auto lg:hidden">
               <div className="flex min-w-max gap-2">
                 {[
-                  ["overview", "Overview"],
-                  ["map", "Map"],
-                  ["places", "Places"],
-                  ["things", "Things to Do"],
-                  ["transport", "Getting There"],
-                  ["culture", "Culture"],
-                  ["season", "Best Time"],
-                  ["nearby", "Nearby"],
-                  ["gallery", "Gallery"],
-                ].map(([id, label]) => (
+  ["overview", "Overview"],
+  ["map", "Map"],
+  ["places", "Places"],
+  ["things", "Things to Do"],
+  ["transport", "Getting There"],
+  ["culture", "Culture"],
+  ["season", "Best Time"],
+  ["nearby", "Nearby"],
+  ["gallery", "Gallery"],
+  ["community", "Community"],
+].map(([id, label]) => (
                   <a
                     key={id}
                     href={`#${id}`}
@@ -768,15 +771,23 @@ export default async function ExploreNepalDistrictPage({
                 icon="✨"
               >
                 <div className="grid gap-7 md:grid-cols-2">
-                  {places.map((place: Place) => (
-                    <PlaceCard
-                      key={
-                        place._key ||
-                        `${place.name}-${Math.random()}`
-                      }
-                      place={place}
-                    />
-                  ))}
+                  {places.map((place: Place) => {
+                    // Transform place to match PlaceCard prop type (slug as string)
+                    const placeForCard = {
+                      ...place,
+                      slug: place.slug?.current || place.name,
+                    };
+                    return (
+                      <PlaceCard
+                        key={
+                          place._key ||
+                          place.slug?.current ||
+                          place.name
+                        }
+                        place={placeForCard}
+                      />
+                    );
+                  })}
                 </div>
               </Section>
             )}
@@ -1055,6 +1066,59 @@ export default async function ExploreNepalDistrictPage({
                 </div>
               </section>
             )}
+            {/* =================================================
+    COMMUNITY ENGAGEMENT
+================================================= */}
+
+<section
+  id="community"
+  className="mb-20 scroll-mt-28"
+>
+  <div className="mb-8">
+    <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-red-800">
+      <span className="h-px w-8 bg-red-800" />
+      Community
+    </p>
+
+    <h2 className="mt-3 font-serif text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+      Share your experience
+    </h2>
+
+    <p className="mt-3 max-w-2xl leading-7 text-slate-600">
+      Tell us how you felt about this district,
+      share your experience, or help another
+      traveller discover something worth seeing.
+    </p>
+  </div>
+
+  {/* Reactions */}
+  <ReactionBar
+    postId={district._id}
+    postSlug={district.slug.current}
+    contentType="district"
+  />
+
+  {/* Comments */}
+  <div className="mt-12">
+    <Comments
+      postSlug={district.slug.current}
+      contentType="district"
+    />
+  </div>
+
+  {/* Feedback */}
+  <div className="mt-12">
+    <FeedbackForm />
+  </div>
+</section>
+
+{/* =================================================
+    NEWSLETTER
+================================================= */}
+
+<section className="mb-20">
+  <NewsletterSignup />
+</section>
 
             {/* ===============================================
                 CTA

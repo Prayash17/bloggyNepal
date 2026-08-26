@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
 
 import { client, urlForImage } from "@/lib/sanity";
-
+import ReactionBar from "@/components/ReactionBar";
+import Comments from "@/components/Comments";
+import FeedbackForm from "@/components/FeedbackForm";
+import NewsletterSignup from "@/components/NewsletterSignup";
 export const revalidate = 60;
 
 interface Destination {
@@ -506,6 +509,57 @@ export default async function DestinationPage({
             </div>
           </GuideSection>
         ) : null}
+{/* =================================================
+    COMMUNITY ENGAGEMENT
+================================================= */}
+
+<section
+  id="community"
+  className="mb-24 scroll-mt-28"
+>
+  <div className="mb-8">
+    <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
+      <span className="h-px w-8 bg-red-800" />
+      Community
+    </p>
+
+    <h2 className="mt-3 font-serif text-3xl font-bold text-slate-900 sm:text-4xl">
+      Tell us about your journey
+    </h2>
+
+    <p className="mt-3 max-w-2xl leading-7 text-slate-600">
+      React to this guide, share your experience,
+      or send us feedback that can help make this
+      destination guide even more useful.
+    </p>
+  </div>
+
+  <ReactionBar
+    postId={destination._id}
+    postSlug={destination.slug.current}
+    contentType="destination"
+  />
+
+  <div className="mt-12">
+    <Comments
+      postSlug={destination.slug.current}
+      contentType="destination"
+    />
+  </div>
+
+  <div className="mt-12">
+    <FeedbackForm />
+  </div>
+</section>
+
+{/* =================================================
+    NEWSLETTER
+================================================= */}
+
+<section className="mb-24">
+  <NewsletterSignup />
+</section>
+
 
         {/* CTA */}
         <section className="rounded-2xl bg-gradient-to-br from-[#f1ede4] to-amber-50 p-8 text-center sm:p-12">

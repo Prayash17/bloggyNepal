@@ -8,6 +8,11 @@ import {
   type PortableTextComponents,
 } from "@portabletext/react";
 
+import ReactionBar from "@/components/ReactionBar";
+import Comments from "@/components/Comments";
+import FeedbackForm from "@/components/FeedbackForm";
+import NewsletterSignup from "@/components/NewsletterSignup";
+
 import {
   client,
   urlForImage,
@@ -242,11 +247,15 @@ function hasValidImage(
     _id?: string;
   };
 } {
-  if (!image || typeof image !== "object") {
+  if (
+    !image ||
+    typeof image !== "object"
+  ) {
     return false;
   }
 
-  const value = image as StoryImage;
+  const value =
+    image as StoryImage;
 
   return Boolean(
     value.asset?._ref ||
@@ -292,7 +301,11 @@ function formatDate(
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
     return "";
   }
 
@@ -323,7 +336,8 @@ export async function generateMetadata({
 
   if (!story) {
     return {
-      title: "Story Not Found | bloggyNepal",
+      title:
+        "Story Not Found | bloggyNepal",
     };
   }
 
@@ -337,15 +351,21 @@ export async function generateMetadata({
     `Read ${story.title} on bloggyNepal — personal journeys, people, places and experiences from Nepal.`;
 
   const ogImage =
-    hasValidImage(story.seo?.ogImage)
-      ? urlForImage(story.seo!.ogImage!)
+    hasValidImage(
+      story.seo?.ogImage
+    )
+      ? urlForImage(
+          story.seo!.ogImage!
+        )
           .width(1600)
           .height(900)
           .quality(90)
           .fit("crop")
           .auto("format")
           .url()
-      : hasValidImage(story.coverImage)
+      : hasValidImage(
+          story.coverImage
+        )
         ? urlForImage(
             story.coverImage
           )
@@ -357,15 +377,16 @@ export async function generateMetadata({
             .url()
         : undefined;
 
-  const robots = story.seo?.noIndex
-    ? {
-        index: false,
-        follow: true,
-      }
-    : {
-        index: true,
-        follow: true,
-      };
+  const robots =
+    story.seo?.noIndex
+      ? {
+          index: false,
+          follow: true,
+        }
+      : {
+          index: true,
+          follow: true,
+        };
 
   return {
     title,
@@ -607,7 +628,9 @@ export default async function StoryPage({
   }
 
   const coverUrl =
-    hasValidImage(story.coverImage)
+    hasValidImage(
+      story.coverImage
+    )
       ? urlForImage(
           story.coverImage
         )
@@ -699,6 +722,7 @@ export default async function StoryPage({
 
         <div className="relative mx-auto flex min-h-[680px] max-w-7xl flex-col px-6 pb-16 pt-8 sm:min-h-[760px] sm:px-8 sm:pb-20">
           {/* TOP NAV */}
+
           <div className="flex items-center justify-between gap-4">
             <Link
               href="/blog"
@@ -716,6 +740,7 @@ export default async function StoryPage({
           </div>
 
           {/* HERO CONTENT */}
+
           <div className="mt-auto max-w-5xl">
             <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-white/75">
               {story.region && (
@@ -739,7 +764,8 @@ export default async function StoryPage({
                   </span>
 
                   <span>
-                    {story.readingTime} min read
+                    {story.readingTime}{" "}
+                    min read
                   </span>
                 </>
               )}
@@ -766,16 +792,18 @@ export default async function StoryPage({
 
             {tags.length > 0 && (
               <div className="mt-7 flex flex-wrap gap-2">
-                {tags.slice(0, 8).map(
-                  (tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-white/15 bg-black/15 px-3 py-1.5 text-xs font-medium text-white/75 backdrop-blur-md"
-                    >
-                      #{tag}
-                    </span>
-                  )
-                )}
+                {tags
+                  .slice(0, 8)
+                  .map(
+                    (tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-white/15 bg-black/15 px-3 py-1.5 text-xs font-medium text-white/75 backdrop-blur-md"
+                      >
+                        #{tag}
+                      </span>
+                    )
+                  )}
               </div>
             )}
           </div>
@@ -800,7 +828,9 @@ export default async function StoryPage({
             {story.tripDuration && (
               <StoryFact
                 label="Journey"
-                value={story.tripDuration}
+                value={
+                  story.tripDuration
+                }
                 icon="🗓️"
               />
             )}
@@ -873,6 +903,7 @@ export default async function StoryPage({
       <article className="mx-auto max-w-7xl px-6 py-16 sm:px-8 lg:py-24">
         <div className="grid gap-12 lg:grid-cols-[220px_minmax(0,1fr)]">
           {/* SIDEBAR */}
+
           <aside className="hidden lg:block">
             <div className="sticky top-24 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-red-800">
@@ -900,13 +931,13 @@ export default async function StoryPage({
                 {story.whatILearned &&
                   story.whatILearned
                     .length > 0 && (
-                    <a
-                      href="#what-i-learned"
-                      className="block rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-amber-50 hover:text-red-800"
-                    >
-                      What I learned
-                    </a>
-                  )}
+                  <a
+                    href="#what-i-learned"
+                    className="block rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-amber-50 hover:text-red-800"
+                  >
+                    What I learned
+                  </a>
+                )}
 
                 {gallery.length >
                   0 && (
@@ -927,13 +958,22 @@ export default async function StoryPage({
                     Related guides
                   </a>
                 )}
+
+                <a
+                  href="#community"
+                  className="block rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-amber-50 hover:text-red-800"
+                >
+                  Community
+                </a>
               </nav>
             </div>
           </aside>
 
           {/* MAIN ARTICLE COLUMN */}
+
           <div className="min-w-0">
             {/* MOBILE META */}
+
             <div className="mb-10 lg:hidden">
               <div className="flex flex-wrap gap-2">
                 {story.category && (
@@ -944,13 +984,15 @@ export default async function StoryPage({
 
                 {story.readingTime && (
                   <span className="rounded-full bg-stone-100 px-3 py-1.5 text-xs font-medium text-slate-600">
-                    {story.readingTime} min read
+                    {story.readingTime}{" "}
+                    min read
                   </span>
                 )}
               </div>
             </div>
 
             {/* STORY */}
+
             <section
               id="story"
               className="scroll-mt-28"
@@ -1042,35 +1084,35 @@ export default async function StoryPage({
             {story.whatILearned &&
               story.whatILearned.length >
                 0 && (
-                <section
-                  id="what-i-learned"
-                  className="mt-16 scroll-mt-28"
-                >
-                  <div className="mb-7">
-                    <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
-                      <span className="h-px w-8 bg-red-800" />
-                      Reflection
-                    </p>
+              <section
+                id="what-i-learned"
+                className="mt-16 scroll-mt-28"
+              >
+                <div className="mb-7">
+                  <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
+                    <span className="h-px w-8 bg-red-800" />
+                    Reflection
+                  </p>
 
-                    <h2 className="mt-3 font-serif text-3xl font-bold text-slate-900 sm:text-4xl">
-                      What I learned
-                    </h2>
-                  </div>
+                  <h2 className="mt-3 font-serif text-3xl font-bold text-slate-900 sm:text-4xl">
+                    What I learned
+                  </h2>
+                </div>
 
-                  <div className="rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-[#f8f0df] p-7 shadow-sm sm:p-10">
-                    <div className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-900 prose-p:leading-8">
-                      <PortableText
-                        value={
-                          story.whatILearned
-                        }
-                        components={
-                          portableTextComponents
-                        }
-                      />
-                    </div>
+                <div className="rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-[#f8f0df] p-7 shadow-sm sm:p-10">
+                  <div className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:text-slate-900 prose-p:leading-8">
+                    <PortableText
+                      value={
+                        story.whatILearned
+                      }
+                      components={
+                        portableTextComponents
+                      }
+                    />
                   </div>
-                </section>
-              )}
+                </div>
+              </section>
+            )}
 
             {/* =================================================
                 GALLERY
@@ -1126,14 +1168,16 @@ export default async function StoryPage({
                             `story-image-${index}`
                           }
                           className={`group overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm ${
-                            index === 0
+                            index ===
+                            0
                               ? "sm:col-span-2"
                               : ""
                           }`}
                         >
                           <div
                             className={`relative overflow-hidden ${
-                              index === 0
+                              index ===
+                              0
                                 ? "aspect-[16/9]"
                                 : "aspect-[4/3]"
                             }`}
@@ -1144,7 +1188,10 @@ export default async function StoryPage({
                               }
                               alt={
                                 image.alt ||
-                                `${story.title} photo ${index + 1}`
+                                `${story.title} photo ${
+                                  index +
+                                  1
+                                }`
                               }
                               fill
                               sizes={
@@ -1209,7 +1256,9 @@ export default async function StoryPage({
 
                 <div className="grid gap-6 md:grid-cols-2">
                   {relatedDestinations.map(
-                    (destination) => {
+                    (
+                      destination
+                    ) => {
                       if (
                         !destination
                           .slug
@@ -1542,6 +1591,65 @@ export default async function StoryPage({
             )}
 
             {/* =================================================
+                COMMUNITY ENGAGEMENT
+            ================================================== */}
+
+            <section
+              id="community"
+              className="mt-20 scroll-mt-28 border-t border-stone-200 pt-16"
+            >
+              <div className="mb-8">
+                <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
+                  <span className="h-px w-8 bg-red-800" />
+                  Community
+                </p>
+
+                <h2 className="mt-3 font-serif text-3xl font-bold text-slate-900 sm:text-4xl">
+                  What did you think?
+                </h2>
+
+                <p className="mt-3 max-w-2xl leading-7 text-slate-600">
+                  Share your reaction, join the
+                  conversation, or help us improve
+                  this story for future travellers.
+                </p>
+              </div>
+
+              {/* REACTIONS */}
+
+              <ReactionBar
+                postId={story._id}
+                postSlug={
+                  story.slug.current
+                }
+                contentType="story"
+              />
+
+              {/* COMMENTS */}
+
+              <div className="mt-12">
+                <Comments
+                  postSlug={
+                    story.slug.current
+                  }
+                  contentType="story"
+                />
+              </div>
+
+              {/* FEEDBACK */}
+
+              <div className="mt-12">
+                <FeedbackForm />
+              </div>
+
+              {/* NEWSLETTER */}
+
+              <div className="mt-12">
+                <NewsletterSignup />
+              </div>
+            </section>
+
+            {/* =================================================
                 FINAL CTA
             ================================================== */}
 
@@ -1554,13 +1662,15 @@ export default async function StoryPage({
                 </p>
 
                 <h2 className="mt-4 max-w-3xl font-serif text-3xl font-bold leading-tight sm:text-5xl">
-                  There is always another road to take.
+                  There is always another road
+                  to take.
                 </h2>
 
                 <p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">
-                  Explore more stories, discover new
-                  destinations, or start planning your next
-                  journey through Nepal.
+                  Explore more stories, discover
+                  new destinations, or start
+                  planning your next journey
+                  through Nepal.
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">

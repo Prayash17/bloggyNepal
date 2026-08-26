@@ -106,3 +106,13 @@ html {
   outline-offset: 2px;
   border-radius: 6px;
 }
+@keyframes blob { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(40px,-30px) scale(1.15)} 66%{transform:translate(-30px,40px) scale(0.9)} }
+.animate-blob{animation:blob 14s ease-in-out infinite}
+.animation-delay-2000{animation-delay:2s}
+.animation-delay-4000{animation-delay:4s}
+@keyframes scroll-down{0%{transform:translateY(-100%)}100%{transform:translateY(200%)}}
+.animate-scroll-down{animation:scroll-down 1.8s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes fade-up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.reveal-up{opacity:0;animation:fade-up 1s cubic-bezier(.16,1,.3,1) forwards}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){.animate-blob,.animate-scroll-down,.reveal-up,[class*="animate-"]{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}}

@@ -12,22 +12,29 @@ import type { District } from "@/types/district";
 
 import { DistrictCard } from "@/components/DistrictCard";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const revalidate = 3600;
 
 const provinceDescriptions: Record<string, string> = {
   Koshi:
     "Eastern Nepal's landscapes of Himalayan peaks, tea gardens, rivers, hills, and culturally rich communities.",
+
   Madhesh:
     "Nepal's southern plains, celebrated for sacred places, Mithila culture, heritage, forests, and vibrant traditions.",
+
   Bagmati:
     "A remarkable mix of Kathmandu Valley heritage, mountain gateways, sacred sites, hills, and Himalayan landscapes.",
+
   Gandaki:
     "Home to dramatic mountain scenery, deep valleys, beautiful lakes, trekking routes, and extraordinary cultural diversity.",
+
   Lumbini:
     "A western landscape combining sacred heritage, fertile plains, forests, hills, and important pilgrimage destinations.",
+
   Karnali:
     "Nepal's wild and remote frontier, where high mountains, enormous valleys, rivers, and traditional communities endure.",
+
   Sudurpashchim:
     "The far west of Nepal, rich in forests, mountains, sacred landscapes, traditional cultures, and quieter journeys.",
 };
@@ -57,41 +64,80 @@ export default async function AllDistrictsPage({
     province?: string;
   }>;
 }) {
-  const params = searchParams ? await searchParams : {};
+  const params = searchParams
+    ? await searchParams
+    : {};
 
-  const query = (params.q || "").trim().toLowerCase();
-  const selectedProvince = (params.province || "").trim().toLowerCase();
+  const query = (params.q || "")
+    .trim()
+    .toLowerCase();
 
-  const [allDistricts, provinces] = await Promise.all([
-    client.fetch<District[]>(allDistrictsQuery),
-    client.fetch<any[]>(allProvincesQuery),
+  const selectedProvince = (
+    params.province || ""
+  )
+    .trim()
+    .toLowerCase();
+
+  const [
+    allDistricts,
+    provinces,
+  ] = await Promise.all([
+    client.fetch<District[]>(
+      allDistrictsQuery
+    ),
+    client.fetch<any[]>(
+      allProvincesQuery
+    ),
   ]);
 
-  const districts = allDistricts.filter((district) => {
-    const matchesSearch =
-      !query ||
-      district.name.toLowerCase().includes(query) ||
-      district.headquarter?.toLowerCase().includes(query) ||
-      district.category?.toLowerCase().includes(query) ||
-      district.province?.name?.toLowerCase().includes(query);
+  const districts = allDistricts.filter(
+    (district) => {
+      const matchesSearch =
+        !query ||
+        district.name
+          .toLowerCase()
+          .includes(query) ||
+        district.headquarter
+          ?.toLowerCase()
+          .includes(query) ||
+        district.category
+          ?.toLowerCase()
+          .includes(query) ||
+        district.province?.name
+          ?.toLowerCase()
+          .includes(query);
 
-    const matchesProvince =
-      !selectedProvince ||
-      district.province?.slug?.current?.toLowerCase() === selectedProvince ||
-      district.province?.name?.toLowerCase() === selectedProvince;
+      const matchesProvince =
+        !selectedProvince ||
+        district.province?.slug?.current
+          ?.toLowerCase() ===
+          selectedProvince ||
+        district.province?.name
+          ?.toLowerCase() ===
+          selectedProvince;
 
-    return matchesSearch && matchesProvince;
-  });
-
-  const totalPopulation = allDistricts.reduce(
-    (sum, district) => sum + (district.population || 0),
-    0
+      return (
+        matchesSearch &&
+        matchesProvince
+      );
+    }
   );
 
-  const totalArea = allDistricts.reduce(
-    (sum, district) => sum + (district.area || 0),
-    0
-  );
+  const totalPopulation =
+    allDistricts.reduce(
+      (sum, district) =>
+        sum +
+        (district.population || 0),
+      0
+    );
+
+  const totalArea =
+    allDistricts.reduce(
+      (sum, district) =>
+        sum +
+        (district.area || 0),
+      0
+    );
 
   return (
     <main className="min-h-screen bg-[#fbfaf7] text-slate-700">
@@ -114,13 +160,17 @@ export default async function AllDistrictsPage({
 
           <h1 className="mt-7 font-serif text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-8xl">
             Explore every corner
-            <span className="block text-amber-300">of Nepal.</span>
+            <span className="block text-amber-300">
+              of Nepal.
+            </span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-3xl text-lg leading-relaxed text-white/70 sm:text-xl">
-            Go beyond famous destinations. Discover the landscapes, cultures,
-            people, history, food, traditions, and hidden places that make
-            every district of Nepal different.
+            Go beyond famous destinations.
+            Discover the landscapes, cultures,
+            people, history, food, traditions,
+            and hidden places that make every
+            district of Nepal different.
           </p>
 
           <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
@@ -165,6 +215,7 @@ export default async function AllDistrictsPage({
             <p className="font-serif text-5xl font-bold text-red-800">
               {provinces.length || 7}
             </p>
+
             <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
               Provinces
             </p>
@@ -174,6 +225,7 @@ export default async function AllDistrictsPage({
             <p className="font-serif text-5xl font-bold text-amber-700">
               {allDistricts.length}
             </p>
+
             <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
               Districts
             </p>
@@ -183,6 +235,7 @@ export default async function AllDistrictsPage({
             <p className="font-serif text-3xl font-bold text-slate-900">
               {totalPopulation.toLocaleString()}
             </p>
+
             <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
               Population in dataset
             </p>
@@ -190,8 +243,11 @@ export default async function AllDistrictsPage({
 
           <div className="border-t border-stone-200 p-7 text-center transition hover:bg-emerald-50 md:border-l md:border-t-0">
             <p className="font-serif text-3xl font-bold text-slate-900">
-              {Math.round(totalArea).toLocaleString()}
+              {Math.round(
+                totalArea
+              ).toLocaleString()}
             </p>
+
             <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
               Area · km²
             </p>
@@ -217,98 +273,114 @@ export default async function AllDistrictsPage({
           </h2>
 
           <p className="mt-4 max-w-3xl leading-relaxed text-slate-600">
-            From Himalayan valleys to the southern plains, each province has a
-            completely different character. Choose a region and explore its
+            From Himalayan valleys to the
+            southern plains, each province has a
+            completely different character.
+            Choose a region and explore its
             districts.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {provinces.map((province) => {
-            const imageUrl = province.coverImage
-              ? urlForImage(province.coverImage)
-                  .width(1200)
-                  .height(800)
-                  .quality(90)
-                  .fit("crop")
-                  .auto("format")
-                  .url()
-              : null;
+          {provinces.map(
+            (province) => {
+              const imageUrl =
+                province.coverImage
+                  ? urlForImage(
+                      province.coverImage
+                    )
+                      .width(1200)
+                      .height(800)
+                      .quality(90)
+                      .fit("crop")
+                      .auto("format")
+                      .url()
+                  : null;
 
-            return (
-              <Link
-                key={province._id}
-                href={`/provinces/${province.slug.current}`}
-                className="group overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl"
-              >
-                <div className="relative h-52 overflow-hidden">
-                  {imageUrl ? (
-                    <Image
-                      src={imageUrl}
-                      alt={province.coverImage?.alt || province.name}
-                      fill
-                      quality={90}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                      className="object-cover transition duration-700 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="h-full bg-gradient-to-br from-red-900 via-slate-900 to-amber-700" />
-                  )}
+              return (
+                <Link
+                  key={province._id}
+                  href={`/provinces/${province.slug.current}`}
+                  className="group overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl"
+                >
+                  <div className="relative h-52 overflow-hidden">
+                    {imageUrl ? (
+                      <Image
+                        src={imageUrl}
+                        alt={
+                          province.coverImage?.alt ||
+                          province.name
+                        }
+                        fill
+                        quality={90}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                        className="object-cover transition duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="h-full bg-gradient-to-br from-red-900 via-slate-900 to-amber-700" />
+                    )}
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 
-                  <div className="absolute bottom-5 left-5">
-                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">
-                      Province {province.number}
-                    </span>
+                    <div className="absolute bottom-5 left-5">
+                      <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">
+                        Province{" "}
+                        {province.number}
+                      </span>
 
-                    <h3 className="mt-1 font-serif text-2xl font-bold text-white">
-                      {province.name}
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <p className="text-sm leading-6 text-slate-600">
-                    {provinceDescriptions[province.name] ||
-                      "Discover the places, people, culture, landscapes and travel experiences of this province."}
-                  </p>
-
-                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-stone-100 pt-5">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                        Districts
-                      </p>
-                      <p className="mt-1 font-bold text-slate-800">
-                        {province.districtCount ||
-                          province.noOfDistricts ||
-                          "—"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                        Capital
-                      </p>
-                      <p className="mt-1 truncate font-bold text-slate-800">
-                        {province.capital || "—"}
-                      </p>
+                      <h3 className="mt-1 font-serif text-2xl font-bold text-white">
+                        {province.name}
+                      </h3>
                     </div>
                   </div>
 
-                  <div className="mt-5 flex items-center justify-between">
-                    <span className="text-sm font-bold text-red-800">
-                      Explore province
-                    </span>
+                  <div className="p-6">
+                    <p className="text-sm leading-6 text-slate-600">
+                      {provinceDescriptions[
+                        province.name
+                      ] ||
+                        "Discover the places, people, culture, landscapes and travel experiences of this province."}
+                    </p>
 
-                    <span className="transition group-hover:translate-x-2">
-                      →
-                    </span>
+                    <div className="mt-5 grid grid-cols-2 gap-3 border-t border-stone-100 pt-5">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Districts
+                        </p>
+
+                        <p className="mt-1 font-bold text-slate-800">
+                          {province.districtCount ||
+                            province.noOfDistricts ||
+                            "—"}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Capital
+                        </p>
+
+                        <p className="mt-1 truncate font-bold text-slate-800">
+                          {province.capital ||
+                            "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex items-center justify-between">
+                      <span className="text-sm font-bold text-red-800">
+                        Explore province
+                      </span>
+
+                      <span className="transition group-hover:translate-x-2">
+                        →
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            );
-          })}
+                </Link>
+              );
+            }
+          )}
         </div>
       </section>
 
@@ -331,9 +403,12 @@ export default async function AllDistrictsPage({
             </h2>
 
             <p className="mt-4 max-w-3xl leading-relaxed text-slate-600">
-              Search, filter, and discover detailed guides to Nepal's
-              districts, including places to visit, maps, culture, history,
-              transportation, and travel inspiration.
+              Search, filter, and discover
+              detailed guides to Nepal's
+              districts, including places to visit,
+              maps, culture, history,
+              transportation, and travel
+              inspiration.
             </p>
           </div>
 
@@ -348,26 +423,39 @@ export default async function AllDistrictsPage({
               <input
                 type="search"
                 name="q"
-                defaultValue={params.q || ""}
+                defaultValue={
+                  params.q || ""
+                }
                 placeholder="Search by district, province, HQ or tourism category..."
                 className="rounded-2xl border border-stone-200 bg-[#fbfaf7] px-5 py-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-700 focus:ring-2 focus:ring-red-700/10"
               />
 
               <select
                 name="province"
-                defaultValue={params.province || ""}
+                defaultValue={
+                  params.province || ""
+                }
                 className="rounded-2xl border border-stone-200 bg-[#fbfaf7] px-5 py-4 text-sm font-medium text-slate-700 outline-none focus:border-red-700 focus:ring-2 focus:ring-red-700/10"
               >
-                <option value="">All provinces</option>
+                <option value="">
+                  All provinces
+                </option>
 
-                {provinces.map((province) => (
-                  <option
-                    key={province._id}
-                    value={province.slug.current}
-                  >
-                    {province.name}
-                  </option>
-                ))}
+                {provinces.map(
+                  (province) => (
+                    <option
+                      key={
+                        province._id
+                      }
+                      value={
+                        province.slug
+                          .current
+                      }
+                    >
+                      {province.name}
+                    </option>
+                  )
+                )}
               </select>
 
               <button
@@ -378,7 +466,8 @@ export default async function AllDistrictsPage({
               </button>
             </div>
 
-            {(params.q || params.province) && (
+            {(params.q ||
+              params.province) && (
               <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-4">
                 <p className="text-sm text-slate-500">
                   Showing{" "}
@@ -398,16 +487,20 @@ export default async function AllDistrictsPage({
             )}
           </form>
 
-          {districts.length === 0 ? (
+          {districts.length ===
+          0 ? (
             <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-16 text-center">
-              <span className="text-6xl">🇳🇵</span>
+              <span className="text-6xl">
+                🇳🇵
+              </span>
 
               <h3 className="mt-5 font-serif text-3xl font-bold text-slate-900">
                 No districts found
               </h3>
 
               <p className="mx-auto mt-3 max-w-xl text-slate-600">
-                Try another district name, province, headquarters, or
+                Try another district name,
+                province, headquarters, or
                 tourism-related search term.
               </p>
 
@@ -435,15 +528,31 @@ export default async function AllDistrictsPage({
               </div>
 
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {districts.map((district) => (
-                  <DistrictCard
-                    key={district._id}
-                    district={district}
-                  />
-                ))}
+                {districts.map(
+                  (district) => (
+                    <DistrictCard
+                      key={
+                        district._id
+                      }
+                      district={
+                        district
+                      }
+                    />
+                  )
+                )}
               </div>
             </>
           )}
+        </div>
+      </section>
+
+      {/* =====================================================
+          NEWSLETTER
+      ====================================================== */}
+
+      <section className="bg-[#f1ede4] px-6 pb-20 sm:px-8 lg:pb-28">
+        <div className="mx-auto max-w-7xl">
+          <NewsletterSignup />
         </div>
       </section>
 
@@ -467,10 +576,12 @@ export default async function AllDistrictsPage({
             </h2>
 
             <p className="mt-6 text-lg leading-relaxed text-white/65">
-              Follow the roads beyond the familiar places. Meet communities,
-              discover forgotten histories, find landscapes that rarely make
-              the usual itineraries, and experience Nepal district by
-              district.
+              Follow the roads beyond the
+              familiar places. Meet communities,
+              discover forgotten histories, find
+              landscapes that rarely make the usual
+              itineraries, and experience Nepal
+              district by district.
             </p>
 
             <Link
@@ -478,6 +589,7 @@ export default async function AllDistrictsPage({
               className="group mt-9 inline-flex items-center gap-3 rounded-full bg-amber-300 px-7 py-4 font-bold text-slate-950 transition hover:-translate-y-1 hover:bg-amber-200 hover:shadow-xl"
             >
               Explore travel guides
+
               <span className="transition group-hover:translate-x-2">
                 →
               </span>
