@@ -283,42 +283,22 @@ export async function checkRateLimit(
       };
     }
 
-    /**
-     * -------------------------------------------------------
-     * 4. PERIODIC CLEANUP
-     * -------------------------------------------------------
-     *
-     * Small random percentage prevents cleanup from running
-     * on every request.
-     */
+    
+ // 4. PERIODIC CLEANUP (Fire-and-forget background sweep for records > 24 hours old)
     if (Math.random() < 0.05) {
-      const oneDayAgo =
-        new Date(
-          now -
-            24 * 60 * 60 * 1000
-        ).toISOString();
-
-      void supabaseAdmin
-        .from("rate_limits")
-        .delete()
-        .lt(
-          "created_at",
-          oneDayAgo
-        )
-        .then(({ error }) => {
-          if (error) {
-            console.error(
-              "⚠️ Rate limit cleanup failed:",
-              error
-            );
-          }
+      const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000).toISOString();
+      
+      // Wrap in Promise.resolve() to get a standard JS Promise with .catch()
+      Promise.resolve(
+        supabaseAdmin
+          .from("rate_limits")
+          .delete()
+          .lt("created_at", oneDayAgo)
+      )
+        .then(({ error }: { error: unknown }) => {
+          if (error) console.error("⚠️ Background cleanup failed:", error);
         })
-        .catch((error) => {
-          console.error(
-            "⚠️ Rate limit cleanup exception:",
-            error
-          );
-        });
+        .catch(() => {});
     }
 
     /**
