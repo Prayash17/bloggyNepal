@@ -1,8 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  // Create an initial response
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -32,7 +31,7 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: Do not remove getUser()
+  // IMPORTANT: Revalidates session and updates response cookies if refreshed
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -45,9 +44,13 @@ export async function middleware(request: NextRequest) {
       const adminUrl = request.nextUrl.clone();
       adminUrl.pathname = "/admin";
       adminUrl.search = "";
-      
-      // Pass the current response headers to preserve session cookie updates
-      return NextResponse.redirect(adminUrl, { headers: response.headers });
+
+      const redirectResponse = NextResponse.redirect(adminUrl);
+      // Copy refreshed auth cookies to the redirect response
+      response.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value);
+      });
+      return redirectResponse;
     }
 
     return response;
@@ -60,8 +63,12 @@ export async function middleware(request: NextRequest) {
       loginUrl.pathname = "/admin/login";
       loginUrl.search = "";
 
-      // Pass response headers here to preserve cookie state
-      return NextResponse.redirect(loginUrl, { headers: response.headers });
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      // Copy refreshed auth cookies to the redirect response
+      response.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value);
+      });
+      return redirectResponse;
     }
   }
 
