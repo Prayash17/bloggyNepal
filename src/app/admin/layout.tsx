@@ -10,6 +10,7 @@ export default async function AdminLayout({
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
 
+  // If no session, redirect to login
   if (!session) {
     redirect('/admin/login')
   }

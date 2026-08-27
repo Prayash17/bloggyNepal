@@ -108,7 +108,7 @@ export default function FeaturedSection({ destinations, stories }: any) {
           </div>
         ) : (
           <p className="text-center text-slate-500">
-            No featured {activeTab} yet. Mark some as "Featured" in your Sanity Studio.
+            No featured {activeTab} yet.
           </p>
         )}
 
