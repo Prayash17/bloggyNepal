@@ -2,10 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-
-  // Create the response that Supabase can attach refreshed auth cookies to.
-  const response = NextResponse.next({
+  let response = NextResponse.next({
     request,
   });
 
@@ -20,6 +17,12 @@ export async function middleware(request: NextRequest) {
 
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
+            // Update cookies on the request so the current request
+            // sees the refreshed authentication state.
+            request.cookies.set(name, value);
+
+            // Update cookies on the response so the browser
+            // receives the refreshed authentication state.
             response.cookies.set(name, value, options);
           });
         },
@@ -29,19 +32,19 @@ export async function middleware(request: NextRequest) {
 
   /*
    * IMPORTANT:
-   * getUser() validates the authenticated user with Supabase.
-   * This is safer for protecting server-side routes than relying
-   * only on getSession().
+   * Always validate the user before protecting admin routes.
    */
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { pathname } = request.nextUrl;
+
   /*
-   * /admin/login must ALWAYS be accessible without authentication.
+   * /admin/login is public.
    *
-   * If an already-authenticated user visits /admin/login,
-   * send them to /admin instead.
+   * Logged-out users are allowed to see it.
+   * Logged-in users are redirected to /admin.
    */
   if (pathname === "/admin/login") {
     if (user) {
@@ -57,17 +60,10 @@ export async function middleware(request: NextRequest) {
 
   /*
    * Every other /admin route requires authentication.
-   *
-   * Example:
-   * /admin
-   * /admin/comments
-   * /admin/feedback
-   * /admin/subscribers
    */
   if (pathname.startsWith("/admin")) {
     if (!user) {
       const loginUrl = request.nextUrl.clone();
-
       loginUrl.pathname = "/admin/login";
       loginUrl.search = "";
 
