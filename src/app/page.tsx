@@ -77,7 +77,7 @@ const travellerTools = [
 ];
 
 const stats = [
-  { value: "8", label: "Regions covered" },
+  { value: "7", label: "Regions covered" },
   { value: "60+", label: "Travel guides" },
   { value: "100%", label: "Solo-friendly" },
   { value: "0₹", label: "Sponsored fluff" },
@@ -232,7 +232,7 @@ export default function Home() {
 
           {/* Photo credit */}
           <div className="absolute bottom-6 right-6 hidden text-xs italic tracking-wide text-white/50 md:block">
-            Cinematic Nepal · bloggyNepal
+            Anuj Bhandari 
           </div>
         </section>
 

@@ -5,7 +5,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Create the response that Supabase can attach refreshed auth cookies to.
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request,
   });
 
