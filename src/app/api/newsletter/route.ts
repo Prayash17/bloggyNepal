@@ -9,14 +9,18 @@ import {
 } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-/**
- * Clean user-provided text.
- */
+function noStoreHeaders() {
+  return {
+    "Cache-Control": "no-store, no-cache, must-revalidate",
+  };
+}
+
 function cleanText(
   value: unknown,
   maxLength: number
@@ -31,12 +35,6 @@ function cleanText(
     .slice(0, maxLength);
 }
 
-/**
- * Validate an email address.
- *
- * This intentionally stays simple. The real authority
- * for email delivery is still the email provider.
- */
 function isValidEmail(email: string): boolean {
   if (!email || email.length > 254) {
     return false;
@@ -47,10 +45,6 @@ function isValidEmail(email: string): boolean {
   );
 }
 
-/**
- * Escape HTML before placing user content
- * inside the welcome email.
- */
 function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -62,39 +56,18 @@ function escapeHtml(value: string): string {
 
 export async function POST(req: Request) {
   try {
-    console.log(
-      "================================="
-    );
-    console.log(
-      "NEWSLETTER REQUEST STARTED"
-    );
-    console.log(
-      "================================="
-    );
-
-    // ========================================================
-    // 1. GET CLIENT IP
-    // ========================================================
+    // --------------------------------------------------------
+    // 1. RATE LIMIT
+    // --------------------------------------------------------
 
     const ip = getClientIP(req);
     const ipHash = hashIP(ip);
-
-    console.log(
-      "IP hash created:",
-      Boolean(ipHash)
-    );
-
-    // ========================================================
-    // 2. RATE LIMIT
-    // ========================================================
 
     const limit = await checkRateLimit(
       ipHash,
       "newsletter",
       3
     );
-
-    console.log("Rate limit:", limit);
 
     if (!limit.allowed) {
       return NextResponse.json(
@@ -103,13 +76,16 @@ export async function POST(req: Request) {
           error:
             "Too many subscription attempts. Please try again later.",
         },
-        { status: 429 }
+        {
+          status: 429,
+          headers: noStoreHeaders(),
+        }
       );
     }
 
-    // ========================================================
-    // 3. READ BODY
-    // ========================================================
+    // --------------------------------------------------------
+    // 2. PARSE BODY
+    // --------------------------------------------------------
 
     let body: {
       email?: unknown;
@@ -125,42 +101,33 @@ export async function POST(req: Request) {
           success: false,
           error: "Invalid request body.",
         },
-        { status: 400 }
+        {
+          status: 400,
+          headers: noStoreHeaders(),
+        }
       );
     }
 
-    console.log(
-      "Newsletter body received:",
-      {
-        hasEmail: Boolean(body.email),
-        hasName: Boolean(body.name),
-        hasWebsite: Boolean(body.website),
-      }
-    );
+    // --------------------------------------------------------
+    // 3. HONEYPOT
+    // --------------------------------------------------------
 
-    // ========================================================
-    // 4. HONEYPOT
-    // ========================================================
-
-    const website = cleanText(
-      body.website,
-      200
-    );
-
-    if (website) {
-      console.log(
-        "HONEYPOT TRIGGERED"
+    if (cleanText(body.website, 200)) {
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Welcome!",
+        },
+        {
+          status: 200,
+          headers: noStoreHeaders(),
+        }
       );
-
-      return NextResponse.json({
-        success: true,
-        message: "Welcome!",
-      });
     }
 
-    // ========================================================
-    // 5. CLEAN INPUT
-    // ========================================================
+    // --------------------------------------------------------
+    // 4. CLEAN INPUT
+    // --------------------------------------------------------
 
     const email = cleanText(
       body.email,
@@ -172,115 +139,108 @@ export async function POST(req: Request) {
       50
     );
 
-    console.log("Email:", email);
-    console.log(
-      "Name:",
-      name || "(none)"
-    );
+    // --------------------------------------------------------
+    // 5. VALIDATION
+    // --------------------------------------------------------
 
-    // ========================================================
-    // 6. VALIDATE EMAIL
-    // ========================================================
-
-    if (
-      !email ||
-      !isValidEmail(email)
-    ) {
-      console.log(
-        "INVALID EMAIL"
-      );
-
+    if (!email || !isValidEmail(email)) {
       return NextResponse.json(
         {
           success: false,
           error:
             "Please enter a valid email address.",
         },
-        { status: 400 }
+        {
+          status: 400,
+          headers: noStoreHeaders(),
+        }
       );
     }
 
-    // ========================================================
-    // 7. CHECK EXISTING SUBSCRIBER
-    // ========================================================
+    if (
+      name &&
+      (name.length < 2 || name.length > 50)
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Name must be between 2 and 50 characters.",
+        },
+        {
+          status: 400,
+          headers: noStoreHeaders(),
+        }
+      );
+    }
+
+    // --------------------------------------------------------
+    // 6. CHECK EXISTING SUBSCRIBER
+    // --------------------------------------------------------
 
     const {
       data: existing,
       error: lookupError,
     } = await supabaseAdmin
       .from("subscribers")
-      .select(
-        "id, email, status"
-      )
+      .select("id, email, status")
       .eq("email", email)
       .maybeSingle();
 
-    console.log(
-      "Existing subscriber:",
-      existing
-    );
-
-    console.log(
-      "Lookup error:",
-      lookupError
-    );
-
     if (lookupError) {
       console.error(
-        "❌ SUBSCRIBER LOOKUP FAILED:",
+        "Subscriber lookup failed:",
         lookupError
       );
 
       return NextResponse.json(
         {
           success: false,
-          stage: "lookup",
           error:
-            lookupError.message,
-          details:
-            lookupError.details,
-          hint:
-            lookupError.hint,
-          code:
-            lookupError.code,
+            "Unable to process your subscription right now.",
         },
-        { status: 500 }
+        {
+          status: 500,
+          headers: noStoreHeaders(),
+        }
       );
     }
 
-    // ========================================================
-    // 8. ALREADY ACTIVE
-    // ========================================================
+    // --------------------------------------------------------
+    // 7. ALREADY ACTIVE
+    // --------------------------------------------------------
 
-    if (
-      existing?.status ===
-      "active"
-    ) {
-      console.log(
-        "EMAIL ALREADY ACTIVE"
-      );
-
+    if (existing?.status === "active") {
       return NextResponse.json(
         {
           success: false,
           error:
             "You're already subscribed to BloggyNepal.",
         },
-        { status: 400 }
+        {
+          status: 400,
+          headers: noStoreHeaders(),
+        }
       );
     }
 
-    // ========================================================
+    // --------------------------------------------------------
+    // 8. SAFE SOURCE VALUE
+    // --------------------------------------------------------
+
+    // DB constraint allows max 100 chars.
+    const source =
+      cleanText(
+        req.headers.get("referer"),
+        100
+      ) || "website";
+
+    // --------------------------------------------------------
     // 9. RE-SUBSCRIBE
-    // ========================================================
+    // --------------------------------------------------------
 
     if (existing) {
-      console.log(
-        "Re-subscribing existing user..."
-      );
-
       const {
-        data: updated,
         error: updateError,
       } = await supabaseAdmin
         .from("subscribers")
@@ -289,132 +249,89 @@ export async function POST(req: Request) {
           unsubscribed_at: null,
           subscribed_at:
             new Date().toISOString(),
-          name:
-            name || null,
+          name: name || null,
+          source,
           ip_hash: ipHash,
         })
-        .eq(
-          "id",
-          existing.id
-        )
-        .select()
-        .single();
-
-      console.log(
-        "Updated subscriber:",
-        updated
-      );
-
-      console.log(
-        "Update error:",
-        updateError
-      );
+        .eq("id", existing.id);
 
       if (updateError) {
         console.error(
-          "❌ SUBSCRIBER UPDATE FAILED:",
+          "Subscriber re-subscribe failed:",
           updateError
         );
 
         return NextResponse.json(
           {
             success: false,
-            stage: "update",
             error:
-              updateError.message,
-            details:
-              updateError.details,
-            hint:
-              updateError.hint,
-            code:
-              updateError.code,
+              "Unable to reactivate your subscription.",
           },
-          { status: 500 }
+          {
+            status: 500,
+            headers: noStoreHeaders(),
+          }
         );
       }
     }
 
-    // ========================================================
+    // --------------------------------------------------------
     // 10. NEW SUBSCRIBER
-    // ========================================================
+    // --------------------------------------------------------
 
     else {
-      console.log(
-        "Creating NEW subscriber..."
-      );
-
-      const subscriber = {
-        email,
-        name:
-          name || null,
-        status: "active",
-        source:
-          req.headers
-            .get("referer")
-            ?.slice(0, 500) ||
-          "website",
-        ip_hash: ipHash,
-        subscribed_at:
-          new Date().toISOString(),
-      };
-
-      console.log(
-        "Insert payload:",
-        {
-          ...subscriber,
-          ip_hash:
-            "[HASHED]",
-        }
-      );
-
       const {
-        data: inserted,
         error: insertError,
       } = await supabaseAdmin
         .from("subscribers")
-        .insert(
-          subscriber
-        )
-        .select()
-        .single();
-
-      console.log(
-        "Inserted subscriber:",
-        inserted
-      );
-
-      console.log(
-        "Insert error:",
-        insertError
-      );
+        .insert({
+          email,
+          name: name || null,
+          status: "active",
+          source,
+          ip_hash: ipHash,
+          subscribed_at:
+            new Date().toISOString(),
+        });
 
       if (insertError) {
         console.error(
-          "❌ SUBSCRIBER INSERT FAILED:",
+          "Subscriber insert failed:",
           insertError
         );
+
+        // Handle possible race-condition duplicate.
+        if (insertError.code === "23505") {
+          return NextResponse.json(
+            {
+              success: false,
+              error:
+                "You're already subscribed to BloggyNepal.",
+            },
+            {
+              status: 409,
+              headers: noStoreHeaders(),
+            }
+          );
+        }
 
         return NextResponse.json(
           {
             success: false,
-            stage: "insert",
             error:
-              insertError.message,
-            details:
-              insertError.details,
-            hint:
-              insertError.hint,
-            code:
-              insertError.code,
+              "Unable to save your subscription right now.",
           },
-          { status: 500 }
+          {
+            status: 500,
+            headers: noStoreHeaders(),
+          }
         );
       }
     }
 
-    // ========================================================
-    // 11. SEND WELCOME EMAIL
-    // ========================================================
+    // --------------------------------------------------------
+    // 11. WELCOME EMAIL
+    // --------------------------------------------------------
 
     if (
       resend &&
@@ -425,110 +342,93 @@ export async function POST(req: Request) {
         : "traveller";
 
       try {
-        const emailResult =
-          await resend.emails.send({
-            from:
-              process.env
-                .RESEND_FROM_EMAIL,
+        await resend.emails.send({
+          from:
+            process.env.RESEND_FROM_EMAIL,
 
-            to: [email],
+          to: [email],
 
-            subject:
-              "🙏 Namaste from BloggyNepal",
+          subject:
+            "🙏 Namaste from BloggyNepal",
 
-            html: `
-              <div style="
-                font-family: Georgia, serif;
-                max-width: 600px;
-                margin: 40px auto;
-                padding: 40px;
-                background: #ffffff;
-                border-radius: 24px;
+          html: `
+            <div style="
+              font-family: Georgia, serif;
+              max-width: 600px;
+              margin: 40px auto;
+              padding: 40px;
+              background: #ffffff;
+              border-radius: 24px;
+            ">
+              <p style="
+                color:#991b1b;
+                font-weight:bold;
+                letter-spacing:3px;
               ">
-                <p style="
-                  color:#991b1b;
-                  font-weight:bold;
-                  letter-spacing:3px;
-                ">
-                  BLOGGYNEPAL
-                </p>
+                BLOGGYNEPAL
+              </p>
 
-                <h1>
-                  Welcome aboard.
-                </h1>
+              <h1>
+                Welcome aboard.
+              </h1>
 
-                <p>
-                  Hi ${safeName},
-                </p>
+              <p>
+                Hi ${safeName},
+              </p>
 
-                <p>
-                  Thank you for joining
-                  BloggyNepal.
-                </p>
+              <p>
+                Thank you for joining BloggyNepal.
+              </p>
 
-                <p>
-                  You'll receive useful
-                  Nepal travel stories,
-                  destinations, guides,
-                  and travel tips.
-                </p>
-              </div>
-            `,
-          });
-
-        console.log(
-          "✅ Welcome email sent:",
-          emailResult
-        );
+              <p>
+                You'll receive useful Nepal travel
+                stories, destinations, guides, and
+                travel tips.
+              </p>
+            </div>
+          `,
+        });
       } catch (emailError) {
+        // Subscription remains successful even if
+        // the welcome email fails.
         console.error(
-          "⚠️ Welcome email failed:",
+          "Welcome email failed:",
           emailError
         );
       }
-    } else {
-      console.log(
-        "Resend is not configured. Skipping welcome email."
-      );
     }
 
-    // ========================================================
+    // --------------------------------------------------------
     // 12. SUCCESS
-    // ========================================================
+    // --------------------------------------------------------
 
-    console.log(
-      "================================="
+    return NextResponse.json(
+      {
+        success: true,
+        message:
+          "Welcome to BloggyNepal!",
+      },
+      {
+        status: 201,
+        headers: noStoreHeaders(),
+      }
     );
-
-    console.log(
-      "✅ NEWSLETTER SUCCESS"
-    );
-
-    console.log(
-      "================================="
-    );
-
-    return NextResponse.json({
-      success: true,
-      message:
-        "Welcome to BloggyNepal!",
-    });
   } catch (error) {
     console.error(
-      "❌ NEWSLETTER FATAL ERROR:",
+      "Newsletter POST fatal error:",
       error
     );
 
     return NextResponse.json(
       {
         success: false,
-        stage: "fatal",
         error:
-          error instanceof Error
-            ? error.message
-            : "Unknown error",
+          "Unable to process your subscription.",
       },
-      { status: 500 }
+      {
+        status: 500,
+        headers: noStoreHeaders(),
+      }
     );
   }
 }
