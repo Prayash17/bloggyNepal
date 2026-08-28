@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import Navbar from "@/components/Navbar";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "bloggyNepal | Honest Travel Guides",
@@ -16,6 +17,7 @@ export default function RootLayout({
       <body className="overflow-x-hidden bg-[#fbfaf7] text-slate-800 antialiased">
         <Navbar />
         <div className="pt-20">{children}</div>
+        <Analytics />
       </body>
     </html>
   );
