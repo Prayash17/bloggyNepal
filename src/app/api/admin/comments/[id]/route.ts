@@ -1,57 +1,97 @@
-import { createClient } from '@/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
-import { logAdminAction } from '@/lib/admin-log'
+import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin-auth";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+import { logAdminAction } from "@/lib/admin-log";
+
+const ALLOWED_STATUSES = [
+  "approved",
+  "rejected",
+  "spam",
+] as const;
 
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params
-  const supabase = await createClient()
-  const body = await req.json()
-  const { status } = body // 'approved', 'rejected', 'spam'
+  const { response } = await requireAdmin();
 
-  const { data, error } = await supabase
-    .from('comments')
-    .update({ status })
-    .eq('id', id)
+  if (response) {
+    return response;
+  }
+
+  const { id } = await context.params;
+  const body = await req.json();
+
+  const status = body?.status;
+
+  if (!ALLOWED_STATUSES.includes(status)) {
+    return NextResponse.json(
+      { error: "Invalid comment status." },
+      { status: 400 }
+    );
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("comments")
+    .update({
+      status,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
     .select()
-    .single()
+    .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error("Admin comment update error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to update comment." },
+      { status: 500 }
+    );
   }
 
   await logAdminAction({
     action: `update_comment_${status}`,
-    entity: 'comment',
+    entity: "comment",
     entity_id: id,
-  })
+  });
 
-  return NextResponse.json(data)
+  return NextResponse.json(data);
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params
-  const supabase = await createClient()
+  const { response } = await requireAdmin();
 
-  const { error } = await supabase
-    .from('comments')
+  if (response) {
+    return response;
+  }
+
+  const { id } = await context.params;
+
+  const { error } = await supabaseAdmin
+    .from("comments")
     .delete()
-    .eq('id', id)
+    .eq("id", id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error("Admin comment delete error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to delete comment." },
+      { status: 500 }
+    );
   }
 
   await logAdminAction({
-    action: 'delete_comment',
-    entity: 'comment',
+    action: "delete_comment",
+    entity: "comment",
     entity_id: id,
-  })
+  });
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({
+    success: true,
+  });
 }

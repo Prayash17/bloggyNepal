@@ -1,15 +1,27 @@
-import { createClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin-auth";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET() {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('subscribers')
-    .select('*')
-    .order('created_at', { ascending: false })
+  const { response } = await requireAdmin();
+
+  if (response) {
+    return response;
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("subscribers")
+    .select("*")
+    .order("subscribed_at", { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error("Admin subscribers GET error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to load subscribers." },
+      { status: 500 }
+    );
   }
-  return NextResponse.json(data)
+
+  return NextResponse.json(data ?? []);
 }

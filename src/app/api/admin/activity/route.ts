@@ -1,16 +1,28 @@
-import { createClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin-auth";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET() {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('admin_logs')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(100)
+  const { response } = await requireAdmin();
+
+  if (response) {
+    return response;
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("admin_logs")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error("Admin activity GET error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to load activity." },
+      { status: 500 }
+    );
   }
-  return NextResponse.json(data)
+
+  return NextResponse.json(data ?? []);
 }

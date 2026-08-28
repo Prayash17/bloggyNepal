@@ -1,50 +1,56 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const supabase = await createClient();
+  // ---------------------------------------------------------
+  // 1. Verify the admin is authenticated
+  // ---------------------------------------------------------
+  const authClient = await createClient();
 
-  // Verify the authenticated user on the server.
   const {
     data: { user },
     error: userError,
-  } = await supabase.auth.getUser();
+  } = await authClient.auth.getUser();
 
-  // If there is no valid authenticated user, send them to admin login.
   if (userError || !user) {
     redirect("/admin/login");
   }
 
-  // Fetch dashboard statistics in parallel.
+  // ---------------------------------------------------------
+  // 2. Read private admin data using the service-role client
+  // ---------------------------------------------------------
   const [
     pendingCommentsResult,
     newFeedbackResult,
     activeSubscribersResult,
     totalReactionsResult,
   ] = await Promise.all([
-    supabase
+    supabaseAdmin
       .from("comments")
-      .select("*", { count: "exact", head: true })
+      .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
 
-    supabase
+    supabaseAdmin
       .from("feedback")
-      .select("*", { count: "exact", head: true })
+      .select("id", { count: "exact", head: true })
       .eq("status", "new"),
 
-    supabase
+    supabaseAdmin
       .from("subscribers")
-      .select("*", { count: "exact", head: true })
+      .select("id", { count: "exact", head: true })
       .eq("status", "active"),
 
-    supabase
+    supabaseAdmin
       .from("reactions")
-      .select("*", { count: "exact", head: true }),
+      .select("id", { count: "exact", head: true }),
   ]);
 
-  // Log database errors without exposing sensitive information to visitors.
+  // ---------------------------------------------------------
+  // 3. Log any database errors
+  // ---------------------------------------------------------
   if (pendingCommentsResult.error) {
     console.error(
       "Admin dashboard - pending comments error:",
@@ -73,6 +79,9 @@ export default async function AdminDashboard() {
     );
   }
 
+  // ---------------------------------------------------------
+  // 4. Final counts
+  // ---------------------------------------------------------
   const pendingComments = pendingCommentsResult.count ?? 0;
   const newFeedback = newFeedbackResult.count ?? 0;
   const activeSubscribers = activeSubscribersResult.count ?? 0;
