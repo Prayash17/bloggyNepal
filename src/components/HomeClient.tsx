@@ -8,13 +8,43 @@ import {
 
 import Link from "next/link";
 
-import { FeaturedSection } from "@/components/FeaturedSection";
+import FeaturedSection from "@/components/FeaturedSection";
 
 import { siteConfig } from "@/lib/site";
 
+type FeaturedDestination = {
+  _id: string;
+  title: string;
+  slug:
+    | string
+    | {
+        current: string;
+      };
+  region?: string;
+  coverImage?: unknown;
+  excerpt?: string;
+  duration?: string;
+  startingCost?: number;
+  maxAltitude?: number;
+};
+
+type FeaturedStory = {
+  _id: string;
+  title: string;
+  slug:
+    | string
+    | {
+        current: string;
+      };
+  region?: string;
+  excerpt?: string;
+  coverImage?: unknown;
+  publishedAt?: string;
+};
+
 type FeaturedContent = {
-  destinations: any[];
-  stories: any[];
+  destinations: FeaturedDestination[];
+  stories: FeaturedStory[];
 };
 
 // ─────────────────────────────────────────────────────────────
