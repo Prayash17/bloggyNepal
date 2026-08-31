@@ -48,12 +48,47 @@ export const metadata: Metadata = {
     images: [siteConfig.images.og],
   },
 };
-
-type FeaturedContent = {
-  destinations: any[];
-  stories: any[];
+type FeaturedImage = {
+  alt?: string;
+  asset?: {
+    _ref?: string;
+    _id?: string;
+  };
 };
 
+type FeaturedDestination = {
+  _id: string;
+  title: string;
+  slug: {
+    current: string;
+  };
+  excerpt?: string;
+  region?: string;
+  duration?: string;
+  startingCost?: number;
+  maxAltitude?: number;
+  coverImage?: FeaturedImage;
+};
+
+type FeaturedStory = {
+  _id: string;
+  title: string;
+  slug: {
+    current: string;
+  };
+  excerpt?: string;
+  region?: string;
+  category?: string;
+  author?: string;
+  publishedAt?: string;
+  readingTime?: number;
+  coverImage?: FeaturedImage;
+};
+
+type FeaturedContent = {
+  destinations: FeaturedDestination[];
+  stories: FeaturedStory[];
+};
 async function getFeaturedContent(): Promise<FeaturedContent> {
   const [
     featuredDestinations,

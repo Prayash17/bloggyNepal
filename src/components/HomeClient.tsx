@@ -2,58 +2,40 @@
 
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-
 import Link from "next/link";
-
-import FeaturedSection from "@/components/FeaturedSection";
 
 import { siteConfig } from "@/lib/site";
 
-type FeaturedDestination = {
-  _id: string;
-  title: string;
-  slug:
-    | string
-    | {
-        current: string;
-      };
-  region?: string;
-  coverImage?: unknown;
-  excerpt?: string;
-  duration?: string;
-  startingCost?: number;
-  maxAltitude?: number;
-};
+import FeaturedSection, {
+  type FeaturedDestination,
+  type FeaturedStory,
+} from "@/components/FeaturedSection";
 
-type FeaturedStory = {
-  _id: string;
-  title: string;
-  slug:
-    | string
-    | {
-        current: string;
-      };
-  region?: string;
-  excerpt?: string;
-  coverImage?: unknown;
-  publishedAt?: string;
-};
+/* =========================================================
+   TYPES
+========================================================= */
 
 type FeaturedContent = {
   destinations: FeaturedDestination[];
   stories: FeaturedStory[];
 };
 
-// ─────────────────────────────────────────────────────────────
-// Reveal-on-scroll hook
-// ─────────────────────────────────────────────────────────────
+type HomeClientProps = {
+  content: FeaturedContent;
+};
 
-function useReveal<T extends HTMLElement>() {
+/* =========================================================
+   REVEAL-ON-SCROLL HOOK
+========================================================= */
+
+function useReveal<
+  T extends HTMLElement
+>() {
   const ref = useRef<T | null>(null);
-
   const [shown, setShown] =
     useState(false);
 
@@ -64,18 +46,43 @@ function useReveal<T extends HTMLElement>() {
       return;
     }
 
+    if (
+      typeof window !==
+        "undefined" &&
+      "matchMedia" in window &&
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches
+    ) {
+      setShown(true);
+      return;
+    }
+
+    if (
+      typeof IntersectionObserver ===
+      "undefined"
+    ) {
+      setShown(true);
+      return;
+    }
+
     const observer =
       new IntersectionObserver(
         (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setShown(true);
-              observer.disconnect();
-            }
-          });
+          const entry =
+            entries[0];
+
+          if (
+            entry?.isIntersecting
+          ) {
+            setShown(true);
+            observer.disconnect();
+          }
         },
         {
-          threshold: 0.15,
+          threshold: 0.12,
+          rootMargin:
+            "0px 0px -80px 0px",
         }
       );
 
@@ -92,9 +99,9 @@ function useReveal<T extends HTMLElement>() {
   };
 }
 
-// ─────────────────────────────────────────────────────────────
-// Traveller tools
-// ─────────────────────────────────────────────────────────────
+/* =========================================================
+   TRAVELLER TOOLS
+========================================================= */
 
 const travellerTools = [
   {
@@ -103,58 +110,29 @@ const travellerTools = [
     description:
       "Clear transport details, practical maps, and realistic ways to get there.",
   },
-
   {
     icon: "📋",
     title: "Itineraries you can follow",
     description:
       "Day-by-day plans built around real travel pace, not rushed checklists.",
   },
-
   {
     icon: "💰",
     title: "Honest cost breakdowns",
     description:
       "Know what to budget in NPR and USD before you leave home.",
   },
-
   {
     icon: "🎒",
     title: "Useful local insight",
     description:
       "Packing advice, altitude tips, and the details that make travel smoother.",
   },
-];
+] as const;
 
-// ─────────────────────────────────────────────────────────────
-// Homepage stats
-// ─────────────────────────────────────────────────────────────
-
-const stats = [
-  {
-    value: "7",
-    label: "Regions covered",
-  },
-
-  {
-    value: "60+",
-    label: "Travel guides",
-  },
-
-  {
-    value: "100%",
-    label: "Solo-friendly",
-  },
-
-  {
-    value: "0",
-    label: "Sponsored fluff",
-  },
-];
-
-// ─────────────────────────────────────────────────────────────
-// Check icon
-// ─────────────────────────────────────────────────────────────
+/* =========================================================
+   CHECK ICON
+========================================================= */
 
 function Check() {
   return (
@@ -173,9 +151,9 @@ function Check() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// Social icons
-// ─────────────────────────────────────────────────────────────
+/* =========================================================
+   SOCIAL ICONS
+========================================================= */
 
 function InstagramIcon() {
   return (
@@ -238,16 +216,33 @@ function FacebookIcon() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// Main homepage client
-// ─────────────────────────────────────────────────────────────
+/* =========================================================
+   SOCIAL LINK SAFETY
+========================================================= */
+
+function isSafeExternalUrl(
+  value: unknown
+): value is string {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  return /^https?:\/\//i.test(
+    value
+  );
+}
+
+/* =========================================================
+   MAIN HOMEPAGE CLIENT
+========================================================= */
 
 export default function HomeClient({
   content,
-}: {
-  content: FeaturedContent;
-}) {
+}: HomeClientProps) {
   const [videoReady, setVideoReady] =
+    useState(false);
+
+  const [reducedMotion, setReducedMotion] =
     useState(false);
 
   const storyReveal =
@@ -259,18 +254,137 @@ export default function HomeClient({
   const ctaReveal =
     useReveal<HTMLDivElement>();
 
-  return (
-    <>
-      <main className="min-h-screen overflow-x-hidden bg-[#fbfaf7] text-slate-900">
-        {/* ═══════════════════════════════════════════════════════════
-            HERO
-        ═══════════════════════════════════════════════════════════ */}
+  /* =======================================================
+     REDUCED MOTION
+  ======================================================== */
 
-        <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden">
-          <div className="absolute inset-0 -z-10 overflow-hidden">
+  useEffect(() => {
+    if (
+      typeof window ===
+      "undefined"
+    ) {
+      return;
+    }
+
+    const mediaQuery =
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      );
+
+    const updateMotionPreference =
+      () => {
+        setReducedMotion(
+          mediaQuery.matches
+        );
+      };
+
+    updateMotionPreference();
+
+    mediaQuery.addEventListener(
+      "change",
+      updateMotionPreference
+    );
+
+    return () => {
+      mediaQuery.removeEventListener(
+        "change",
+        updateMotionPreference
+      );
+    };
+  }, []);
+
+  /* =======================================================
+     DYNAMIC HOMEPAGE STATS
+  ======================================================== */
+
+  const homepageStats =
+    useMemo(() => {
+      const destinations =
+        Array.isArray(
+          content.destinations
+        )
+          ? content.destinations
+          : [];
+
+      const stories =
+        Array.isArray(
+          content.stories
+        )
+          ? content.stories
+          : [];
+
+      const regions =
+        new Set(
+          [
+            ...destinations.map(
+              (item) => item.region
+            ),
+            ...stories.map(
+              (item) => item.region
+            ),
+          ].filter(
+            (
+              value
+            ): value is string =>
+              typeof value ===
+                "string" &&
+              value.trim().length > 0
+          )
+        );
+
+      return [
+        {
+          value: String(
+            regions.size
+          ),
+          label: "Regions represented",
+        },
+        {
+          value:
+            destinations.length > 0
+              ? `${destinations.length}`
+              : "0",
+          label: "Featured destinations",
+        },
+        {
+          value:
+            stories.length > 0
+              ? `${stories.length}`
+              : "0",
+          label: "Published stories",
+        },
+        {
+          value: "Real",
+          label: "Travel perspective",
+        },
+      ];
+    }, [content]);
+
+  /* =======================================================
+     HERO VIDEO
+  ======================================================== */
+
+  const shouldRenderVideo =
+    !reducedMotion;
+
+  return (
+    <div className="min-h-screen bg-[#fbfaf7] text-slate-900">
+      <main className="overflow-x-hidden">
+        {/* ═════════════════════════════════════════════════════
+            HERO
+        ═════════════════════════════════════════════════════ */}
+
+        <section
+          aria-labelledby="homepage-title"
+          className="relative isolate flex min-h-[100svh] items-center overflow-hidden"
+        >
+          <div className="absolute inset-0 -z-10 overflow-hidden bg-slate-950">
+            {/* STATIC POSTER */}
+
             <div
               className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${
-                videoReady
+                videoReady &&
+                shouldRenderVideo
                   ? "opacity-0"
                   : "opacity-100"
               }`}
@@ -280,50 +394,65 @@ export default function HomeClient({
               }}
             />
 
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster="/nepal-hero-poster.jpg"
-              onCanPlay={() =>
-                setVideoReady(true)
-              }
-              className={`h-full w-full object-cover transition-opacity duration-700 ${
-                videoReady
-                  ? "opacity-100"
-                  : "opacity-0"
-              }`}
-              aria-hidden="true"
-            >
-              <source
-                src="/nepal-hero.webm"
-                type="video/webm"
-              />
+            {/* VIDEO */}
 
-              <source
-                src="/Hero-Video.mp4"
-                type="video/mp4"
-              />
-            </video>
+            {shouldRenderVideo && (
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster="/nepal-hero-poster.jpg"
+                onCanPlay={() =>
+                  setVideoReady(
+                    true
+                  )
+                }
+                onError={() =>
+                  setVideoReady(
+                    false
+                  )
+                }
+                className={`h-full w-full object-cover transition-opacity duration-700 ${
+                  videoReady
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+                aria-hidden="true"
+              >
+                <source
+                  src="/nepal-hero.webm"
+                  type="video/webm"
+                />
 
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/40 to-slate-950/90" />
+                <source
+                  src="/Hero-Video.mp4"
+                  type="video/mp4"
+                />
+              </video>
+            )}
+
+            {/* HERO OVERLAYS */}
+
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/40 to-slate-950/95" />
 
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
 
-            <div className="absolute -right-32 top-10 h-96 w-96 rounded-full bg-amber-400/20 blur-3xl animate-blob" />
+            <div className="absolute -right-32 top-10 h-96 w-96 rounded-full bg-amber-400/20 blur-3xl motion-safe:animate-blob" />
 
-            <div className="absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-red-700/25 blur-3xl animate-blob animation-delay-2000" />
+            <div className="absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-red-700/25 blur-3xl motion-safe:animate-blob motion-safe:animation-delay-2000" />
 
-            <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/10 blur-3xl animate-blob animation-delay-4000" />
+            <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/10 blur-3xl motion-safe:animate-blob motion-safe:animation-delay-4000" />
           </div>
 
-          <div className="relative mx-auto w-full max-w-7xl px-6 py-24 sm:px-8">
-            <div className="max-w-4xl text-white">
-              <p className="reveal-up inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-amber-200 backdrop-blur-md">
+          {/* HERO CONTENT */}
+
+          <div className="relative mx-auto w-full max-w-7xl px-6 py-24 sm:px-8 lg:py-28">
+            <div className="max-w-5xl text-white">
+              <p className="motion-safe:reveal-up inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-amber-200 backdrop-blur-md">
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-300 opacity-75" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-300 opacity-75 motion-reduce:hidden" />
 
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-300" />
                 </span>
@@ -331,17 +460,19 @@ export default function HomeClient({
                 हिमालय · Travel deeper
               </p>
 
-              <h1 className="reveal-up [animation-delay:150ms] mt-8 font-serif text-5xl font-bold leading-[0.92] tracking-tight sm:text-7xl lg:text-[5.5rem]">
+              <h1
+                id="homepage-title"
+                className="motion-safe:reveal-up mt-8 font-serif text-5xl font-bold leading-[0.92] tracking-tight sm:text-7xl lg:text-[6rem]"
+              >
                 Nepal, beyond
-
                 <span className="mt-2 block bg-gradient-to-r from-amber-200 via-amber-300 to-orange-300 bg-clip-text text-transparent">
                   the postcard.
                 </span>
               </h1>
 
-              <p className="reveal-up [animation-delay:300ms] mt-7 max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl">
-                Honest guides, memorable stories,
-                and practical tools for solo
+              <p className="motion-safe:reveal-up mt-7 max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl">
+                Honest guides, memorable
+                stories, and practical tools for
                 travellers who want to experience
                 Nepal with{" "}
                 <span className="text-amber-300">
@@ -354,16 +485,19 @@ export default function HomeClient({
                 .
               </p>
 
-              <div className="reveal-up [animation-delay:450ms] mt-10 flex flex-col gap-3 sm:flex-row">
+              {/* PRIMARY ACTIONS */}
+
+              <div className="motion-safe:reveal-up mt-10 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/destinations"
-                  className="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-full bg-amber-300 px-8 py-4 font-bold text-slate-950 shadow-2xl shadow-amber-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-amber-500/50"
+                  className="group inline-flex items-center justify-center gap-3 rounded-full bg-amber-300 px-8 py-4 font-bold text-slate-950 shadow-2xl shadow-amber-500/30 transition-all duration-300 hover:-translate-y-1 hover:bg-amber-200 hover:shadow-amber-500/50"
                 >
-                  <span className="absolute inset-0 -z-10 bg-gradient-to-r from-amber-300 via-orange-300 to-amber-300 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
                   Explore destinations
 
-                  <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  <span
+                    aria-hidden="true"
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  >
                     →
                   </span>
                 </Link>
@@ -376,15 +510,17 @@ export default function HomeClient({
                 </Link>
               </div>
 
-              <div className="reveal-up [animation-delay:600ms] mt-12 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/80">
+              {/* TRUST POINTS */}
+
+              <div className="motion-safe:reveal-up mt-12 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/80">
                 <span className="flex items-center gap-2">
                   <Check />
-                  Solo-travel friendly
+                  Practical information
                 </span>
 
                 <span className="flex items-center gap-2">
                   <Check />
-                  Real budgets
+                  Real experiences
                 </span>
 
                 <span className="flex items-center gap-2">
@@ -395,35 +531,40 @@ export default function HomeClient({
             </div>
           </div>
 
-          <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs uppercase tracking-[0.3em] text-white/70 md:flex">
-            <span>Scroll</span>
+          {/* SCROLL INDICATOR */}
 
-            <span className="relative h-12 w-px overflow-hidden bg-white/20">
-              <span className="absolute left-0 top-0 h-1/2 w-full bg-amber-300 animate-scroll-down" />
-            </span>
-          </div>
+          {!reducedMotion && (
+            <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs uppercase tracking-[0.3em] text-white/70 md:flex">
+              <span>Scroll</span>
+
+              <span className="relative h-12 w-px overflow-hidden bg-white/20">
+                <span className="absolute left-0 top-0 h-1/2 w-full bg-amber-300 animate-scroll-down motion-reduce:hidden" />
+              </span>
+            </div>
+          )}
 
           <div className="absolute bottom-6 right-6 hidden text-xs italic tracking-wide text-white/50 md:block">
-            Anuj Bhandari
+            bloggyNepal
           </div>
         </section>
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* ═════════════════════════════════════════════════════
             INTRO / MISSION
-        ═══════════════════════════════════════════════════════════ */}
+        ═════════════════════════════════════════════════════ */}
 
         <section
           ref={storyReveal.ref}
+          aria-labelledby="mission-title"
           className="relative overflow-hidden bg-[#f1ede4] px-6 py-24 sm:px-8 lg:py-32"
         >
           <div className="absolute inset-0 opacity-[0.04] [background-image:radial-gradient(circle_at_1px_1px,#000_1px,transparent_0)] [background-size:24px_24px]" />
 
           <div
-            className={`relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1fr_1.35fr] transition-all duration-1000 ${
+            className={`relative mx-auto grid max-w-7xl items-center gap-14 transition-all duration-1000 lg:grid-cols-[1fr_1.35fr] ${
               storyReveal.shown
                 ? "translate-y-0 opacity-100"
                 : "translate-y-10 opacity-0"
-            }`}
+            } motion-reduce:translate-y-0 motion-reduce:opacity-100`}
           >
             <div>
               <p className="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-red-800">
@@ -432,9 +573,13 @@ export default function HomeClient({
                 Why bloggyNepal
               </p>
 
-              <h2 className="mt-5 font-serif text-4xl font-bold leading-[1.05] text-slate-900 md:text-5xl lg:text-6xl">
-                A better companion for the road
-                ahead.
+              <h2
+                id="mission-title"
+                className="mt-5 font-serif text-4xl font-bold leading-[1.05] text-slate-900 md:text-5xl lg:text-6xl"
+              >
+                A better companion
+                <br className="hidden sm:block" />
+                for the road ahead.
               </h2>
             </div>
 
@@ -449,10 +594,10 @@ export default function HomeClient({
                   bloggyNepal
                 </span>{" "}
                 combines beautiful inspiration
-                with the practical information you
-                need to travel{" "}
-                <span className="text-red-800">
-                  further, safer, and more
+                with practical information that
+                helps you travel{" "}
+                <span className="font-semibold text-red-800">
+                  further, smarter, and more
                   meaningfully
                 </span>
                 .
@@ -464,43 +609,51 @@ export default function HomeClient({
               >
                 Meet the person behind the guides
 
-                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                <span
+                  aria-hidden="true"
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                >
                   →
                 </span>
               </Link>
             </div>
           </div>
 
+          {/* DYNAMIC STATS */}
+
           <div
-            className={`relative mx-auto mt-20 grid max-w-5xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-stone-300 bg-stone-300 sm:grid-cols-4 transition-all duration-1000 delay-300 ${
+            className={`relative mx-auto mt-20 grid max-w-5xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-stone-300 bg-stone-300 transition-all delay-300 duration-1000 sm:grid-cols-4 ${
               storyReveal.shown
                 ? "translate-y-0 opacity-100"
                 : "translate-y-10 opacity-0"
-            }`}
+            } motion-reduce:translate-y-0 motion-reduce:opacity-100`}
           >
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="bg-[#f1ede4] px-6 py-8 text-center transition-colors duration-300 hover:bg-white"
-              >
-                <p className="font-serif text-4xl font-bold text-slate-900 sm:text-5xl">
-                  {stat.value}
-                </p>
+            {homepageStats.map(
+              (stat) => (
+                <div
+                  key={stat.label}
+                  className="bg-[#f1ede4] px-5 py-8 text-center transition-colors duration-300 hover:bg-white sm:px-6"
+                >
+                  <p className="font-serif text-3xl font-bold text-slate-900 sm:text-5xl">
+                    {stat.value}
+                  </p>
 
-                <p className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
+                  <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600 sm:text-xs">
+                    {stat.label}
+                  </p>
+                </div>
+              )
+            )}
           </div>
         </section>
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* ═════════════════════════════════════════════════════
             TRAVELLER TOOLS
-        ═══════════════════════════════════════════════════════════ */}
+        ═════════════════════════════════════════════════════ */}
 
         <section
           ref={toolsReveal.ref}
+          aria-labelledby="tools-title"
           className="bg-white px-6 py-24 sm:px-8 lg:py-32"
         >
           <div className="mx-auto max-w-7xl">
@@ -509,7 +662,7 @@ export default function HomeClient({
                 toolsReveal.shown
                   ? "translate-y-0 opacity-100"
                   : "translate-y-10 opacity-0"
-              }`}
+              } motion-reduce:translate-y-0 motion-reduce:opacity-100`}
             >
               <p className="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-red-800">
                 <span className="h-px w-8 bg-red-800" />
@@ -517,7 +670,10 @@ export default function HomeClient({
                 Made for curious travellers
               </p>
 
-              <h2 className="mt-5 font-serif text-4xl font-bold text-slate-900 md:text-5xl lg:text-6xl">
+              <h2
+                id="tools-title"
+                className="mt-5 font-serif text-4xl font-bold text-slate-900 md:text-5xl lg:text-6xl"
+              >
                 Everything you need.
                 <span className="text-stone-400">
                   {" "}
@@ -535,7 +691,7 @@ export default function HomeClient({
                       toolsReveal.shown
                         ? "translate-y-0 opacity-100"
                         : "translate-y-10 opacity-0"
-                    }`}
+                    } motion-reduce:translate-y-0 motion-reduce:opacity-100`}
                     style={{
                       transitionDelay:
                         `${index * 100}ms`,
@@ -558,11 +714,6 @@ export default function HomeClient({
                     <p className="mt-3 leading-relaxed text-slate-600">
                       {tool.description}
                     </p>
-
-                    <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-red-800 opacity-0 transition-all duration-300 group-hover:gap-2 group-hover:opacity-100">
-                      Learn more{" "}
-                      <span>→</span>
-                    </span>
                   </article>
                 )
               )}
@@ -570,59 +721,74 @@ export default function HomeClient({
           </div>
         </section>
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* ═════════════════════════════════════════════════════
             CTA BAND
-        ═══════════════════════════════════════════════════════════ */}
+        ═════════════════════════════════════════════════════ */}
 
         <section
           ref={ctaReveal.ref}
+          aria-labelledby="cta-title"
           className="relative overflow-hidden bg-slate-950 px-6 py-24 sm:px-8"
         >
           <div className="absolute inset-0 opacity-40">
-            <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-amber-500/30 blur-3xl animate-blob" />
+            <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-amber-500/30 blur-3xl motion-safe:animate-blob" />
 
-            <div className="absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-red-700/30 blur-3xl animation-delay-2000" />
+            <div className="absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-red-700/30 blur-3xl motion-safe:animation-delay-2000" />
           </div>
 
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:48px_48px]" />
 
           <div
-            className={`relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 lg:flex-row lg:items-center transition-all duration-1000 ${
+            className={`relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 transition-all duration-1000 lg:flex-row lg:items-center ${
               ctaReveal.shown
                 ? "translate-y-0 opacity-100"
                 : "translate-y-10 opacity-0"
-            }`}
+            } motion-reduce:translate-y-0 motion-reduce:opacity-100`}
           >
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.22em] text-amber-300">
                 Find your next journey
               </p>
 
-              <h2 className="mt-4 font-serif text-3xl font-bold leading-tight text-white sm:text-5xl">
+              <h2
+                id="cta-title"
+                className="mt-4 font-serif text-3xl font-bold leading-tight text-white sm:text-5xl"
+              >
                 Mountains, culture, wildlife,
                 <br className="hidden sm:block" />
                 and hidden corners.
               </h2>
+
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-white/60">
+                Explore Nepal beyond the places
+                everyone already knows.
+              </p>
             </div>
 
             <Link
               href="/explore-nepal"
-              className="group relative inline-flex shrink-0 items-center gap-3 overflow-hidden rounded-full border border-amber-300 px-8 py-4 font-bold text-amber-200 transition-all duration-300 hover:bg-amber-300 hover:text-slate-950 hover:shadow-2xl hover:shadow-amber-500/30"
+              className="group inline-flex shrink-0 items-center gap-3 rounded-full border border-amber-300 px-8 py-4 font-bold text-amber-200 transition-all duration-300 hover:bg-amber-300 hover:text-slate-950 hover:shadow-2xl hover:shadow-amber-500/30"
             >
               Explore Nepal your way
 
-              <span className="transition-transform duration-300 group-hover:translate-x-1">
+              <span
+                aria-hidden="true"
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              >
                 →
               </span>
             </Link>
           </div>
         </section>
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* ═════════════════════════════════════════════════════
             SOCIAL MEDIA
-        ═══════════════════════════════════════════════════════════ */}
+        ═════════════════════════════════════════════════════ */}
 
-        <section className="relative overflow-hidden bg-[#f1ede4] px-6 py-24 sm:px-8 lg:py-28">
+        <section
+          aria-labelledby="social-title"
+          className="relative overflow-hidden bg-[#f1ede4] px-6 py-24 sm:px-8 lg:py-28"
+        >
           <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-amber-300/20 blur-3xl" />
 
           <div className="absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-red-700/10 blur-3xl" />
@@ -637,142 +803,183 @@ export default function HomeClient({
                 <span className="h-px w-8 bg-red-800" />
               </p>
 
-              <h2 className="mt-5 font-serif text-4xl font-bold leading-tight text-slate-900 md:text-5xl">
+              <h2
+                id="social-title"
+                className="mt-5 font-serif text-4xl font-bold leading-tight text-slate-900 md:text-5xl"
+              >
                 Nepal doesn't end when
                 you leave the website.
               </h2>
 
               <p className="mt-5 text-lg leading-relaxed text-slate-600">
-                Follow bloggyNepal for more
-                places, stories, travel ideas,
-                and moments from Nepal beyond
-                the postcard.
+                Follow bloggyNepal for more places,
+                stories, travel ideas, and moments
+                from Nepal beyond the postcard.
               </p>
             </div>
 
             <div className="mx-auto mt-12 grid max-w-5xl gap-5 md:grid-cols-3">
-              {/* Instagram */}
+              {/* INSTAGRAM */}
 
-              <a
-                href={siteConfig.social.instagram}
-                target="_blank"
-                rel="me noopener noreferrer"
-                aria-label="Follow bloggyNepal on Instagram"
-                className="group rounded-3xl border border-stone-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl"
-              >
-                <div className="flex items-start justify-between">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-rose-100 text-red-800">
-                    <InstagramIcon />
-                  </span>
+              {isSafeExternalUrl(
+                siteConfig.social
+                  .instagram
+              ) && (
+                <a
+                  href={
+                    siteConfig.social
+                      .instagram
+                  }
+                  target="_blank"
+                  rel="me noopener noreferrer"
+                  aria-label="Follow bloggyNepal on Instagram"
+                  className="group rounded-3xl border border-stone-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl"
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-rose-100 text-red-800">
+                      <InstagramIcon />
+                    </span>
 
-                  <span className="text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-red-800">
-                    ↗
-                  </span>
-                </div>
+                    <span
+                      aria-hidden="true"
+                      className="text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-red-800"
+                    >
+                      ↗
+                    </span>
+                  </div>
 
-                <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
-                  Instagram
-                </p>
+                  <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
+                    Instagram
+                  </p>
 
-                <h3 className="mt-2 text-xl font-bold text-slate-900">
-                  See Nepal visually
-                </h3>
+                  <h3 className="mt-2 text-xl font-bold text-slate-900">
+                    See Nepal visually
+                  </h3>
 
-                <p className="mt-3 leading-relaxed text-slate-600">
-                  Follow the places, people,
-                  moments, and landscapes that
-                  make Nepal unforgettable.
-                </p>
-              </a>
+                  <p className="mt-3 leading-relaxed text-slate-600">
+                    Follow the places, people,
+                    moments, and landscapes that
+                    make Nepal unforgettable.
+                  </p>
+                </a>
+              )}
 
-              {/* TikTok */}
+              {/* TIKTOK */}
 
-              <a
-                href={siteConfig.social.tiktok}
-                target="_blank"
-                rel="me noopener noreferrer"
-                aria-label="Follow bloggyNepal on TikTok"
-                className="group rounded-3xl border border-stone-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl"
-              >
-                <div className="flex items-start justify-between">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-900">
-                    <TikTokIcon />
-                  </span>
+              {isSafeExternalUrl(
+                siteConfig.social
+                  .tiktok
+              ) && (
+                <a
+                  href={
+                    siteConfig.social
+                      .tiktok
+                  }
+                  target="_blank"
+                  rel="me noopener noreferrer"
+                  aria-label="Follow bloggyNepal on TikTok"
+                  className="group rounded-3xl border border-stone-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl"
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-900">
+                      <TikTokIcon />
+                    </span>
 
-                  <span className="text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-red-800">
-                    ↗
-                  </span>
-                </div>
+                    <span
+                      aria-hidden="true"
+                      className="text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-red-800"
+                    >
+                      ↗
+                    </span>
+                  </div>
 
-                <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
-                  TikTok
-                </p>
+                  <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
+                    TikTok
+                  </p>
 
-                <h3 className="mt-2 text-xl font-bold text-slate-900">
-                  Travel in short stories
-                </h3>
+                  <h3 className="mt-2 text-xl font-bold text-slate-900">
+                    Travel in short stories
+                  </h3>
 
-                <p className="mt-3 leading-relaxed text-slate-600">
-                  Quick travel ideas, hidden
-                  corners, practical tips, and
-                  moments from the road.
-                </p>
-              </a>
+                  <p className="mt-3 leading-relaxed text-slate-600">
+                    Quick travel ideas, hidden
+                    corners, practical tips, and
+                    moments from the road.
+                  </p>
+                </a>
+              )}
 
-              {/* Facebook */}
+              {/* FACEBOOK */}
 
-              <a
-                href={siteConfig.social.facebook}
-                target="_blank"
-                rel="me noopener noreferrer"
-                aria-label="Follow bloggyNepal on Facebook"
-                className="group rounded-3xl border border-stone-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl"
-              >
-                <div className="flex items-start justify-between">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
-                    <FacebookIcon />
-                  </span>
+              {isSafeExternalUrl(
+                siteConfig.social
+                  .facebook
+              ) && (
+                <a
+                  href={
+                    siteConfig.social
+                      .facebook
+                  }
+                  target="_blank"
+                  rel="me noopener noreferrer"
+                  aria-label="Follow bloggyNepal on Facebook"
+                  className="group rounded-3xl border border-stone-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl"
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+                      <FacebookIcon />
+                    </span>
 
-                  <span className="text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-red-800">
-                    ↗
-                  </span>
-                </div>
+                    <span
+                      aria-hidden="true"
+                      className="text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-red-800"
+                    >
+                      ↗
+                    </span>
+                  </div>
 
-                <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
-                  Facebook
-                </p>
+                  <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-red-800">
+                    Facebook
+                  </p>
 
-                <h3 className="mt-2 text-xl font-bold text-slate-900">
-                  Join the community
-                </h3>
+                  <h3 className="mt-2 text-xl font-bold text-slate-900">
+                    Join the community
+                  </h3>
 
-                <p className="mt-3 leading-relaxed text-slate-600">
-                  Stay connected with travel
-                  stories, updates, discussions,
-                  and new guides.
-                </p>
-              </a>
+                  <p className="mt-3 leading-relaxed text-slate-600">
+                    Stay connected with travel
+                    stories, updates, discussions,
+                    and new guides.
+                  </p>
+                </a>
+              )}
             </div>
           </div>
         </section>
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* ═════════════════════════════════════════════════════
             FEATURED CONTENT
-        ═══════════════════════════════════════════════════════════ */}
+        ═════════════════════════════════════════════════════ */}
 
         <FeaturedSection
-          destinations={content.destinations}
-          stories={content.stories}
+          destinations={
+            content.destinations
+          }
+          stories={
+            content.stories
+          }
         />
       </main>
 
-      {/* ═════════════════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════════
           FOOTER
-      ═════════════════════════════════════════════════════════════ */}
+      ═══════════════════════════════════════════════════════ */}
 
       <footer className="bg-[#f1ede4] px-6 py-16 sm:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-12 md:grid-cols-[1.2fr_1fr]">
+          <div className="grid gap-12 border-b border-stone-300 pb-14 md:grid-cols-[1.2fr_1fr]">
+            {/* BRAND */}
+
             <div>
               <Link
                 href="/"
@@ -785,51 +992,70 @@ export default function HomeClient({
               </Link>
 
               <p className="mt-4 max-w-md leading-relaxed text-slate-600">
-                Honest travel guides for people
-                who want to see Nepal more deeply,
-                one journey at a time.
+                Honest travel guides and stories
+                for people who want to experience
+                Nepal more deeply, one journey at
+                a time.
               </p>
 
-              {/* Footer social links */}
-
               <div className="mt-7 flex items-center gap-3">
-                <a
-                  href={
-                    siteConfig.social.instagram
-                  }
-                  target="_blank"
-                  rel="me noopener noreferrer"
-                  aria-label="Instagram"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-slate-700 transition hover:-translate-y-1 hover:border-red-800 hover:text-red-800"
-                >
-                  <InstagramIcon />
-                </a>
+                {isSafeExternalUrl(
+                  siteConfig.social
+                    .instagram
+                ) && (
+                  <a
+                    href={
+                      siteConfig.social
+                        .instagram
+                    }
+                    target="_blank"
+                    rel="me noopener noreferrer"
+                    aria-label="Instagram"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-slate-700 transition hover:-translate-y-1 hover:border-red-800 hover:text-red-800"
+                  >
+                    <InstagramIcon />
+                  </a>
+                )}
 
-                <a
-                  href={
-                    siteConfig.social.tiktok
-                  }
-                  target="_blank"
-                  rel="me noopener noreferrer"
-                  aria-label="TikTok"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-slate-700 transition hover:-translate-y-1 hover:border-red-800 hover:text-red-800"
-                >
-                  <TikTokIcon />
-                </a>
+                {isSafeExternalUrl(
+                  siteConfig.social
+                    .tiktok
+                ) && (
+                  <a
+                    href={
+                      siteConfig.social
+                        .tiktok
+                    }
+                    target="_blank"
+                    rel="me noopener noreferrer"
+                    aria-label="TikTok"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-slate-700 transition hover:-translate-y-1 hover:border-red-800 hover:text-red-800"
+                  >
+                    <TikTokIcon />
+                  </a>
+                )}
 
-                <a
-                  href={
-                    siteConfig.social.facebook
-                  }
-                  target="_blank"
-                  rel="me noopener noreferrer"
-                  aria-label="Facebook"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-slate-700 transition hover:-translate-y-1 hover:border-red-800 hover:text-red-800"
-                >
-                  <FacebookIcon />
-                </a>
+                {isSafeExternalUrl(
+                  siteConfig.social
+                    .facebook
+                ) && (
+                  <a
+                    href={
+                      siteConfig.social
+                        .facebook
+                    }
+                    target="_blank"
+                    rel="me noopener noreferrer"
+                    aria-label="Facebook"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-slate-700 transition hover:-translate-y-1 hover:border-red-800 hover:text-red-800"
+                  >
+                    <FacebookIcon />
+                  </a>
+                )}
               </div>
             </div>
+
+            {/* FOOTER NAVIGATION */}
 
             <div className="grid grid-cols-2 gap-8 text-sm">
               <div>
@@ -837,7 +1063,7 @@ export default function HomeClient({
                   Explore
                 </p>
 
-                <div className="mt-4 flex flex-col gap-3 text-slate-600">
+                <nav className="mt-4 flex flex-col gap-3 text-slate-600">
                   <Link
                     href="/destinations"
                     className="transition hover:text-red-800"
@@ -858,7 +1084,7 @@ export default function HomeClient({
                   >
                     Explore Nepal
                   </Link>
-                </div>
+                </nav>
               </div>
 
               <div>
@@ -866,7 +1092,7 @@ export default function HomeClient({
                   bloggyNepal
                 </p>
 
-                <div className="mt-4 flex flex-col gap-3 text-slate-600">
+                <nav className="mt-4 flex flex-col gap-3 text-slate-600">
                   <Link
                     href="/about"
                     className="transition hover:text-red-800"
@@ -875,19 +1101,29 @@ export default function HomeClient({
                   </Link>
 
                   <Link
+                    href="/feedback"
+                    className="transition hover:text-red-800"
+                  >
+                    Feedback
+                  </Link>
+
+                  <Link
                     href="/"
                     className="transition hover:text-red-800"
                   >
                     Home
                   </Link>
-                </div>
+                </nav>
               </div>
             </div>
           </div>
 
-          <div className="mt-14 flex flex-col gap-3 border-t border-stone-300 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          {/* COPYRIGHT */}
+
+          <div className="flex flex-col gap-3 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
             <p>
-              © {new Date().getFullYear()}{" "}
+              ©{" "}
+              {new Date().getFullYear()}{" "}
               bloggyNepal. Made for curious
               travellers.
             </p>
@@ -898,6 +1134,6 @@ export default function HomeClient({
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
