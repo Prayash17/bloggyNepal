@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 
-import Navbar from "@/components/Navbar";
 import { siteConfig } from "@/lib/site";
+import SiteShell from "@/components/SiteShell";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -27,8 +27,7 @@ export const metadata: Metadata = {
   },
 
   verification: {
-    google:
-      "ptiZgLG_l5VaFlu04WYsGAD-I7wHkESwJvX-v4zwzt8",
+    google: "ptiZgLG_l5VaFlu04WYsGAD-I7wHkESwJvX-v4zwzt8",
   },
 
   robots: {
@@ -88,11 +87,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="overflow-x-hidden bg-[#fbfaf7] text-slate-800 antialiased">
-        <Navbar />
-
-        <div className="pt-20">
-          {children}
-        </div>
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );
