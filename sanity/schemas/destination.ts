@@ -33,21 +33,22 @@ const LICENSE_OPTIONS = [
 ] as const;
 
 const REGION_OPTIONS = [
+  // Major Himalayan trekking regions
   {
     title: "Everest Region",
     value: "Everest Region",
   },
   {
-    title: "Annapurna",
-    value: "Annapurna",
+    title: "Annapurna Region",
+    value: "Annapurna Region",
   },
   {
-    title: "Langtang",
-    value: "Langtang",
+    title: "Langtang & Helambu",
+    value: "Langtang & Helambu",
   },
   {
-    title: "Manaslu",
-    value: "Manaslu",
+    title: "Manaslu Region",
+    value: "Manaslu Region",
   },
   {
     title: "Mustang",
@@ -57,20 +58,47 @@ const REGION_OPTIONS = [
     title: "Dolpo",
     value: "Dolpo",
   },
-  {
-    title: "Lumbini & Terai",
-    value: "Lumbini & Terai",
-  },
-  {
-    title: "Chitwan",
-    value: "Chitwan",
-  },
+
+  // Major cultural / urban tourism areas
   {
     title: "Kathmandu Valley",
     value: "Kathmandu Valley",
   },
-] as const;
+  {
+    title: "Lumbini",
+    value: "Lumbini",
+  },
 
+  // Broader geographic / tourism regions
+  {
+    title: "Eastern Nepal",
+    value: "Eastern Nepal",
+  },
+  {
+    title: "Central Nepal",
+    value: "Central Nepal",
+  },
+  {
+    title: "Western Nepal",
+    value: "Western Nepal",
+  },
+  {
+    title: "Karnali",
+    value: "Karnali",
+  },
+  {
+    title: "Far West Nepal",
+    value: "Far West Nepal",
+  },
+  {
+    title: "Terai",
+    value: "Terai",
+  },
+  {
+    title: "Mid-Hills",
+    value: "Mid-Hills",
+  },
+] as const;
 const DIFFICULTY_OPTIONS = [
   {
     title: "Easy",
