@@ -1,36 +1,214 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🇳🇵 BloggyNepal
 
-## Getting Started
+Discover Nepal. Plan Your Journey. Experience More.
 
-First, run the development server:
+BloggyNepal is a full-stack Nepal tourism platform designed to help travelers discover destinations, explore travel stories, find activities, and plan their journeys across Nepal.
 
-```bash
+🌐 Live Demo: https://bloggy-nepal.vercel.app
+📦 Repository: https://github.com/Prayash17/bloggyNepal
+
+⸻
+
+✨ Features
+
+🗺️ Destination Discovery
+
+* Explore destinations across Nepal
+* Detailed destination pages
+* Travel information and highlights
+* Activities and experiences
+* Route and itinerary information
+* Cost and travel guidance
+
+📖 Travel Stories
+
+* Destination-based stories
+* Rich content powered by Sanity CMS
+* Dynamic story pages
+* SEO-friendly content structure
+
+🔎 Search & Discovery
+
+* Search destinations and content
+* Explore destinations by categories
+* Dynamic content discovery
+
+💬 Community Features
+
+* User comments
+* Reactions
+* Subscriber system
+* User engagement
+
+🛠️ Admin Dashboard
+
+* Content management
+* Comment management
+* Subscriber management
+* Activity monitoring
+* Administrative controls
+
+📱 Responsive Experience
+
+Designed for desktop, tablet and mobile users.
+
+⸻
+
+🧱 Tech Stack
+
+Frontend
+
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+
+Backend
+
+* Next.js API routes
+* Supabase
+* PostgreSQL
+
+CMS
+
+* Sanity CMS
+
+Deployment
+
+* Vercel
+* GitHub
+
+Development
+
+* ESLint
+* Git
+* GitHub
+
+⸻
+
+🏗️ Architecture
+
+                         ┌─────────────────┐
+                         │     User        │
+                         └────────┬────────┘
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │    Next.js      │
+                         │  React + TS     │
+                         └───────┬─────────┘
+                                 │
+                   ┌─────────────┼─────────────┐
+                   │             │             │
+                   ▼             ▼             ▼
+              ┌────────┐   ┌──────────┐   ┌──────────┐
+              │ Sanity │   │ Supabase │   │   APIs   │
+              │  CMS   │   │PostgreSQL│   │          │
+              └────────┘   └──────────┘   └──────────┘
+                   │             │             │
+                   └─────────────┼─────────────┘
+                                 ▼
+                          ┌─────────────┐
+                          │   Vercel    │
+                          │ Production  │
+                          └─────────────┘
+
+⸻
+
+📂 Project Structure
+
+bloggyNepal/
+├── public/
+├── sanity/
+├── scripts/
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── lib/
+│   └── ...
+├── .gitignore
+├── eslint.config.mjs
+├── next.config.ts
+├── package.json
+├── tsconfig.json
+└── README.md
+
+⸻
+
+🎯 Project Goals
+
+BloggyNepal aims to create a centralized platform for discovering Nepal’s:
+
+* Destinations
+* Districts
+* Activities
+* Travel stories
+* Itineraries
+* Travel information
+
+The long-term goal is to make Nepal easier to explore for both domestic and international travelers.
+
+⸻
+
+🚀 Future Development
+
+* [ ]	AI-powered Nepal Trip Planner
+* [ ]	Personalized itinerary generation
+* [ ]	Advanced destination search
+* [ ]	User authentication
+* [ ]	Saved destinations
+* [ ]	Advanced admin analytics
+* [ ]	Automated testing
+* [ ]	Performance optimization
+* [ ]	Progressive Web App features
+
+⸻
+
+🧪 Development
+
+Clone the repository:
+
+git clone https://github.com/Prayash17/bloggyNepal.git
+cd bloggyNepal
+
+Install dependencies:
+
+npm install
+
+Create your environment file:
+
+cp .env.example .env.local
+
+Add the required environment variables.
+
+Run the development server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+⸻
 
-## Learn More
+👨‍💻 Developer
 
-To learn more about Next.js, take a look at the following resources:
+Prayash
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Full-Stack Developer focused on building modern web applications and AI-powered products.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Interests
 
-## Deploy on Vercel
+* Full-Stack Development
+* Next.js
+* TypeScript
+* PostgreSQL
+* AI Engineering
+* Automation
+* Cloud Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+⸻
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+📄 License
+
+This project is currently maintained as a personal portfolio and product project.
