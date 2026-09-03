@@ -1,9 +1,9 @@
-
 import { defineField, defineType } from "sanity";
 
 // ============================================================
 // BLOGGYNEPAL — DESTINATION SCHEMA
- 
+// Professional travel-guide architecture
+// ============================================================
 
 const LICENSE_OPTIONS = [
   {
@@ -33,7 +33,6 @@ const LICENSE_OPTIONS = [
 ] as const;
 
 const REGION_OPTIONS = [
-  // Major Himalayan trekking regions
   {
     title: "Everest Region",
     value: "Everest Region",
@@ -58,8 +57,6 @@ const REGION_OPTIONS = [
     title: "Dolpo",
     value: "Dolpo",
   },
-
-  // Major cultural / urban tourism areas
   {
     title: "Kathmandu Valley",
     value: "Kathmandu Valley",
@@ -68,8 +65,6 @@ const REGION_OPTIONS = [
     title: "Lumbini",
     value: "Lumbini",
   },
-
-  // Broader geographic / tourism regions
   {
     title: "Eastern Nepal",
     value: "Eastern Nepal",
@@ -91,6 +86,10 @@ const REGION_OPTIONS = [
     value: "Far West Nepal",
   },
   {
+    title: "Sudurpashchim",
+    value: "Sudurpashchim",
+  },
+  {
     title: "Terai",
     value: "Terai",
   },
@@ -99,6 +98,7 @@ const REGION_OPTIONS = [
     value: "Mid-Hills",
   },
 ] as const;
+
 const DIFFICULTY_OPTIONS = [
   {
     title: "Easy",
@@ -126,16 +126,17 @@ export const destination = defineType({
   // ===========================================================
   // STUDIO GROUPS
   // ===========================================================
-  //
-  // These groups only organize the Sanity Studio interface.
-  // They do not modify your stored document structure.
-  // ===========================================================
 
   groups: [
     {
       name: "basic",
       title: "Basic Information",
       default: true,
+    },
+
+    {
+      name: "location",
+      title: "Location",
     },
 
     {
@@ -177,6 +178,11 @@ export const destination = defineType({
       name: "seo",
       title: "SEO",
     },
+
+    {
+      name: "verification",
+      title: "Editorial Verification",
+    },
   ],
 
   // ===========================================================
@@ -195,12 +201,12 @@ export const destination = defineType({
       group: "basic",
 
       description:
-        "The public-facing name of the destination. Use the name travelers are most likely to recognize and search for.",
+        "The public-facing destination name. Use the name travelers are most likely to recognize and search for.",
 
       validation: (Rule) =>
         Rule.required()
           .min(3)
-          .max(100),
+          .max(120),
     }),
 
     defineField({
@@ -215,7 +221,7 @@ export const destination = defineType({
       },
 
       description:
-        "Clean URL identifier for the destination. Keep it short, lowercase, readable, and permanent once the page is public.",
+        "Permanent, clean URL identifier. Example: rara-lake or khaptad-national-park.",
 
       validation: (Rule) =>
         Rule.required(),
@@ -232,7 +238,7 @@ export const destination = defineType({
       },
 
       description:
-        "Select the main trekking or tourism region associated with this destination.",
+        "Main tourism or geographic region associated with the destination.",
     }),
 
     defineField({
@@ -243,12 +249,12 @@ export const destination = defineType({
       group: "basic",
 
       description:
-        "A concise introduction used in cards, destination listings, metadata fallbacks, and other previews. Explain what makes this destination worth visiting.",
+        "A concise destination summary used on cards, listings, previews, and metadata fallbacks.",
 
       validation: (Rule) =>
         Rule.required()
-          .min(30)
-          .max(300),
+          .min(40)
+          .max(320),
     }),
 
     defineField({
@@ -260,7 +266,121 @@ export const destination = defineType({
       initialValue: false,
 
       description:
-        "Turn this on when the destination should be prioritized in homepage or featured destination sections.",
+        "Prioritize this destination in homepage and featured destination sections.",
+    }),
+
+    defineField({
+      name: "activityTypes",
+      title: "Main Activities",
+      type: "array",
+      group: "basic",
+
+      of: [
+        {
+          type: "string",
+        },
+      ],
+
+      description:
+        "Examples: trekking, pilgrimage, wildlife, lake, culture, photography, adventure.",
+
+      validation: (Rule) =>
+        Rule.max(12).warning(
+          "Keep activity types focused."
+        ),
+    }),
+
+    defineField({
+      name: "highlights",
+      title: "Destination Highlights",
+      type: "array",
+      group: "basic",
+
+      of: [
+        {
+          type: "string",
+        },
+      ],
+
+      description:
+        "3–8 short points that summarize what makes the destination worth visiting.",
+
+      validation: (Rule) =>
+        Rule.max(8).warning(
+          "Keep highlights concise and meaningful."
+        ),
+    }),
+
+    // ==========================================================
+    // LOCATION
+    // ==========================================================
+
+    defineField({
+      name: "province",
+      title: "Province",
+      type: "reference",
+      to: [{ type: "province" }],
+      group: "location",
+
+      description:
+        "Province where the destination is primarily located.",
+    }),
+
+    defineField({
+      name: "district",
+      title: "District",
+      type: "reference",
+      to: [{ type: "district" }],
+      group: "location",
+
+      description:
+        "Primary district associated with the destination. Use the most relevant district when a destination spans multiple districts.",
+    }),
+
+    defineField({
+      name: "coordinates",
+      title: "Coordinates",
+      type: "object",
+      group: "location",
+
+      options: {
+        collapsible: true,
+      },
+
+      description:
+        "Primary map coordinates for the destination or principal visitor point.",
+
+      fields: [
+        defineField({
+          name: "lat",
+          title: "Latitude",
+          type: "number",
+
+          validation: (Rule) =>
+            Rule.min(-90)
+              .max(90),
+        }),
+
+        defineField({
+          name: "lng",
+          title: "Longitude",
+          type: "number",
+
+          validation: (Rule) =>
+            Rule.min(-180)
+              .max(180),
+        }),
+      ],
+    }),
+
+    defineField({
+      name: "mapEmbedUrl",
+      title: "Google Maps Embed URL",
+      type: "url",
+      group: "location",
+
+      description:
+        "Optional Google Maps embed URL for the destination.",
     }),
 
     // ==========================================================
@@ -278,7 +398,7 @@ export const destination = defineType({
       },
 
       description:
-        "Primary image for the destination page and destination cards. Choose a strong landscape photograph that immediately communicates the place.",
+        "Primary destination image. Choose a strong landscape photograph that immediately communicates the destination.",
 
       validation: (Rule) =>
         Rule.required(),
@@ -290,12 +410,11 @@ export const destination = defineType({
           type: "string",
 
           description:
-            "Describe the important visible subject naturally for accessibility. Do not stuff keywords.",
+            "Describe the important visible subject naturally. Do not keyword-stuff.",
 
           validation: (Rule) =>
-            Rule.max(160).warning(
-              "Keep alternative text concise and descriptive, ideally under 160 characters."
-            ),
+            Rule.required()
+              .max(160),
         }),
 
         defineField({
@@ -303,12 +422,9 @@ export const destination = defineType({
           title: "Caption",
           type: "string",
 
-          description:
-            "Optional caption providing useful context about the photograph.",
-
           validation: (Rule) =>
-            Rule.max(200).warning(
-              "Keep image captions concise and useful."
+            Rule.max(250).warning(
+              "Keep captions useful and concise."
             ),
         }),
 
@@ -316,18 +432,12 @@ export const destination = defineType({
           name: "credit",
           title: "Photo Credit",
           type: "string",
-
-          description:
-            "Photographer, creator, organization, or attribution information.",
         }),
 
         defineField({
           name: "license",
           title: "License",
           type: "string",
-
-          description:
-            "Select the actual license or ownership status of this image.",
 
           options: {
             list: [...LICENSE_OPTIONS],
@@ -340,7 +450,7 @@ export const destination = defineType({
           type: "url",
 
           description:
-            "Optional link to the original image or source page, especially for Wikimedia Commons or externally sourced photography.",
+            "Original source page when externally sourced.",
         }),
       ],
     }),
@@ -351,17 +461,15 @@ export const destination = defineType({
 
     defineField({
       name: "duration",
-      title: "Duration",
+      title: "Typical Duration",
       type: "string",
       group: "trip",
 
       description:
-        "Typical time required for the complete experience. Example: 7–10 days.",
+        "Example: 5–7 days or 2–3 days.",
 
       validation: (Rule) =>
-        Rule.max(50).warning(
-          "Keep the duration concise, such as '7–10 days'."
-        ),
+        Rule.max(100),
     }),
 
     defineField({
@@ -371,12 +479,10 @@ export const destination = defineType({
       group: "trip",
 
       description:
-        "Highest elevation reached during the trip. Example: 5,364 m.",
+        "Highest point reached during the normal experience. Include the unit.",
 
       validation: (Rule) =>
-        Rule.max(50).warning(
-          "Keep the altitude concise and include the unit where appropriate."
-        ),
+        Rule.max(80),
     }),
 
     defineField({
@@ -390,7 +496,7 @@ export const destination = defineType({
       },
 
       description:
-        "Choose the overall difficulty based on terrain, altitude, duration, remoteness, and physical demands.",
+        "Consider terrain, altitude, duration, remoteness, road conditions, and physical demand.",
     }),
 
     defineField({
@@ -400,12 +506,10 @@ export const destination = defineType({
       group: "trip",
 
       description:
-        "State the most suitable months or seasons. Example: March–May, October–November.",
+        "Example: March–May and October–November.",
 
       validation: (Rule) =>
-        Rule.max(100).warning(
-          "Keep the seasonal recommendation concise."
-        ),
+        Rule.max(120),
     }),
 
     defineField({
@@ -415,44 +519,74 @@ export const destination = defineType({
       group: "trip",
 
       description:
-        "Approximate minimum trip budget for one traveler. Keep the figure realistic and explain inclusions elsewhere in the cost breakdown.",
+        "Optional indicative minimum cost for one traveler. Use only when you have a defensible basis.",
 
       validation: (Rule) =>
         Rule.min(0),
     }),
 
     // ==========================================================
-    // MAP
+    // INTRODUCTION
     // ==========================================================
 
     defineField({
-      name: "mapImage",
-      title: "Map Image",
-      type: "image",
-      group: "route",
+      name: "overview",
+      title: "Destination Overview",
+      type: "array",
+      group: "content",
 
-      options: {
-        hotspot: true,
-      },
+      of: [{ type: "block" }],
 
       description:
-        "Optional destination or route map. Use a clear, readable map that helps travelers understand the location or route.",
+        "The main introduction. Explain what the destination is, where it is, what it feels like, why it matters, and who will enjoy it.",
+    }),
 
-      fields: [
-        defineField({
-          name: "alt",
-          title: "Alternative Text",
-          type: "string",
+    // ==========================================================
+    // THINGS TO DO
+    // ==========================================================
 
-          description:
-            "Describe what the map communicates. Example: 'Map showing the Annapurna Circuit route through central Nepal.'",
+    defineField({
+      name: "thingsToDo",
+      title: "Things to Do",
+      type: "array",
+      group: "content",
 
-          validation: (Rule) =>
-            Rule.max(160).warning(
-              "Keep map alternative text concise and descriptive."
-            ),
-        }),
-      ],
+      of: [{ type: "block" }],
+
+      description:
+        "Meaningful activities and experiences visitors can actually have.",
+    }),
+
+    // ==========================================================
+    // CULTURE & HISTORY
+    // ==========================================================
+
+    defineField({
+      name: "cultureAndHistory",
+      title: "Culture & History",
+      type: "array",
+      group: "content",
+
+      of: [{ type: "block" }],
+
+      description:
+        "Cultural context, history, communities, traditions, religion, festivals, food, architecture, and local customs.",
+    }),
+
+    // ==========================================================
+    // BEST TIME
+    // ==========================================================
+
+    defineField({
+      name: "bestTimeToVisit",
+      title: "Best Time to Visit — Detailed",
+      type: "array",
+      group: "content",
+
+      of: [{ type: "block" }],
+
+      description:
+        "Detailed seasonal information including weather, visibility, road/trail conditions, crowds, festivals, and accessibility.",
     }),
 
     // ==========================================================
@@ -468,11 +602,11 @@ export const destination = defineType({
       of: [{ type: "block" }],
 
       description:
-        "Explain realistic transport options, road or flight access, transfer points, travel times, and important practical considerations.",
+        "Explain realistic routes, transport choices, transfer points, travel times, road conditions, and the final approach.",
     }),
 
     // ==========================================================
-    // DAY-BY-DAY ITINERARY
+    // ITINERARY
     // ==========================================================
 
     defineField({
@@ -482,17 +616,17 @@ export const destination = defineType({
       group: "route",
 
       description:
-        "Build the journey in realistic daily stages. Use one entry per day and keep descriptions useful rather than overly generic.",
+        "Build a realistic journey with one entry per day.",
 
       validation: (Rule) =>
         Rule.max(60).warning(
-          "An itinerary longer than 60 days is unusual; double-check the entries."
+          "More than 60 days is unusual. Double-check the itinerary."
         ),
 
       of: [
         {
           type: "object",
-          name: "day",
+          name: "itineraryDay",
           title: "Itinerary Day",
 
           fields: [
@@ -500,9 +634,6 @@ export const destination = defineType({
               name: "day",
               title: "Day Number",
               type: "number",
-
-              description:
-                "Sequential itinerary day number.",
 
               validation: (Rule) =>
                 Rule.required()
@@ -516,7 +647,7 @@ export const destination = defineType({
               type: "string",
 
               description:
-                "A clear summary of the day's route or main activity.",
+                "Example: Kathmandu → Pokhara or Trek to Khaptad Baba Ashram.",
 
               validation: (Rule) =>
                 Rule.required()
@@ -526,17 +657,29 @@ export const destination = defineType({
 
             defineField({
               name: "description",
-              title: "Description",
+              title: "Day Description",
               type: "text",
-              rows: 5,
+              rows: 6,
 
               description:
-                "Explain the day's route, travel, activities, accommodation area, and anything important travelers should know.",
+                "Route, activities, practical notes, accommodation area, and realistic pacing.",
 
               validation: (Rule) =>
-                Rule.max(1500).warning(
-                  "Keep each itinerary day focused and readable."
-                ),
+                Rule.required()
+                  .min(20)
+                  .max(1800),
+            }),
+
+            defineField({
+              name: "overnight",
+              title: "Overnight",
+              type: "string",
+
+              description:
+                "Optional overnight location.",
+
+              validation: (Rule) =>
+                Rule.max(120),
             }),
           ],
 
@@ -544,11 +687,13 @@ export const destination = defineType({
             select: {
               day: "day",
               title: "title",
+              overnight: "overnight",
             },
 
             prepare({
               day,
               title,
+              overnight,
             }) {
               return {
                 title:
@@ -556,9 +701,15 @@ export const destination = defineType({
                   `Day ${day ?? ""}`,
 
                 subtitle:
-                  typeof day === "number"
-                    ? `Day ${day}`
-                    : "Itinerary day",
+                  [
+                    typeof day ===
+                    "number"
+                      ? `Day ${day}`
+                      : null,
+                    overnight,
+                  ]
+                    .filter(Boolean)
+                    .join(" · "),
               };
             },
           },
@@ -577,27 +728,22 @@ export const destination = defineType({
       group: "costs",
 
       description:
-        "Break down the major costs travelers should expect. Use realistic current estimates and explain what each amount includes.",
+        "Meaningful travel costs with realistic ranges and explanations.",
 
       validation: (Rule) =>
-        Rule.max(30).warning(
-          "Keep the budget breakdown focused on meaningful travel expenses."
-        ),
+        Rule.max(30),
 
       of: [
         {
           type: "object",
-          name: "cost",
+          name: "costItem",
           title: "Cost Item",
 
           fields: [
             defineField({
               name: "item",
-              title: "Item",
+              title: "Expense",
               type: "string",
-
-              description:
-                "Example: Permit, accommodation, transportation, guide, meals.",
 
               validation: (Rule) =>
                 Rule.required()
@@ -611,12 +757,11 @@ export const destination = defineType({
               type: "string",
 
               description:
-                "Keep the amount easy to understand. Example: $25–40.",
+                "Example: $25–40.",
 
               validation: (Rule) =>
-                Rule.max(100).warning(
-                  "Keep cost amounts concise and include the currency."
-                ),
+                Rule.required()
+                  .max(100),
             }),
 
             defineField({
@@ -624,13 +769,8 @@ export const destination = defineType({
               title: "Notes",
               type: "string",
 
-              description:
-                "Optional explanation of what the cost includes or when it may vary.",
-
               validation: (Rule) =>
-                Rule.max(300).warning(
-                  "Keep cost notes concise."
-                ),
+                Rule.max(300),
             }),
           ],
 
@@ -645,17 +785,30 @@ export const destination = defineType({
     }),
 
     // ==========================================================
+    // BUDGET NOTE
+    // ==========================================================
+
+    defineField({
+      name: "budgetNotes",
+      title: "Budget Notes",
+      type: "array",
+      group: "costs",
+
+      of: [{ type: "block" }],
+
+      description:
+        "Explain what changes the price: transport, season, group size, private vehicles, guide, accommodation, etc.",
+    }),
+
+    // ==========================================================
     // PERMITS
     // ==========================================================
 
     defineField({
       name: "permits",
-      title: "Permits Required",
+      title: "Permits & Entry Requirements",
       type: "array",
       group: "planning",
-
-      description:
-        "List permits, entry fees, restricted-area permissions, or other official requirements travelers may need.",
 
       of: [
         {
@@ -664,9 +817,7 @@ export const destination = defineType({
       ],
 
       validation: (Rule) =>
-        Rule.max(30).warning(
-          "Keep permit information focused on actual requirements."
-        ),
+        Rule.max(30),
     }),
 
     // ==========================================================
@@ -679,9 +830,6 @@ export const destination = defineType({
       type: "array",
       group: "planning",
 
-      description:
-        "List practical items travelers should consider bringing. Prioritize destination-specific needs.",
-
       of: [
         {
           type: "string",
@@ -689,13 +837,11 @@ export const destination = defineType({
       ],
 
       validation: (Rule) =>
-        Rule.max(80).warning(
-          "Keep the packing list practical rather than repetitive."
-        ),
+        Rule.max(80),
     }),
 
     // ==========================================================
-    // SAFETY TIPS
+    // SAFETY
     // ==========================================================
 
     defineField({
@@ -704,9 +850,6 @@ export const destination = defineType({
       type: "array",
       group: "planning",
 
-      description:
-        "Provide practical, destination-specific safety advice. Include altitude, weather, transport, terrain, permits, wildlife, or emergency considerations when relevant.",
-
       of: [
         {
           type: "string",
@@ -714,9 +857,7 @@ export const destination = defineType({
       ],
 
       validation: (Rule) =>
-        Rule.max(40).warning(
-          "Keep safety guidance focused on meaningful, actionable advice."
-        ),
+        Rule.max(40),
     }),
 
     // ==========================================================
@@ -732,7 +873,7 @@ export const destination = defineType({
       of: [{ type: "block" }],
 
       description:
-        "Explain realistic accommodation options, typical standards, locations, booking considerations, and seasonal availability.",
+        "Realistic accommodation options, standards, locations, booking advice, capacity and seasonal availability.",
     }),
 
     // ==========================================================
@@ -745,9 +886,6 @@ export const destination = defineType({
       type: "array",
       group: "content",
 
-      description:
-        "Add useful first-hand style advice that can make the trip smoother, more affordable, safer, or more meaningful.",
-
       of: [
         {
           type: "string",
@@ -755,13 +893,98 @@ export const destination = defineType({
       ],
 
       validation: (Rule) =>
-        Rule.max(40).warning(
-          "Keep pro tips focused on genuinely useful advice."
-        ),
+        Rule.max(40),
     }),
 
     // ==========================================================
-    // PHOTO GALLERY
+    // NEARBY DESTINATIONS
+    // ==========================================================
+
+    defineField({
+      name: "nearbyDestinations",
+      title: "Nearby Destinations",
+      type: "array",
+      group: "content",
+
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "destination" }],
+        },
+      ],
+
+      description:
+        "Destinations travelers can logically combine with this trip.",
+    }),
+
+    // ==========================================================
+    // FAQ
+    // ==========================================================
+
+    defineField({
+      name: "faqs",
+      title: "Frequently Asked Questions",
+      type: "array",
+      group: "content",
+
+      description:
+        "Answer real traveler questions. Avoid creating FAQs purely for SEO.",
+
+      validation: (Rule) =>
+        Rule.max(12),
+
+      of: [
+        {
+          type: "object",
+          name: "faq",
+          title: "FAQ",
+
+          fields: [
+            defineField({
+              name: "question",
+              title: "Question",
+              type: "string",
+
+              validation: (Rule) =>
+                Rule.required()
+                  .min(8)
+                  .max(220),
+            }),
+
+            defineField({
+              name: "answer",
+              title: "Answer",
+              type: "text",
+              rows: 5,
+
+              validation: (Rule) =>
+                Rule.required()
+                  .min(10)
+                  .max(1200),
+            }),
+          ],
+
+          preview: {
+            select: {
+              title: "question",
+            },
+
+            prepare({
+              title,
+            }) {
+              return {
+                title:
+                  title ||
+                  "Untitled FAQ",
+              };
+            },
+          },
+        },
+      ],
+    }),
+
+    // ==========================================================
+    // GALLERY
     // ==========================================================
 
     defineField({
@@ -771,16 +994,14 @@ export const destination = defineType({
       group: "gallery",
 
       description:
-        "Add supporting photographs that genuinely represent the destination. Use proper alt text, captions, credits, source URLs, and licensing information where applicable.",
+        "High-quality supporting photographs. Use accurate alt text, captions, credits and licensing information.",
 
       options: {
         layout: "grid",
       },
 
       validation: (Rule) =>
-        Rule.max(30).warning(
-          "A focused, high-quality gallery is preferable to a very large collection."
-        ),
+        Rule.max(30),
 
       of: [
         {
@@ -796,13 +1017,9 @@ export const destination = defineType({
               title: "Alternative Text",
               type: "string",
 
-              description:
-                "Describe the visible subject naturally and accurately.",
-
               validation: (Rule) =>
-                Rule.max(160).warning(
-                  "Keep alternative text concise and descriptive."
-                ),
+                Rule.required()
+                  .max(160),
             }),
 
             defineField({
@@ -810,40 +1027,26 @@ export const destination = defineType({
               title: "Caption",
               type: "string",
 
-              description:
-                "Optional contextual description for readers.",
-
               validation: (Rule) =>
-                Rule.max(200).warning(
-                  "Keep captions concise and useful."
-                ),
+                Rule.max(250),
             }),
 
             defineField({
               name: "credit",
               title: "Photo Credit",
               type: "string",
-
-              description:
-                "Photographer, creator, organization, or attribution.",
             }),
 
             defineField({
               name: "source",
               title: "Source URL",
               type: "url",
-
-              description:
-                "Optional URL to the original source or image page.",
             }),
 
             defineField({
               name: "license",
               title: "License",
               type: "string",
-
-              description:
-                "Select the actual license or ownership status.",
 
               options: {
                 list: [...LICENSE_OPTIONS],
@@ -853,10 +1056,169 @@ export const destination = defineType({
         },
       ],
     }),
+
+    // ==========================================================
+    // MAP IMAGE
+    // ==========================================================
+
+    defineField({
+      name: "mapImage",
+      title: "Map Image",
+      type: "image",
+      group: "media",
+
+      options: {
+        hotspot: true,
+      },
+
+      description:
+        "Optional destination or route map.",
+
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+
+          validation: (Rule) =>
+            Rule.max(160),
+        }),
+      ],
+    }),
+
+    // ==========================================================
+    // SEO
+    // ==========================================================
+
+    defineField({
+      name: "seo",
+      title: "SEO",
+      type: "object",
+      group: "seo",
+
+      options: {
+        collapsible: true,
+      },
+
+      fields: [
+        defineField({
+          name: "metaTitle",
+          title: "Meta Title",
+          type: "string",
+
+          validation: (Rule) =>
+            Rule.max(70).warning(
+              "Aim for roughly 50–60 characters when practical."
+            ),
+        }),
+
+        defineField({
+          name: "metaDescription",
+          title: "Meta Description",
+          type: "text",
+          rows: 3,
+
+          validation: (Rule) =>
+            Rule.max(160).warning(
+              "Aim for roughly 140–160 characters when practical."
+            ),
+        }),
+
+        defineField({
+          name: "ogImage",
+          title: "Social Share Image",
+          type: "image",
+
+          options: {
+            hotspot: true,
+          },
+
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+
+              validation: (Rule) =>
+                Rule.max(160),
+            }),
+          ],
+        }),
+      ],
+    }),
+
+    // ==========================================================
+    // EDITORIAL VERIFICATION
+    // ==========================================================
+
+    defineField({
+      name: "factCheckedAt",
+      title: "Fact Checked On",
+      type: "date",
+      group: "verification",
+
+      description:
+        "Date when important travel information was last checked.",
+    }),
+
+    defineField({
+      name: "sources",
+      title: "Editorial Sources",
+      type: "array",
+      group: "verification",
+
+      description:
+        "Internal editorial record of sources used to verify the destination information.",
+
+      of: [
+        {
+          type: "object",
+          name: "source",
+          title: "Source",
+
+          fields: [
+            defineField({
+              name: "name",
+              title: "Source Name",
+              type: "string",
+
+              validation: (Rule) =>
+                Rule.required()
+                  .max(160),
+            }),
+
+            defineField({
+              name: "url",
+              title: "Source URL",
+              type: "url",
+
+              validation: (Rule) =>
+                Rule.required(),
+            }),
+
+            defineField({
+              name: "checkedAt",
+              title: "Checked On",
+              type: "date",
+            }),
+          ],
+
+          preview: {
+            select: {
+              title: "name",
+              subtitle: "url",
+            },
+          },
+        },
+      ],
+
+      validation: (Rule) =>
+        Rule.max(30),
+    }),
   ],
 
   // ===========================================================
-  // STUDIO PREVIEW
+  // PREVIEW
   // ===========================================================
 
   preview: {
@@ -902,11 +1264,7 @@ export const destination = defineType({
   },
 
   // ===========================================================
-  // STUDIO SORTING
-  // ===========================================================
-  //
-  // These only control how destinations are listed inside
-  // Sanity Studio. They do not modify your documents.
+  // SORTING
   // ===========================================================
 
   orderings: [
@@ -918,18 +1276,6 @@ export const destination = defineType({
         {
           field: "title",
           direction: "asc",
-        },
-      ],
-    },
-
-    {
-      title: "Destination Name — Z → A",
-      name: "titleDesc",
-
-      by: [
-        {
-          field: "title",
-          direction: "desc",
         },
       ],
     },
@@ -951,25 +1297,13 @@ export const destination = defineType({
     },
 
     {
-      title: "Starting Cost — Lowest First",
-      name: "costAsc",
+      title: "Difficulty — Easy First",
+      name: "difficultyAsc",
 
       by: [
         {
-          field: "startingCost",
+          field: "difficulty",
           direction: "asc",
-        },
-      ],
-    },
-
-    {
-      title: "Starting Cost — Highest First",
-      name: "costDesc",
-
-      by: [
-        {
-          field: "startingCost",
-          direction: "desc",
         },
       ],
     },
@@ -982,6 +1316,18 @@ export const destination = defineType({
         {
           field: "_updatedAt",
           direction: "desc",
+        },
+      ],
+    },
+
+    {
+      title: "Lowest Starting Cost",
+      name: "costAsc",
+
+      by: [
+        {
+          field: "startingCost",
+          direction: "asc",
         },
       ],
     },
