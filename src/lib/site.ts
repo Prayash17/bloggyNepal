@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "bloggyNepal",
 
-  url: "https://bloggy-nepal.vercel.app",
+  url: "https://www.bloggynepal.com",
 
   title: "bloggyNepal | Honest Travel Guides",
 
