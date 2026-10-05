@@ -222,14 +222,6 @@ function Hero({
   destination: Destination;
   coverUrl: string | null;
 }) {
-  const provinceSlug =
-    destination.province
-      ?.slug?.current;
-
-  const districtSlug =
-    destination.district
-      ?.slug?.current;
-
   return (
     <section className="relative isolate min-h-[650px] overflow-hidden sm:min-h-[760px]">
       {coverUrl ? (

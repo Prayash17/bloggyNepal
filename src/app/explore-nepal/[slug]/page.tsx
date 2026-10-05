@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site";
 import type { ReactNode } from "react";
 import { PortableText } from "@portabletext/react";
 
@@ -37,10 +38,7 @@ export const revalidate = 3600;
    SITE URL
 ========================================================= */
 
-const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://www.bloggynepal.com"
-).replace(/\/$/, "");
+const SITE_URL = siteConfig.url;
 
 /* =========================================================
    HELPERS
@@ -2292,7 +2290,7 @@ export default async function ExploreNepalDistrictPage({
                 </h2>
 
                 <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/70">
-                  Continue through Nepal's
+                  Continue through Nepal&apos;s
                   landscapes, communities, history,
                   traditions, food, and remarkable
                   places — one district at a time.

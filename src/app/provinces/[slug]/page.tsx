@@ -161,7 +161,7 @@ export default async function ProvincePage({
                   key={district._id}
                   district={{
                     ...district,
-                    province: { name: province.name } as any,
+                    province: { name: province.name },
                   }}
                 />
               ))}

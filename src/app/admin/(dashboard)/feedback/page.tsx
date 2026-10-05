@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type FeedbackStatus = "new" | "reviewing" | "resolved";
 
@@ -28,44 +28,40 @@ export default function FeedbackPage() {
   const [error, setError] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  async function loadFeedback() {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch("/api/admin/feedback", {
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+  const loadFeedback = useCallback((signal?: AbortSignal) => {
+    return fetch("/api/admin/feedback", {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+      signal,
+    })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result?.error || "Failed to load feedback.");
+        }
+        if (!Array.isArray(result)) {
+          throw new Error("Invalid feedback response.");
+        }
+        if (!signal?.aborted) setFeedback(result);
+      })
+      .catch((err: unknown) => {
+        if (signal?.aborted) return;
+        console.error("Feedback page load error:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to load feedback."
+        );
+      })
+      .finally(() => {
+        if (!signal?.aborted) setLoading(false);
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data?.error || "Failed to load feedback.");
-      }
-
-      if (!Array.isArray(data)) {
-        throw new Error("Invalid feedback response.");
-      }
-
-      setFeedback(data);
-    } catch (err) {
-      console.error("Feedback page load error:", err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load feedback."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, []);
 
   useEffect(() => {
-    loadFeedback();
-  }, []);
+    const controller = new AbortController();
+    void loadFeedback(controller.signal);
+    return () => controller.abort();
+  }, [loadFeedback]);
 
   async function updateFeedback(
     id: string,
@@ -174,7 +170,11 @@ export default function FeedbackPage() {
 
           <button
             type="button"
-            onClick={loadFeedback}
+            onClick={() => {
+              setLoading(true);
+              setError("");
+              void loadFeedback();
+            }}
             disabled={loading}
             className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-50"
           >

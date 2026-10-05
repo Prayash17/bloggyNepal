@@ -2,9 +2,10 @@
 
 import {
   useEffect,
-  useRef,
   useState,
 } from "react";
+
+import { useReveal } from "@/hooks/useReveal";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -51,69 +52,7 @@ const travellerTools = [
    REVEAL HOOK
 ========================================================= */
 
-function useReveal<
-  T extends HTMLElement
->() {
-  const ref =
-    useRef<T | null>(null);
 
-  const [shown, setShown] =
-    useState(false);
-
-  useEffect(() => {
-    const element =
-      ref.current;
-
-    if (!element) {
-      return;
-    }
-
-    if (
-      window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches
-    ) {
-      setShown(true);
-      return;
-    }
-
-    if (
-      typeof IntersectionObserver ===
-      "undefined"
-    ) {
-      setShown(true);
-      return;
-    }
-
-    const observer =
-      new IntersectionObserver(
-        (entries) => {
-          if (
-            entries[0]?.isIntersecting
-          ) {
-            setShown(true);
-            observer.disconnect();
-          }
-        },
-        {
-          threshold: 0.12,
-          rootMargin:
-            "0px 0px -80px 0px",
-        }
-      );
-
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  return {
-    ref,
-    shown,
-  };
-}
 
 /* =========================================================
    CHECK ICON
@@ -299,14 +238,11 @@ export default function HomeClient({
   const [videoReady, setVideoReady] =
     useState(false);
 
-  const storyReveal =
-    useReveal<HTMLDivElement>();
+  const [storyRef, storyShown] = useReveal<HTMLElement>();
 
-  const toolsReveal =
-    useReveal<HTMLDivElement>();
+  const [toolsRef, toolsShown] = useReveal<HTMLElement>();
 
-  const ctaReveal =
-    useReveal<HTMLDivElement>();
+  const [ctaRef, ctaShown] = useReveal<HTMLElement>();
 
   /* =======================================================
      MOTION PREFERENCE
@@ -562,7 +498,7 @@ export default function HomeClient({
       ====================================================== */}
 
       <section
-        ref={storyReveal.ref}
+        ref={storyRef}
         aria-labelledby="mission-title"
         className="relative overflow-hidden bg-[#f1ede4] px-6 py-24 sm:px-8 lg:py-32"
       >
@@ -573,7 +509,7 @@ export default function HomeClient({
 
         <div
           className={`relative mx-auto grid max-w-7xl items-center gap-14 transition-all duration-1000 lg:grid-cols-[1fr_1.35fr] ${
-            storyReveal.shown
+            storyShown
               ? "translate-y-0"
               : "translate-y-4"
           } motion-reduce:translate-y-0`}
@@ -641,7 +577,7 @@ export default function HomeClient({
 
         <div
           className={`relative mx-auto mt-20 grid max-w-5xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-stone-300 bg-stone-300 transition-all delay-300 duration-1000 sm:grid-cols-4 ${
-            storyReveal.shown
+            storyShown
               ? "translate-y-0"
               : "translate-y-4"
           } motion-reduce:translate-y-0`}
@@ -696,14 +632,14 @@ export default function HomeClient({
       ====================================================== */}
 
       <section
-        ref={toolsReveal.ref}
+        ref={toolsRef}
         aria-labelledby="tools-title"
         className="bg-white px-6 py-24 sm:px-8 lg:py-32"
       >
         <div className="mx-auto max-w-7xl">
           <div
             className={`max-w-2xl transition-all duration-1000 ${
-              toolsReveal.shown
+              toolsShown
                 ? "translate-y-0"
                 : "translate-y-4"
             } motion-reduce:translate-y-0`}
@@ -724,7 +660,7 @@ export default function HomeClient({
               Everything you need.
               <span className="text-stone-400">
                 {" "}
-                Nothing you don't.
+                Nothing you don&apos;t.
               </span>
             </h2>
           </div>
@@ -738,13 +674,13 @@ export default function HomeClient({
                 <article
                   key={tool.title}
                   className={`group relative overflow-hidden rounded-2xl border border-stone-200 bg-[#fbfaf7] p-7 shadow-sm transition-all duration-700 hover:-translate-y-2 hover:border-amber-300 hover:shadow-2xl hover:shadow-amber-900/10 ${
-                    toolsReveal.shown
+                    toolsShown
                       ? "translate-y-0"
                       : "translate-y-4"
                   } motion-reduce:translate-y-0`}
                   style={{
                     transitionDelay:
-                      toolsReveal.shown
+                      toolsShown
                         ? `${index * 100}ms`
                         : "0ms",
                   }}
@@ -784,7 +720,7 @@ export default function HomeClient({
       ====================================================== */}
 
       <section
-        ref={ctaReveal.ref}
+        ref={ctaRef}
         aria-labelledby="cta-title"
         className="relative overflow-hidden bg-slate-950 px-6 py-24 sm:px-8"
       >
@@ -804,7 +740,7 @@ export default function HomeClient({
 
         <div
           className={`relative mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 transition-all duration-1000 lg:flex-row lg:items-center ${
-            ctaReveal.shown
+            ctaShown
               ? "translate-y-0"
               : "translate-y-4"
           } motion-reduce:translate-y-0`}
@@ -883,7 +819,7 @@ export default function HomeClient({
               id="social-title"
               className="mt-5 font-serif text-4xl font-bold leading-tight text-slate-900 md:text-5xl"
             >
-              Nepal doesn't end when
+              Nepal doesn&apos;t end when
               you leave the website.
             </h2>
 

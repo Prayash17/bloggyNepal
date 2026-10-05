@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 
 import { client } from "@/sanity/lib/client";
+import { siteConfig } from "@/lib/site";
 
-const BASE_URL = "https://www.bloggynepal.com";
+const BASE_URL = siteConfig.url;
 
 export const revalidate = 3600;
 

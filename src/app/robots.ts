@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { siteConfig } from "@/lib/site";
 
-const BASE_URL = "https://www.bloggynepal.com";
+const BASE_URL = siteConfig.url;
 
 export default function robots(): MetadataRoute.Robots {
   return {

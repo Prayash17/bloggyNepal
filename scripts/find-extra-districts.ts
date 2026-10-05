@@ -58,7 +58,6 @@ async function findExtras() {
 
   for (const d of allDistricts) {
     const slug = d.slug || "";
-    const nameLower = d.name.toLowerCase().trim();
 
     // Check if it's in the real list (by slug)
     if (REAL_DISTRICTS.includes(slug)) {

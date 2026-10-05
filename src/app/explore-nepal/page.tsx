@@ -325,7 +325,7 @@ export default async function AllDistrictsPage({
           </h1>
 
           <p className="mx-auto mt-7 max-w-3xl text-base leading-relaxed text-white/75 sm:text-xl">
-            Go beyond Nepal's famous destinations.
+            Go beyond Nepal&apos;s famous destinations.
             Discover the landscapes, cultures,
             communities, history, food, traditions,
             and places that give every district
@@ -431,7 +431,7 @@ export default async function AllDistrictsPage({
         <p className="mt-3 text-center text-xs leading-5 text-slate-500">
           Population and area figures reflect the
           current district data maintained in
-          BloggyNepal's directory.
+          BloggyNepal&apos;s directory.
         </p>
       </section>
 
@@ -458,7 +458,7 @@ export default async function AllDistrictsPage({
 
           <p className="mt-4 max-w-3xl leading-relaxed text-slate-600">
             From Himalayan valleys to the southern
-            plains, Nepal's seven provinces have
+            plains, Nepal&apos;s seven provinces have
             distinctly different landscapes,
             cultures, and travel experiences.
           </p>

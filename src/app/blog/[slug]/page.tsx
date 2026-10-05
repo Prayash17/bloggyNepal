@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site";
 
 import {
   PortableText,
   type PortableTextComponents,
+  type PortableTextBlock,
 } from "@portabletext/react";
 
 import ReactionBar from "@/components/ReactionBar";
@@ -24,9 +26,7 @@ import {
 
 export const revalidate = 60;
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://bloggy-nepal.vercel.app";
+const SITE_URL = siteConfig.url;
 
 /* =========================================================
    TYPES
@@ -107,10 +107,10 @@ interface Story {
   coverImage?: StoryImage;
   gallery?: StoryImage[];
 
-  body?: any[];
+  body?: PortableTextBlock[];
 
   travelTips?: string[];
-  whatILearned?: any[];
+  whatILearned?: PortableTextBlock[];
 
   bestTimeToVisit?: string;
   estimatedBudget?: string;

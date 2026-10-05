@@ -17,11 +17,7 @@ export const revalidate = 3600;
    SITE URL
 ========================================================= */
 
-const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  siteConfig.url ||
-  "https://bloggy-nepal.vercel.app"
-).replace(/\/$/, "");
+const SITE_URL = siteConfig.url;
 
 /* =========================================================
    METADATA

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type CommentStatus = "pending" | "approved" | "rejected" | "spam";
 
@@ -34,46 +34,40 @@ export default function CommentsPage() {
   const [error, setError] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  async function loadComments() {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch("/api/admin/comments", {
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data?.error || "Failed to load comments."
+  const loadComments = useCallback((signal?: AbortSignal) => {
+    return fetch("/api/admin/comments", {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+      signal,
+    })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result?.error || "Failed to load comments.");
+        }
+        if (!Array.isArray(result)) {
+          throw new Error("Invalid comments response.");
+        }
+        if (!signal?.aborted) setComments(result);
+      })
+      .catch((err: unknown) => {
+        if (signal?.aborted) return;
+        console.error("Comments page load error:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to load comments."
         );
-      }
-
-      if (!Array.isArray(data)) {
-        throw new Error("Invalid comments response.");
-      }
-
-      setComments(data);
-    } catch (err) {
-      console.error("Comments page load error:", err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load comments."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+      })
+      .finally(() => {
+        if (!signal?.aborted) setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
-    loadComments();
-  }, []);
+    const controller = new AbortController();
+    void loadComments(controller.signal);
+    return () => controller.abort();
+  }, [loadComments]);
 
   async function updateComment(
     id: string,

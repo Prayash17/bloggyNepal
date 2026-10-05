@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Activity = {
   id: string;
@@ -16,49 +16,40 @@ export default function ActivityPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function loadActivity() {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch(
-        "/api/admin/activity",
-        {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store",
+  const loadActivity = useCallback((signal?: AbortSignal) => {
+    return fetch("/api/admin/activity", {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+      signal,
+    })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result?.error || "Failed to load activity.");
         }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data?.error || "Failed to load activity."
+        if (!Array.isArray(result)) {
+          throw new Error("Invalid activity response.");
+        }
+        if (!signal?.aborted) setActivities(result);
+      })
+      .catch((err: unknown) => {
+        if (signal?.aborted) return;
+        console.error("Activity page load error:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to load activity."
         );
-      }
-
-      if (!Array.isArray(data)) {
-        throw new Error("Invalid activity response.");
-      }
-
-      setActivities(data);
-    } catch (err) {
-      console.error("Activity page load error:", err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load activity."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+      })
+      .finally(() => {
+        if (!signal?.aborted) setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
-    loadActivity();
-  }, []);
+    const controller = new AbortController();
+    void loadActivity(controller.signal);
+    return () => controller.abort();
+  }, [loadActivity]);
 
   return (
     <main className="min-h-screen bg-gray-50 p-6 md:p-8">
@@ -76,7 +67,11 @@ export default function ActivityPage() {
 
           <button
             type="button"
-            onClick={loadActivity}
+            onClick={() => {
+              setLoading(true);
+              setError("");
+              void loadActivity();
+            }}
             disabled={loading}
             className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           >

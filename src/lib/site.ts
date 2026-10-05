@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "bloggyNepal",
 
-  url: "https://www.bloggynepal.com",
+  url: "https://bloggynepal.com",
 
   title: "bloggyNepal | Honest Travel Guides",
 
