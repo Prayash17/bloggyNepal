@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 
 // ============================================================
 // BLOGGYNEPAL — DISTRICT SCHEMA
+// ============================================================
 
 const LICENSE_OPTIONS = [
   {
@@ -37,10 +38,6 @@ export const district = defineType({
 
   // ===========================================================
   // STUDIO FIELD GROUPS
-  // ===========================================================
-  //
-  // These groups only organize the Sanity Studio interface.
-  // They do not change your saved document structure.
   // ===========================================================
 
   groups: [
@@ -82,7 +79,7 @@ export const district = defineType({
   ],
 
   // ===========================================================
-  // DOCUMENT FIELDS
+  // FIELDS
   // ===========================================================
 
   fields: [
@@ -117,7 +114,7 @@ export const district = defineType({
       },
 
       description:
-        "The clean URL identifier used for the district page. Example: kathmandu, darchula, or ilam.",
+        "Clean URL identifier. Example: kathmandu, darchula, ilam.",
 
       validation: (Rule) =>
         Rule.required(),
@@ -159,7 +156,7 @@ export const district = defineType({
       group: "basic",
 
       description:
-        "Comma-separated tourism themes used to describe the district. Example: trekking, lakes, culture, pilgrimage, wildlife.",
+        "Comma-separated tourism themes. Example: trekking, lakes, culture, pilgrimage, wildlife.",
 
       validation: (Rule) =>
         Rule.max(250).warning(
@@ -178,7 +175,7 @@ export const district = defineType({
       group: "statistics",
 
       description:
-        "Use the latest reliable census figure or clearly identified official estimate.",
+        "Use the latest reliable census figure or a clearly identified official estimate.",
 
       validation: (Rule) =>
         Rule.min(0),
@@ -199,18 +196,18 @@ export const district = defineType({
 
     defineField({
       name: "elevation",
-      title: "Elevation (meters)",
+      title: "Reference Elevation (meters)",
       type: "number",
       group: "statistics",
 
       description:
-        "Representative elevation above sea level. Ideally use the district headquarters or clearly stated reference point.",
+        "Representative elevation above sea level. Ideally use the district headquarters or clearly state the reference point used.",
 
       validation: (Rule) =>
         Rule.min(-500)
           .max(9000)
           .warning(
-            "Check that the elevation is realistic and that you are using the intended reference point."
+            "Check that the elevation is realistic and that the reference point is clear."
           ),
     }),
 
@@ -286,7 +283,7 @@ export const district = defineType({
       group: "location",
 
       description:
-        "Optional Google Maps embed URL for displaying the district location on the website.",
+        "Optional Google Maps embed URL. The website loads the interactive map only when the visitor opens it.",
     }),
 
     // ==========================================================
@@ -300,7 +297,7 @@ export const district = defineType({
       group: "media",
 
       description:
-        "Primary visual for the district page, destination cards, social previews where applicable, and featured content.",
+        "Primary visual for the district page, cards, and social previews where applicable.",
 
       options: {
         hotspot: true,
@@ -313,7 +310,7 @@ export const district = defineType({
           type: "string",
 
           description:
-            "Describe what is visibly important in the image. Avoid keyword stuffing.",
+            "Describe what is visually important in the image. Avoid keyword stuffing.",
 
           validation: (Rule) =>
             Rule.custom((value) => {
@@ -338,16 +335,13 @@ export const district = defineType({
           type: "string",
 
           description:
-            "Photographer, creator, organization, or attribution required for this image.",
+            "Photographer, creator, organization, or required attribution.",
         }),
 
         defineField({
           name: "license",
           title: "License",
           type: "string",
-
-          description:
-            "Choose the correct usage/license status for this image.",
 
           options: {
             list: [...LICENSE_OPTIONS],
@@ -367,7 +361,7 @@ export const district = defineType({
       group: "media",
 
       description:
-        "Map showing where the district is located within Nepal. Use a clear, readable map suitable for web display.",
+        "Clear district map suitable for web display.",
 
       options: {
         hotspot: true,
@@ -380,7 +374,7 @@ export const district = defineType({
           type: "string",
 
           description:
-            "Describe the map clearly for accessibility. Example: 'Map of Darchula district in far-western Nepal.'",
+            "Example: Map of Darchula district in far-western Nepal.",
 
           validation: (Rule) =>
             Rule.custom((value) => {
@@ -398,6 +392,17 @@ export const district = defineType({
               return true;
             }).warning(),
         }),
+
+        defineField({
+          name: "caption",
+          title: "Map Caption",
+          type: "string",
+
+          validation: (Rule) =>
+            Rule.max(250).warning(
+              "Keep the caption concise and useful."
+            ),
+        }),
       ],
     }),
 
@@ -412,7 +417,7 @@ export const district = defineType({
       group: "media",
 
       description:
-        "Add high-quality photographs that genuinely represent the district. Use accurate captions, credits, source URLs, and licenses when applicable.",
+        "Use a focused set of high-quality photographs that genuinely represent the district.",
 
       options: {
         layout: "grid",
@@ -463,7 +468,7 @@ export const district = defineType({
               type: "string",
 
               description:
-                "Optional human-readable caption that gives context to the photograph.",
+                "Optional context for the photograph.",
 
               validation: (Rule) =>
                 Rule.max(250).warning(
@@ -477,7 +482,7 @@ export const district = defineType({
               type: "string",
 
               description:
-                'Credit the original photographer, creator, organization, or source. Example: "Photo by Mark Pokers, CC BY 2.0".',
+                "Photographer, creator, organization, or attribution required for this image.",
             }),
 
             defineField({
@@ -486,16 +491,13 @@ export const district = defineType({
               type: "url",
 
               description:
-                "Optional URL to the original image/source page, such as Wikimedia Commons.",
+                "Optional URL to the original source page.",
             }),
 
             defineField({
               name: "license",
               title: "License",
               type: "string",
-
-              description:
-                "Select the image's actual licensing status.",
 
               options: {
                 list: [...LICENSE_OPTIONS],
@@ -519,7 +521,7 @@ export const district = defineType({
       of: [{ type: "block" }],
 
       description:
-        "Write the main introduction to the district. Explain what makes it distinctive, where it is, what travelers can expect, and why it is worth knowing.",
+        "Introduce the district, where it is, what makes it distinctive, and why travelers should know about it.",
     }),
 
     defineField({
@@ -531,7 +533,7 @@ export const district = defineType({
       of: [{ type: "block" }],
 
       description:
-        "Explain practical access by road, air, public transport, private vehicle, or trekking routes. Mention realistic travel conditions where relevant.",
+        "Explain realistic routes by road, air, public transport, private vehicle, or trekking. Mention meaningful route conditions where relevant.",
     }),
 
     defineField({
@@ -543,7 +545,7 @@ export const district = defineType({
       of: [{ type: "block" }],
 
       description:
-        "Describe meaningful experiences travelers can actually have in the district, rather than simply listing names.",
+        "Describe meaningful experiences travelers can actually have in the district.",
     }),
 
     defineField({
@@ -567,23 +569,99 @@ export const district = defineType({
       of: [{ type: "block" }],
 
       description:
-        "Explain seasons, weather, road conditions, trekking conditions, festivals, wildlife opportunities, and any meaningful seasonal differences.",
+        "Explain seasonal weather, road conditions, trekking conditions, festivals, wildlife opportunities, and other meaningful seasonal differences.",
     }),
 
     defineField({
       name: "nearbyAttractions",
       title: "Nearby Attractions",
       type: "text",
-      rows: 4,
+      rows: 5,
       group: "content",
 
       description:
-        "Mention nearby attractions, districts, towns, routes, or useful combinations that help travelers plan a wider itinerary.",
+        "Mention nearby attractions, towns, districts, routes, or useful combinations for a wider itinerary.",
 
       validation: (Rule) =>
-        Rule.max(2000).warning(
+        Rule.max(2500).warning(
           "Keep this focused on useful nearby travel connections."
         ),
+    }),
+
+    // ==========================================================
+    // FAQ
+    // ==========================================================
+
+    defineField({
+      name: "faqs",
+      title: "Frequently Asked Questions",
+      type: "array",
+      group: "content",
+
+      description:
+        "Add practical questions travelers commonly ask about this district. Keep answers specific and genuinely useful.",
+
+      validation: (Rule) =>
+        Rule.max(10).warning(
+          "A focused FAQ is better than a long list."
+        ),
+
+      of: [
+        {
+          type: "object",
+
+          fields: [
+            defineField({
+              name: "question",
+              title: "Question",
+              type: "string",
+
+              validation: (Rule) =>
+                Rule.required()
+                  .min(10)
+                  .max(180),
+            }),
+
+            defineField({
+              name: "answer",
+              title: "Answer",
+              type: "text",
+              rows: 5,
+
+              validation: (Rule) =>
+                Rule.required()
+                  .min(20)
+                  .max(1000),
+            }),
+          ],
+
+          preview: {
+            select: {
+              title: "question",
+              subtitle: "answer",
+            },
+
+            prepare({
+              title,
+              subtitle,
+            }) {
+              return {
+                title:
+                  title ||
+                  "Untitled question",
+
+                subtitle:
+                  subtitle
+                    ? subtitle.slice(
+                        0,
+                        100
+                      )
+                    : "No answer yet",
+              };
+            },
+          },
+        },
+      ],
     }),
 
     // ==========================================================
@@ -597,7 +675,7 @@ export const district = defineType({
       group: "places",
 
       description:
-        "Add the district's strongest visitor experiences. Aim for 3–6 genuinely useful places rather than a long, low-value list.",
+        "Add the district's strongest visitor experiences. Aim for 3–6 genuinely useful places rather than a long list.",
 
       validation: (Rule) =>
         Rule.max(12).warning(
@@ -614,13 +692,10 @@ export const district = defineType({
               title: "Place Name",
               type: "string",
 
-              description:
-                "Official or commonly recognized name of the place.",
-
               validation: (Rule) =>
-                Rule.max(120).warning(
-                  "Keep place names concise."
-                ),
+                Rule.required()
+                  .min(2)
+                  .max(120),
             }),
 
             defineField({
@@ -634,7 +709,7 @@ export const district = defineType({
               },
 
               description:
-                "Optional clean identifier for the place. Keep it lowercase and readable.",
+                "Optional clean identifier for the place.",
             }),
 
             defineField({
@@ -645,7 +720,7 @@ export const district = defineType({
               of: [{ type: "block" }],
 
               description:
-                "Explain what makes this place worth visiting, what travelers can experience there, and any important practical context.",
+                "Explain why this place is worth visiting and what travelers can experience there.",
             }),
 
             defineField({
@@ -682,6 +757,71 @@ export const district = defineType({
                       return true;
                     }).warning(),
                 }),
+
+                defineField({
+                  name: "caption",
+                  title: "Caption",
+                  type: "string",
+
+                  validation: (Rule) =>
+                    Rule.max(250).warning(
+                      "Keep the caption concise and useful."
+                    ),
+                }),
+
+                defineField({
+                  name: "credit",
+                  title: "Photo Credit",
+                  type: "string",
+                }),
+
+                defineField({
+                  name: "source",
+                  title: "Source URL",
+                  type: "url",
+                }),
+
+                defineField({
+                  name: "license",
+                  title: "License",
+                  type: "string",
+
+                  options: {
+                    list: [
+                      ...LICENSE_OPTIONS,
+                    ],
+                  },
+                }),
+              ],
+            }),
+
+            defineField({
+              name: "coordinates",
+              title: "Coordinates",
+              type: "object",
+
+              options: {
+                collapsible: true,
+              },
+
+              fields: [
+                defineField({
+                  name: "lat",
+                  title: "Latitude",
+                  type: "number",
+
+                  validation: (Rule) =>
+                    Rule.min(-90).max(90),
+                }),
+
+                defineField({
+                  name: "lng",
+                  title: "Longitude",
+                  type: "number",
+
+                  validation: (Rule) =>
+                    Rule.min(-180).max(180),
+                }),
               ],
             }),
           ],
@@ -700,7 +840,8 @@ export const district = defineType({
             }) {
               return {
                 title:
-                  title || "Untitled place",
+                  title ||
+                  "Untitled place",
 
                 subtitle: slug
                   ? `/${slug}`
@@ -725,7 +866,7 @@ export const district = defineType({
       group: "seo",
 
       description:
-        "Optional SEO overrides for the district page. Leave fields empty when the website should fall back to the district name/content.",
+        "Optional SEO overrides. Leave empty to use the website's generated defaults.",
 
       options: {
         collapsible: true,
@@ -738,11 +879,11 @@ export const district = defineType({
           type: "string",
 
           description:
-            "A compelling page title for search engines. Aim for roughly 50–60 characters when practical.",
+            "Compelling search title. Aim for roughly 50–60 characters when practical.",
 
           validation: (Rule) =>
             Rule.max(70).warning(
-              "Try to keep the meta title around 50–60 characters when possible."
+              "Try to keep this around 50–60 characters when possible."
             ),
         }),
 
@@ -753,11 +894,11 @@ export const district = defineType({
           rows: 3,
 
           description:
-            "Write a useful search snippet summarizing this district page. Aim for roughly 140–160 characters when practical.",
+            "Useful search snippet. Aim for roughly 140–160 characters when practical.",
 
           validation: (Rule) =>
             Rule.max(160).warning(
-              "Try to keep the meta description around 140–160 characters."
+              "Try to keep this around 140–160 characters when possible."
             ),
         }),
 
@@ -767,19 +908,50 @@ export const district = defineType({
           type: "image",
 
           description:
-            "Optional image used when the district page is shared on social platforms. Prefer a clear landscape image with the subject easy to understand.",
+            "Optional image used when the district page is shared on social platforms.",
 
           options: {
             hotspot: true,
           },
+
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+
+              validation: (Rule) =>
+                Rule.max(160).warning(
+                  "Keep alternative text concise."
+                ),
+            }),
+
+            defineField({
+              name: "credit",
+              title: "Photo Credit",
+              type: "string",
+            }),
+
+            defineField({
+              name: "license",
+              title: "License",
+              type: "string",
+
+              options: {
+                list: [
+                  ...LICENSE_OPTIONS,
+                ],
+              },
+            }),
+          ],
         }),
       ],
     }),
   ],
 
-  // ===========================================================
+  // ==========================================================
   // DOCUMENT PREVIEW
-  // ===========================================================
+  // ==========================================================
 
   preview: {
     select: {
@@ -815,7 +987,9 @@ export const district = defineType({
 
         subtitle:
           subtitleParts.length > 0
-            ? subtitleParts.join(" | ")
+            ? subtitleParts.join(
+                " | "
+              )
             : "District information",
 
         media,
@@ -823,13 +997,9 @@ export const district = defineType({
     },
   },
 
-  // ===========================================================
-  // SANITY STUDIO SORTING
-  // ===========================================================
-  //
-  // These only affect how districts are listed in Studio.
-  // They do not alter the stored documents.
-  // ===========================================================
+  // ==========================================================
+  // STUDIO ORDERING
+  // ==========================================================
 
   orderings: [
     {

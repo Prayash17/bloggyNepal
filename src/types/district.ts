@@ -1,66 +1,160 @@
-import type { PortableTextBlock } from "@portabletext/react";
+ 
+
+/* =========================================================
+   SANITY IMAGE
+========================================================= */
+
+export interface SanityImageAsset {
+  _ref?: string;
+  _id?: string;
+}
 
 export interface SanityImage {
-  _type: "image";
-  asset: {
-    _ref: string;
-    _type: "reference";
-  };
+  asset?: SanityImageAsset;
+
   alt?: string;
   caption?: string;
   credit?: string;
   source?: string;
   license?: string;
-  hotspot?: {
-    x: number;
-    y: number;
-    height: number;
-    width: number;
-  };
 }
 
-export interface Place {
-  _key: string;
-  name: string;
-  slug?: {
-    current: string;
-  };
-  description?: PortableTextBlock[];
-  image?: SanityImage;
+/* =========================================================
+   SLUG
+========================================================= */
+
+export interface SanitySlug {
+  current?: string;
 }
+
+/* =========================================================
+   COORDINATES
+========================================================= */
 
 export interface Coordinates {
-  lat: number;
-  lng: number;
+  lat?: number;
+  lng?: number;
 }
 
-export interface DistrictProvince {
-  _id?: string;
-  _ref?: string;
-  _type?: "reference";
-  name?: string;
-  slug?: {
-    current: string;
-  };
-  number?: number;
-  capital?: string;
+/* =========================================================
+   PORTABLE TEXT
+========================================================= */
+
+export interface PortableTextSpan {
+  _key?: string;
+  _type?: string;
+  text?: string;
+  marks?: string[];
 }
+
+export interface PortableTextBlock {
+  _key?: string;
+  _type: string;
+  style?: string;
+
+  children?: PortableTextSpan[];
+
+  markDefs?: unknown[];
+}
+
+/* =========================================================
+   PLACE
+========================================================= */
+
+export interface Place {
+  _key?: string;
+
+  name: string;
+
+  slug?: SanitySlug;
+
+  description?: PortableTextBlock[];
+
+  image?: SanityImage;
+
+  coordinates?: Coordinates;
+}
+
+/* =========================================================
+   PROVINCE
+========================================================= */
+
+export interface ProvinceReference {
+  _id?: string;
+
+  name?: string;
+
+  number?: number;
+
+  capital?: string;
+
+  slug?: SanitySlug;
+}
+
+export interface Province {
+  _id: string;
+
+  name: string;
+
+  number?: number;
+
+  capital?: string;
+
+  districtCount?: number;
+
+  noOfDistricts?: number;
+
+  slug: SanitySlug;
+
+  coverImage?: SanityImage;
+}
+
+/* =========================================================
+   FAQ
+========================================================= */
+
+export interface DistrictFAQ {
+  _key?: string;
+
+  question?: string;
+
+  answer?: string;
+}
+
+/* =========================================================
+   SEO
+========================================================= */
+
+export interface DistrictSEO {
+  metaTitle?: string;
+
+  metaDescription?: string;
+
+  ogImage?: SanityImage;
+}
+
+/* =========================================================
+   DISTRICT
+========================================================= */
 
 export interface District {
   _id: string;
-  _createdAt: string;
+
+  _updatedAt?: string;
 
   name: string;
 
-  slug: {
-    current: string;
-  };
+  slug: SanitySlug;
 
-  province?: DistrictProvince | null;
+  province?: ProvinceReference | null;
 
   headquarter?: string;
 
   category?: string;
+
+  /* =======================================================
+     STATISTICS
+  ====================================================== */
 
   population?: number;
 
@@ -70,15 +164,27 @@ export interface District {
 
   density?: number;
 
+  /* =======================================================
+     LOCATION
+  ====================================================== */
+
   coordinates?: Coordinates;
+
+  mapEmbedUrl?: string;
+
+  /* =======================================================
+     MEDIA
+  ====================================================== */
 
   coverImage?: SanityImage;
 
   mapImage?: SanityImage;
 
-  mapEmbedUrl?: string;
-
   gallery?: SanityImage[];
+
+  /* =======================================================
+     CONTENT
+  ====================================================== */
 
   body?: PortableTextBlock[];
 
@@ -92,11 +198,35 @@ export interface District {
 
   nearbyAttractions?: string;
 
+  /* =======================================================
+     FAQ
+  ====================================================== */
+
+  faqs?: DistrictFAQ[];
+
+  /* =======================================================
+     PLACES
+  ====================================================== */
+
   places?: Place[];
 
-  seo?: {
-    metaTitle?: string;
-    metaDescription?: string;
-    ogImage?: SanityImage;
-  };
+  /* =======================================================
+     SEO
+  ====================================================== */
+
+  seo?: DistrictSEO;
+}
+
+/* =========================================================
+   LIGHTWEIGHT DISTRICT NAVIGATION
+========================================================= */
+
+export interface DistrictNavigationItem {
+  _id: string;
+
+  name: string;
+
+  slug: SanitySlug;
+
+  province?: ProvinceReference | null;
 }

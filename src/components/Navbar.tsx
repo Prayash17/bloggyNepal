@@ -37,38 +37,6 @@ function SearchIcon({
   );
 }
 
-function CloseIcon({
-  className,
-}: {
-  className?: string;
-}) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <line
-        x1="18"
-        y1="6"
-        x2="6"
-        y2="18"
-      />
-      <line
-        x1="6"
-        y1="6"
-        x2="18"
-        y2="18"
-      />
-    </svg>
-  );
-}
-
 function SparkleIcon({
   className,
 }: {
@@ -145,6 +113,11 @@ const popularSearches = [
 ============================================================ */
 
 export default function Navbar() {
+  const pathname = usePathname();
+  return <NavbarContent key={pathname} pathname={pathname} />;
+}
+
+function NavbarContent({ pathname }: { pathname: string }) {
   const [open, setOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] =
     useState(false);
@@ -154,7 +127,6 @@ export default function Navbar() {
     useState(false);
   const [query, setQuery] = useState("");
 
-  const pathname = usePathname();
   const router = useRouter();
 
   const paletteInputRef =
@@ -238,16 +210,6 @@ export default function Navbar() {
     open,
     paletteOpen,
   ]);
-
-  /* ==========================================================
-     CLOSE ON ROUTE CHANGE
-  ========================================================== */
-
-  useEffect(() => {
-    setOpen(false);
-    setPaletteOpen(false);
-    setQuery("");
-  }, [pathname]);
 
   /* ==========================================================
      CMD / CTRL + K

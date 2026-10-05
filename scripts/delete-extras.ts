@@ -19,7 +19,7 @@ async function deleteExtras() {
   try {
     await client.delete(draftId1);
     console.log("✅ Deleted Arghakhanchi draft");
-  } catch (err) {
+  } catch {
     console.log("⚠️  Arghakhanchi draft not found or already deleted");
   }
 
@@ -29,7 +29,7 @@ async function deleteExtras() {
   try {
     await client.delete(draftId2);
     console.log("✅ Deleted empty draft");
-  } catch (err) {
+  } catch {
     console.log("⚠️  Empty draft not found or already deleted");
   }
 

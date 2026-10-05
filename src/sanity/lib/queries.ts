@@ -1,61 +1,118 @@
 import { groq } from "next-sanity";
 
-/* =========================================================
-   DISTRICT
-========================================================= */
+// =========================================================
+// SINGLE DISTRICT
+// =========================================================
 
-export const districtBySlugQuery = groq`
+export const districtBySlugQuery = `
   *[
     _type == "district" &&
     slug.current == $slug
-  ][0] {
+  ][0]{
     _id,
-    _createdAt,
-    name,
-    slug,
-    headquarter,
-    category,
-    population,
-    area,
-    elevation,
-    density,
-    coordinates,
-    mapEmbedUrl,
+    _updatedAt,
 
-    "province": province->{
+    name,
+
+    slug,
+
+    province->{
       _id,
       name,
-      slug,
       number,
-      capital
+      capital,
+      slug
     },
 
-    coverImage,
-    mapImage,
-    gallery,
+    headquarter,
+
+    category,
+
+    population,
+
+    area,
+
+    elevation,
+
+    density,
+
+    coordinates{
+      lat,
+      lng
+    },
+
+    mapEmbedUrl,
+
+    coverImage{
+      asset,
+      alt,
+      credit,
+      license
+    },
+
+    mapImage{
+      asset,
+      alt
+    },
+
+    gallery[]{
+      asset,
+      alt,
+      caption,
+      credit,
+      source,
+      license
+    },
 
     body,
+
     howToGetThere,
+
     thingsToDo,
+
     cultureAndHistory,
+
     bestTimeToVisit,
+
     nearbyAttractions,
 
-    places[] {
+    places[]{
       _key,
+
       name,
+
       slug,
+
       description,
-      image
+
+      image{
+        asset,
+        alt
+      },
+
+      coordinates{
+        lat,
+        lng
+      }
     },
 
-    seo {
+    seo{
       metaTitle,
       metaDescription,
-      ogImage
+
+      ogImage{
+        asset
+      }
+    },
+
+    faqs[]{
+      _key,
+      question,
+      answer
     }
   }
 `;
+
 
 /* =========================================================
    ALL DISTRICTS
@@ -102,6 +159,12 @@ export const districtSlugsQuery = groq`
 /* =========================================================
    PROVINCES
 ========================================================= */
+export const provinceSlugsQuery = `
+  *[
+    _type == "province" &&
+    defined(slug.current)
+  ].slug.current
+`;
 
 export const allProvincesQuery = groq`
   *[
@@ -166,9 +229,20 @@ export const provinceBySlugQuery = groq`
   }
 `;
 
-export const provinceSlugsQuery = groq`
+export const districtNavigationQuery = `
   *[
-    _type == "province" &&
+    _type == "district" &&
     defined(slug.current)
-  ][].slug.current
+  ] | order(name asc) {
+    _id,
+    name,
+    slug,
+    province->{
+      _id,
+      name,
+      number,
+      slug
+    }
+  }
 `;
+ 

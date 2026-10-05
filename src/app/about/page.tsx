@@ -1,33 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useReveal } from "@/hooks/useReveal";
 
 // ─── Reveal-on-scroll hook ────────────────────────────────────────────
-function useReveal<T extends HTMLElement>() {
-  const ref = useRef<T | null>(null);
-  const [shown, setShown] = useState(false);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            setShown(true);
-            io.disconnect();
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  return { ref, shown };
-}
 
 const values = [
   {
@@ -48,9 +25,9 @@ const values = [
 ];
 
 export default function AboutPage() {
-  const storyReveal = useReveal<HTMLDivElement>();
-  const valuesReveal = useReveal<HTMLDivElement>();
-  const closingReveal = useReveal<HTMLDivElement>();
+  const [storyRef, storyShown] = useReveal<HTMLElement>({ threshold: 0.15, rootMargin: "0px" });
+  const [valuesRef, valuesShown] = useReveal<HTMLElement>({ threshold: 0.15, rootMargin: "0px" });
+  const [closingRef, closingShown] = useReveal<HTMLElement>({ threshold: 0.15, rootMargin: "0px" });
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#fbfaf7] text-slate-700">
@@ -94,12 +71,12 @@ export default function AboutPage() {
 
       {/* ═══════ WHY I STARTED ═══════ */}
       <section
-        ref={storyReveal.ref}
+        ref={storyRef}
         className="px-6 py-24 sm:px-8 lg:py-32"
       >
         <div
           className={`mx-auto max-w-5xl transition-all duration-1000 ${
-            storyReveal.shown ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            storyShown ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           }`}
         >
           <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
@@ -148,7 +125,7 @@ export default function AboutPage() {
 
       {/* ═══════ VALUES ═══════ */}
       <section
-        ref={valuesReveal.ref}
+        ref={valuesRef}
         className="relative bg-[#f1ede4] px-6 py-24 sm:px-8 lg:py-32"
       >
         <div className="absolute inset-0 opacity-[0.04] [background-image:radial-gradient(circle_at_1px_1px,#000_1px,transparent_0)] [background-size:24px_24px]" />
@@ -156,7 +133,7 @@ export default function AboutPage() {
         <div className="relative mx-auto max-w-7xl">
           <div
             className={`max-w-2xl transition-all duration-1000 ${
-              valuesReveal.shown
+              valuesShown
                 ? "translate-y-0 opacity-100"
                 : "translate-y-10 opacity-0"
             }`}
@@ -175,7 +152,7 @@ export default function AboutPage() {
               <article
                 key={value.number}
                 className={`group relative overflow-hidden rounded-2xl border border-stone-200 bg-white p-7 shadow-sm transition-all duration-700 hover:-translate-y-2 hover:border-amber-300 hover:shadow-xl hover:shadow-amber-900/10 ${
-                  valuesReveal.shown
+                  valuesShown
                     ? "translate-y-0 opacity-100"
                     : "translate-y-10 opacity-0"
                 }`}
@@ -199,10 +176,10 @@ export default function AboutPage() {
       </section>
 
       {/* ═══════ MY STORIES / CLOSING ═══════ */}
-      <section ref={closingReveal.ref} className="px-6 py-24 sm:px-8 lg:py-32">
+      <section ref={closingRef} className="px-6 py-24 sm:px-8 lg:py-32">
         <div
           className={`mx-auto max-w-3xl transition-all duration-1000 ${
-            closingReveal.shown ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            closingShown ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           }`}
         >
           <article className="space-y-8 text-lg leading-relaxed text-slate-600">

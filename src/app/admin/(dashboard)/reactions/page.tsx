@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type ReactionResponse = {
   typeCounts: Record<string, number>;
@@ -29,45 +29,37 @@ export default function ReactionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function loadReactions() {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch(
-        "/api/admin/reactions",
-        {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store",
+  const loadReactions = useCallback((signal?: AbortSignal) => {
+    return fetch("/api/admin/reactions", {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+      signal,
+    })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result?.error || "Failed to load reactions.");
         }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          result?.error || "Failed to load reactions."
+        if (!signal?.aborted) setData(result);
+      })
+      .catch((err: unknown) => {
+        if (signal?.aborted) return;
+        console.error("Reactions page load error:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to load reactions."
         );
-      }
-
-      setData(result);
-    } catch (err) {
-      console.error("Reactions page load error:", err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load reactions."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+      })
+      .finally(() => {
+        if (!signal?.aborted) setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
-    loadReactions();
-  }, []);
+    const controller = new AbortController();
+    void loadReactions(controller.signal);
+    return () => controller.abort();
+  }, [loadReactions]);
 
   return (
     <main className="min-h-screen bg-gray-50 p-6 md:p-8">
@@ -85,7 +77,11 @@ export default function ReactionsPage() {
 
           <button
             type="button"
-            onClick={loadReactions}
+            onClick={() => {
+              setLoading(true);
+              setError("");
+              void loadReactions();
+            }}
             disabled={loading}
             className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:opacity-50"
           >
