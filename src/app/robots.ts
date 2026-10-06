@@ -15,7 +15,6 @@ export default function robots(): MetadataRoute.Robots {
         "/admin/",
         "/studio/",
         "/login",
-        "/_next/",
       ],
     },
 
