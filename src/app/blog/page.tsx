@@ -1,10 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { client, urlForImage } from "@/lib/sanity";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const revalidate = 60;
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/blog",
+  },
+};
 
 /* =========================================================
    TYPES

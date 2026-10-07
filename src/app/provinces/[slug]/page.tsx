@@ -16,16 +16,21 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
-// ============ METADATA ============
+ // ============ METADATA ============
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;  // 👈 await params first
+  const { slug } = await params;
   const province: Province = await client.fetch(provinceBySlugQuery, { slug });
+
   if (!province) return {};
+
   return {
+    alternates: {
+      canonical: `/provinces/${slug}`,
+    },
     title: province.seo?.metaTitle || `${province.name} Province - Nepal`,
     description:
       province.seo?.metaDescription ||
