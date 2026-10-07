@@ -673,7 +673,7 @@ export async function generateMetadata({
         quality: 80,
         fit: "crop",
       }
-    );
+    ) || absoluteUrl(siteConfig.images.og);
 
   return {
     metadataBase:

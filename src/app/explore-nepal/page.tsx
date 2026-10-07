@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site";
 
 import { client } from "@/sanity/lib/client";
 import {
@@ -160,6 +161,9 @@ export async function generateMetadata({
 
     twitter: {
       card: "summary_large_image",
+      images: [
+  new URL(siteConfig.images.og, siteConfig.url).toString(),
+],
 
       title:
         "Explore Nepal | 77 Districts, Provinces & Travel Guides",

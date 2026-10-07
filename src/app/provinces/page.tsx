@@ -3,13 +3,17 @@ import type { Metadata } from "next";
 import { allProvincesQuery } from "@/sanity/lib/queries";
 import { ProvinceCard } from "@/components/ProvinceCard";
 import type { Province } from "@/types/province";
+import { pageMetadata } from "@/lib/page-metadata";
 
 export const revalidate = 3600;
-export const metadata: Metadata = {
-  alternates: {
-    canonical: "/provinces",
-  },
-};
+
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMetadata(
+    "Provinces of Nepal",
+    "Explore the 7 provinces of Nepal — from the Himalayas to the Terai.",
+    "/provinces"
+  );
+}
 
 export default async function ProvincesPage() {
   const provinces: Province[] = await client.fetch(allProvincesQuery);

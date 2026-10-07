@@ -1,16 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 
+import { pageMetadata } from "@/lib/page-metadata";
 import { client, urlForImage } from "@/lib/sanity";
 import NewsletterSignup from "@/components/NewsletterSignup";
 
 export const revalidate = 60;
-export const metadata: Metadata = {
-  alternates: {
-    canonical: "/blog",
-  },
-};
+export const metadata = pageMetadata(
+  "Nepal Travel Stories & Experiences",
+  "Read personal travel stories from Nepal, with trekking experiences, local encounters, practical lessons, and reflections from the journey.",
+  "/blog"
+);
 
 /* =========================================================
    TYPES
