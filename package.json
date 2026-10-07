@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "audit:content": "tsx scripts/audit-content.ts",
     "import:district": "tsx scripts/import-district.ts",
     "import:all-districts": "tsx scripts/import-all-districts.ts",
     "seed:sanity": "tsx scripts/seed-sanity.ts"
@@ -19,7 +20,6 @@
     "@supabase/supabase-js": "^2.112.4",
     "@vercel/analytics": "^2.0.1",
     "dotenv": "^17.4.2",
-    "ffmpeg": "^1.1.3",
     "leaflet": "^1.9.4",
     "mammoth": "^1.12.1",
     "next": "^16.3.0",

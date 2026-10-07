@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { PortableText } from "@portabletext/react";
@@ -11,26 +12,37 @@ import { ProvinceMap } from "@/components/ProvinceMap";
 import type { Province } from "@/types/province";
 import { pageMetadata } from "@/lib/page-metadata";
 
-// ============ STATIC PARAMS ============
 export async function generateStaticParams() {
   const slugs = await client.fetch<string[]>(provinceSlugsQuery);
   return slugs.map((slug) => ({ slug }));
 }
 
- export const metadata = pageMetadata(
-  "Explore Nepal's Seven Provinces",
-  "Explore Nepal's seven provinces, their districts, landscapes, culture, and places to visit. Find regional information to help plan your journey.",
-  "/provinces"
-);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const province: Province | null = await client.fetch(provinceBySlugQuery, { slug });
 
+  if (!province) return {};
 
-// ============ MAIN PAGE ============
+  return pageMetadata(
+    province.seo?.metaTitle || `${province.name} Province - Nepal`,
+    province.seo?.metaDescription ||
+      `Discover ${province.name} Province in Nepal${
+        province.capital ? `. Capital: ${province.capital}.` : "."
+      }`,
+    `/provinces/${slug}`
+  );
+}
+
 export default async function ProvincePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;  // 👈 await params first
+  const { slug } = await params;
   const province: Province = await client.fetch(provinceBySlugQuery, { slug });
 
   if (!province) notFound();
@@ -117,29 +129,25 @@ export default async function ProvincePage({
           </section>
         )}
 
-        {/* Find the map section and replace with: */}
-{province.mapImage && (
-  <section className="mb-10">
-    <h2 className="mb-3 border-b pb-2 text-3xl font-bold text-gray-800">
-      🗺️ Map
-    </h2>
-    <div className="grid gap-4 md:grid-cols-2">
-      {province.mapImage && (
-        <div className="overflow-hidden rounded-lg shadow-md">
-          <Image
-            src={urlForImage(province.mapImage).width(1200).url()}
-            alt={province.mapImage.alt || `${province.name} map`}
-            width={1200}
-            height={800}
-            className="h-auto w-full"
-          />
-        </div>
-      )}
-      <ProvinceMap provinceName={province.name} height="400px" />
-    </div>
-  </section>
-)}
-
+        {province.mapImage && (
+          <section className="mb-10">
+            <h2 className="mb-3 border-b pb-2 text-3xl font-bold text-gray-800">
+              🗺️ Map
+            </h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="overflow-hidden rounded-lg shadow-md">
+                <Image
+                  src={urlForImage(province.mapImage).width(1200).url()}
+                  alt={province.mapImage.alt || `${province.name} map`}
+                  width={1200}
+                  height={800}
+                  className="h-auto w-full"
+                />
+              </div>
+              <ProvinceMap provinceName={province.name} height="400px" />
+            </div>
+          </section>
+        )}
 
         {province.districts && province.districts.length > 0 && (
           <section className="mb-10">

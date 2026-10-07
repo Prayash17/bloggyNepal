@@ -27,13 +27,33 @@ export default defineConfig({
                   .filter('_type == "post"')
               ),
 
+            S.divider(),
+
             S.listItem()
-              .title("Destinations")
+              .title("Destinations — Published")
               .child(
                 S.documentTypeList("destination")
-                  .title("Destinations")
+                  .title("Published Destinations")
+                  .filter('_type == "destination" && !(_id in path("drafts.**"))')
+              ),
+
+            S.listItem()
+              .title("Destinations — Drafts")
+              .child(
+                S.documentTypeList("destination")
+                  .title("Draft Destinations")
+                  .filter('_type == "destination" && _id in path("drafts.**")')
+              ),
+
+            S.listItem()
+              .title("All Destinations")
+              .child(
+                S.documentTypeList("destination")
+                  .title("All Destinations")
                   .filter('_type == "destination"')
               ),
+
+            S.divider(),
 
             S.listItem()
               .title("Districts")
