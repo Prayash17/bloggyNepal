@@ -9,6 +9,7 @@ import { DistrictCard } from "@/components/DistrictCard";
 import { StatCard } from "@/components/StatCard";
 import { ProvinceMap } from "@/components/ProvinceMap";
 import type { Province } from "@/types/province";
+import { pageMetadata } from "@/lib/page-metadata";
 
 // ============ STATIC PARAMS ============
 export async function generateStaticParams() {
@@ -16,27 +17,12 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
- // ============ METADATA ============
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const province: Province = await client.fetch(provinceBySlugQuery, { slug });
+ export const metadata = pageMetadata(
+  "Explore Nepal's Seven Provinces",
+  "Explore Nepal's seven provinces, their districts, landscapes, culture, and places to visit. Find regional information to help plan your journey.",
+  "/provinces"
+);
 
-  if (!province) return {};
-
-  return {
-    alternates: {
-      canonical: `/provinces/${slug}`,
-    },
-    title: province.seo?.metaTitle || `${province.name} Province - Nepal`,
-    description:
-      province.seo?.metaDescription ||
-      `Discover ${province.name} Province in Nepal. Capital: ${province.capital}.`,
-  };
-}
 
 // ============ MAIN PAGE ============
 export default async function ProvincePage({

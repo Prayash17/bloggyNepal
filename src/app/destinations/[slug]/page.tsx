@@ -2215,19 +2215,11 @@ export default async function DestinationPage({
           JSON-LD
       ====================================================== */}
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html:
-            structuredData
-              .map(
-                (item) =>
-                  jsonLdScript(
-                    item
-                  )
-              )
-              .join(""),
-        }}
+    <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: jsonLdScript(structuredData),
+  }}
       />
     </main>
   );
