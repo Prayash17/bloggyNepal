@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "audit:content": "tsx scripts/audit-content.ts",
+    "audit:provinces": "tsx scripts/update-provinces.ts",
+    "update:provinces": "tsx scripts/update-provinces.ts --write",
     "import:district": "tsx scripts/import-district.ts",
     "import:all-districts": "tsx scripts/import-all-districts.ts",
     "seed:sanity": "tsx scripts/seed-sanity.ts"

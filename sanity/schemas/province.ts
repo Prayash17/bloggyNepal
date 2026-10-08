@@ -1,27 +1,57 @@
 import { defineField, defineType } from "sanity";
 
+const LICENSE_OPTIONS = [
+  { title: "Public Domain", value: "public-domain" },
+  { title: "CC0", value: "cc0" },
+  { title: "CC BY", value: "cc-by" },
+  { title: "CC BY-SA", value: "cc-by-sa" },
+  { title: "Own Photo", value: "own" },
+  { title: "Purchased / Stock", value: "stock" },
+] as const;
+
 export const province = defineType({
   name: "province",
   title: "Province",
   type: "document",
+
+  groups: [
+    { name: "identity", title: "Identity", default: true },
+    { name: "statistics", title: "Statistics" },
+    { name: "content", title: "Travel Content" },
+    { name: "media", title: "Media" },
+    { name: "seo", title: "SEO & Verification" },
+  ],
+
   fields: [
     defineField({
       name: "name",
       title: "Province Name",
       type: "string",
-      description: "e.g., Bagmati, Gandaki, Lumbini",
-      validation: (Rule) => Rule.required(),
+      group: "identity",
+      description: "Short public name, for example Koshi, Bagmati or Gandaki.",
+      validation: (Rule) => Rule.required().min(2).max(80),
     }),
     defineField({
       name: "officialName",
       title: "Official Name",
       type: "string",
-      description: "e.g., Province 3 (Bagmati Province)",
+      group: "identity",
+      description: "Full public name, for example Koshi Province.",
+      validation: (Rule) => Rule.max(120),
+    }),
+    defineField({
+      name: "nepaliName",
+      title: "Nepali Name",
+      type: "string",
+      group: "identity",
+      description: "Official or commonly used Nepali-script province name.",
+      validation: (Rule) => Rule.max(120),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "identity",
       options: { source: "name", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
@@ -29,118 +59,240 @@ export const province = defineType({
       name: "number",
       title: "Province Number",
       type: "number",
-      description: "1 through 7",
+      group: "identity",
       validation: (Rule) => Rule.required().min(1).max(7),
     }),
     defineField({
+      name: "shortDescription",
+      title: "Short Description",
+      type: "text",
+      rows: 3,
+      group: "identity",
+      description: "Distinctive 1–2 sentence summary used on province cards and page introductions.",
+      validation: (Rule) => Rule.max(360),
+    }),
+    defineField({
+      name: "travelThemes",
+      title: "Travel Themes",
+      type: "array",
+      group: "identity",
+      of: [{ type: "string" }],
+      options: { layout: "tags" },
+      description: "Focused themes such as trekking, wildlife, pilgrimage, tea country or heritage.",
+      validation: (Rule) => Rule.max(8),
+    }),
+
+    defineField({
       name: "capital",
-      title: "Capital City",
+      title: "Formal Provincial Capital",
       type: "string",
+      group: "statistics",
+      description: "Formal/declared provincial capital. Keep separate from the administrative seat when they differ.",
+      validation: (Rule) => Rule.max(120),
     }),
     defineField({
       name: "headquarters",
-      title: "Headquarters",
+      title: "Administrative Seat / Headquarters",
       type: "string",
+      group: "statistics",
+      description: "Current main administrative seat. Use this when it differs from the formal capital.",
+      validation: (Rule) => Rule.max(120),
     }),
-
-    // ============ STATS ============
     defineField({
       name: "population",
       title: "Total Population",
       type: "number",
+      group: "statistics",
+      description: "BloggyNepal baseline: National Population and Housing Census 2021.",
+      validation: (Rule) => Rule.min(0),
     }),
     defineField({
       name: "area",
       title: "Area (sq km)",
       type: "number",
+      group: "statistics",
+      description: "Use one nationwide statistical baseline consistently across all seven provinces.",
+      validation: (Rule) => Rule.min(0),
+    }),
+    defineField({
+      name: "density",
+      title: "Population Density (per sq km)",
+      type: "number",
+      group: "statistics",
+      description: "NPHC 2021 density baseline.",
+      validation: (Rule) => Rule.min(0),
     }),
     defineField({
       name: "noOfDistricts",
       title: "Number of Districts",
       type: "number",
+      group: "statistics",
+      validation: (Rule) => Rule.min(1).max(30),
     }),
 
-    // ============ IMAGES ============
-    defineField({
-      name: "coverImage",
-      title: "Cover Image",
-      type: "image",
-      options: { hotspot: true },
-      fields: [
-        { name: "alt", type: "string", title: "Alternative Text" },
-      ],
-    }),
-    defineField({
-      name: "mapImage",
-      title: "Map Image",
-      type: "image",
-      options: { hotspot: true },
-      fields: [
-        { name: "alt", type: "string", title: "Alternative Text" },
-      ],
-    }),
-
-    // ============ RICH TEXT ============
     defineField({
       name: "body",
-      title: "Overview",
+      title: "Province Overview",
       type: "array",
+      group: "content",
+      of: [{ type: "block" }],
+      description: "Long-form overview explaining what makes this province distinct and useful to travelers.",
+    }),
+    defineField({
+      name: "highlights",
+      title: "Province Highlights",
+      type: "array",
+      group: "content",
+      of: [{ type: "string" }],
+      description: "6–12 concise province-level highlights. Destination cards are populated automatically on the website.",
+      validation: (Rule) => Rule.max(14),
+    }),
+    defineField({
+      name: "gettingThere",
+      title: "Getting There & Moving Around",
+      type: "array",
+      group: "content",
+      of: [{ type: "block" }],
+      description: "Province-level gateways and transport logic; avoid fake precision in road times.",
+    }),
+    defineField({
+      name: "geography",
+      title: "Geography & Climate",
+      type: "array",
+      group: "content",
       of: [{ type: "block" }],
     }),
     defineField({
       name: "cultureAndHistory",
       title: "Culture & History",
       type: "array",
+      group: "content",
       of: [{ type: "block" }],
     }),
     defineField({
-      name: "geography",
-      title: "Geography",
+      name: "bestTimeToVisit",
+      title: "Best Time to Visit",
       type: "array",
+      group: "content",
       of: [{ type: "block" }],
+      description: "Explain regional and altitude differences instead of giving one generic season.",
+    }),
+    defineField({
+      name: "practicalNotes",
+      title: "Practical / Editorial Notes",
+      type: "array",
+      group: "content",
+      of: [{ type: "string" }],
+      description: "Important cautions, verification notes and practical planning context.",
+      validation: (Rule) => Rule.max(12),
     }),
 
-    // ============ REFERENCE: DISTRICTS ============
     defineField({
-      name: "districts",
-      title: "Districts in this Province",
+      name: "coverImage",
+      title: "Cover Image",
+      type: "image",
+      group: "media",
+      options: { hotspot: true },
+      fields: [
+        { name: "alt", type: "string", title: "Alternative Text" },
+        { name: "credit", type: "string", title: "Photo Credit" },
+        { name: "source", type: "url", title: "Source URL" },
+        { name: "license", type: "string", title: "License", options: { list: [...LICENSE_OPTIONS] } },
+      ],
+    }),
+    defineField({
+      name: "mapImage",
+      title: "Province Map",
+      type: "image",
+      group: "media",
+      options: { hotspot: true },
+      fields: [
+        { name: "alt", type: "string", title: "Alternative Text" },
+        { name: "caption", type: "string", title: "Caption" },
+        { name: "credit", type: "string", title: "Map Credit" },
+        { name: "source", type: "url", title: "Source URL" },
+        { name: "license", type: "string", title: "License", options: { list: [...LICENSE_OPTIONS] } },
+      ],
+    }),
+    defineField({
+      name: "gallery",
+      title: "Province Gallery",
       type: "array",
+      group: "media",
+      options: { layout: "grid" },
+      validation: (Rule) => Rule.max(12),
       of: [
         {
-          type: "reference",
-          to: [{ type: "district" }],
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            { name: "alt", type: "string", title: "Alternative Text" },
+            { name: "caption", type: "string", title: "Caption" },
+            { name: "credit", type: "string", title: "Photo Credit" },
+            { name: "source", type: "url", title: "Source URL" },
+            { name: "license", type: "string", title: "License", options: { list: [...LICENSE_OPTIONS] } },
+          ],
         },
       ],
-      description: "Add all districts that belong to this province",
     }),
 
-    // ============ SEO ============
+    defineField({
+      name: "districts",
+      title: "Districts (legacy)",
+      type: "array",
+      hidden: true,
+      readOnly: true,
+      of: [{ type: "reference", to: [{ type: "district" }] }],
+    }),
+
+    defineField({
+      name: "factCheckedAt",
+      title: "Fact Checked At",
+      type: "date",
+      group: "seo",
+      description: "Date the stable province facts and editorial content were last reviewed.",
+    }),
+    defineField({
+      name: "sources",
+      title: "Editorial Sources",
+      type: "array",
+      group: "seo",
+      validation: (Rule) => Rule.max(20),
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "name", title: "Source Name", type: "string" },
+            { name: "url", title: "Source URL", type: "url" },
+            { name: "checkedAt", title: "Checked At", type: "date" },
+          ],
+        },
+      ],
+    }),
     defineField({
       name: "seo",
       title: "SEO",
       type: "object",
+      group: "seo",
       fields: [
-        { name: "metaTitle", type: "string", title: "Meta Title" },
-        { name: "metaDescription", type: "text", title: "Meta Description" },
-        {
-          name: "ogImage",
-          type: "image",
-          title: "Social Share Image",
-          options: { hotspot: true },
-        },
+        { name: "metaTitle", type: "string", title: "Meta Title", validation: (Rule) => Rule.max(70) },
+        { name: "metaDescription", type: "text", title: "Meta Description", validation: (Rule) => Rule.max(180) },
+        { name: "ogImage", type: "image", title: "Social Share Image", options: { hotspot: true } },
       ],
     }),
   ],
+
   preview: {
     select: {
-      title: "name",
+      title: "officialName",
+      fallbackTitle: "name",
       subtitle: "capital",
       media: "coverImage",
     },
-    prepare({ title, subtitle, media }) {
+    prepare({ title, fallbackTitle, subtitle, media }) {
       return {
-        title,
-        subtitle: subtitle ? `🏛️ Capital: ${subtitle}` : "No capital",
+        title: title || fallbackTitle || "Untitled province",
+        subtitle: subtitle ? `Capital: ${subtitle}` : "No capital",
         media,
       };
     },
