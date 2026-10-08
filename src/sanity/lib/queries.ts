@@ -11,117 +11,56 @@ export const districtBySlugQuery = `
   ][0]{
     _id,
     _updatedAt,
-
     name,
-
     slug,
-
     province->{
       _id,
       name,
+      officialName,
       number,
       capital,
       slug
     },
-
     headquarter,
-
     category,
-
     population,
-
     area,
-
     elevation,
-
     density,
-
-    coordinates{
-      lat,
-      lng
-    },
-
+    coordinates{ lat, lng },
     mapEmbedUrl,
-
-    coverImage{
-      asset,
-      alt,
-      credit,
-      license
-    },
-
-    mapImage{
-      asset,
-      alt
-    },
-
-    gallery[]{
-      asset,
-      alt,
-      caption,
-      credit,
-      source,
-      license
-    },
-
+    coverImage{ asset, alt, credit, source, license },
+    mapImage{ asset, alt },
+    gallery[]{ asset, alt, caption, credit, source, license },
     body,
-
     howToGetThere,
-
     thingsToDo,
-
     cultureAndHistory,
-
     bestTimeToVisit,
-
     nearbyAttractions,
-
     places[]{
       _key,
-
       name,
-
       slug,
-
       description,
-
-      image{
-        asset,
-        alt
-      },
-
-      coordinates{
-        lat,
-        lng
-      }
+      image{ asset, alt },
+      coordinates{ lat, lng }
     },
-
     seo{
       metaTitle,
       metaDescription,
-
-      ogImage{
-        asset
-      }
+      ogImage{ asset }
     },
-
-    faqs[]{
-      _key,
-      question,
-      answer
-    }
+    faqs[]{ _key, question, answer }
   }
 `;
 
-
-/* =========================================================
-   ALL DISTRICTS
-========================================================= */
+// =========================================================
+// ALL DISTRICTS
+// =========================================================
 
 export const allDistrictsQuery = groq`
-  *[
-    _type == "district"
-  ]
+  *[_type == "district"]
   | order(name asc) {
     _id,
     _createdAt,
@@ -133,21 +72,20 @@ export const allDistrictsQuery = groq`
     area,
     elevation,
     density,
-
     "province": province->{
       _id,
       name,
+      officialName,
       slug,
       number
     },
-
     coverImage
   }
 `;
 
-/* =========================================================
-   DISTRICT SLUGS
-========================================================= */
+// =========================================================
+// DISTRICT SLUGS
+// =========================================================
 
 export const districtSlugsQuery = groq`
   *[
@@ -156,10 +94,11 @@ export const districtSlugsQuery = groq`
   ][].slug.current
 `;
 
-/* =========================================================
-   PROVINCES
-========================================================= */
-export const provinceSlugsQuery = `
+// =========================================================
+// PROVINCES
+// =========================================================
+
+export const provinceSlugsQuery = groq`
   *[
     _type == "province" &&
     defined(slug.current)
@@ -167,23 +106,35 @@ export const provinceSlugsQuery = `
 `;
 
 export const allProvincesQuery = groq`
-  *[
-    _type == "province"
-  ]
+  *[_type == "province"]
   | order(number asc) {
     _id,
     name,
     officialName,
+    nepaliName,
     slug,
     number,
     capital,
     headquarters,
     population,
     area,
+    density,
     noOfDistricts,
-    "districtCount": count(districts),
-
-    coverImage
+    shortDescription,
+    travelThemes,
+    "districtCount": count(*[_type == "district" && province._ref == ^._id]),
+    "destinationCount": count(*[
+      _type == "destination" &&
+      defined(slug.current) &&
+      (province._ref == ^._id || district->province._ref == ^._id)
+    ]),
+    "storyCount": count(*[
+      _type == "post" &&
+      defined(slug.current) &&
+      (province._ref == ^._id || district->province._ref == ^._id)
+    ]),
+    coverImage{ asset, alt, credit, source, license },
+    mapImage{ asset, alt, caption, credit, source, license }
   }
 `;
 
@@ -194,42 +145,95 @@ export const provinceBySlugQuery = groq`
   ][0] {
     _id,
     _createdAt,
+    _updatedAt,
     name,
     officialName,
+    nepaliName,
     slug,
     number,
     capital,
     headquarters,
     population,
     area,
+    density,
     noOfDistricts,
-
-    coverImage,
-    mapImage,
-
+    shortDescription,
+    travelThemes,
     body,
+    highlights,
+    gettingThere,
     cultureAndHistory,
     geography,
+    bestTimeToVisit,
+    practicalNotes,
+    factCheckedAt,
 
-    "districts": districts[]->{
+    coverImage{ asset, alt, credit, source, license },
+    mapImage{ asset, alt, caption, credit, source, license },
+    gallery[]{ asset, alt, caption, credit, source, license },
+
+    "districts": *[
+      _type == "district" &&
+      province._ref == ^._id &&
+      defined(slug.current)
+    ] | order(name asc) {
       _id,
       name,
       slug,
       headquarter,
       population,
       area,
-      coverImage
+      coverImage{ asset, alt, credit, source, license }
+    },
+
+    "destinations": *[
+      _type == "destination" &&
+      defined(slug.current) &&
+      (
+        province._ref == ^._id ||
+        district->province._ref == ^._id
+      )
+    ] | order(featured desc, _updatedAt desc, title asc)[0...8] {
+      _id,
+      title,
+      slug,
+      excerpt,
+      region,
+      featured,
+      duration,
+      difficulty,
+      coverImage{ asset, alt, caption, credit, source, license },
+      district->{ name, slug }
+    },
+
+    "stories": *[
+      _type == "post" &&
+      defined(slug.current) &&
+      (
+        province._ref == ^._id ||
+        district->province._ref == ^._id
+      )
+    ] | order(publishedAt desc, _updatedAt desc)[0...6] {
+      _id,
+      title,
+      slug,
+      excerpt,
+      category,
+      publishedAt,
+      readingTime,
+      coverImage{ asset, alt, caption, credit, source, license },
+      district->{ name, slug }
     },
 
     seo {
       metaTitle,
       metaDescription,
-      ogImage
+      ogImage{ asset, alt }
     }
   }
 `;
 
-export const districtNavigationQuery = `
+export const districtNavigationQuery = groq`
   *[
     _type == "district" &&
     defined(slug.current)
@@ -240,9 +244,9 @@ export const districtNavigationQuery = `
     province->{
       _id,
       name,
+      officialName,
       number,
       slug
     }
   }
 `;
- 
