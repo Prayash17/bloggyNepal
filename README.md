@@ -6,8 +6,7 @@ BloggyNepal is a travel publishing and discovery project I’m building to make 
 
 **Live site:** [bloggynepal.com](https://bloggynepal.com)
 
-![BloggyNepal homepage](docs/screenshots/home.webp)
-
+![BloggyNepal homepage](docs/screenshots/Home.png)
 ## What BloggyNepal does
 
 - Publishes detailed destination guides with routes, activities, costs, maps, itineraries and practical planning information.
@@ -18,8 +17,8 @@ BloggyNepal is a travel publishing and discovery project I’m building to make 
 - Treats SEO, accessibility and content accuracy as part of the product rather than an afterthought.
 
 <p align="center">
-  <img src="docs/screenshots/destination.webp" width="49%" alt="BloggyNepal destination guide for Shey Phoksundo National Park and Phoksundo Lake" />
-  <img src="docs/screenshots/explore.webp" width="49%" alt="BloggyNepal Explore Nepal district directory" />
+  <img src="docs/screenshots/destination.png" width="49%" alt="BloggyNepal destination guide" />
+<img src="docs/screenshots/Explore-Nepal.png" width="49%" alt="BloggyNepal Explore Nepal district directory" />
 </p>
 
 ## Built with
