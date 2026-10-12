@@ -8,7 +8,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
 
-      allow: "/",
+      // The public login page must be crawlable for its noindex tag to be read.
+      // Protected dashboard paths remain disallowed and require authentication.
+      allow: ["/", "/admin/login"],
 
       disallow: [
         "/api/",

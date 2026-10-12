@@ -47,7 +47,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const province = await client.fetch<Province | null>(provinceBySlugQuery, { slug });
-  if (!province) return {};
+  if (!province) notFound();
 
   return pageMetadata(
     province.seo?.metaTitle || `${label(province)} Travel Guide`,

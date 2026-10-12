@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site";
 
+// Editors sometimes include the brand in Sanity's metaTitle already.
+// An absolute title avoids appending the root layout's template a second time.
+export function brandedTitle(title: string): Metadata["title"] {
+  const text = title.trim().replace(/(?:\s*[|–—-]\s*bloggynepal)+$/i, "").trim();
+  return { absolute: `${text} | ${siteConfig.name}` };
+}
+
 export function pageMetadata(
   title: string,
   description: string,
@@ -13,7 +20,7 @@ export function pageMetadata(
   ).toString();
 
   return {
-    title,
+    title: brandedTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: {

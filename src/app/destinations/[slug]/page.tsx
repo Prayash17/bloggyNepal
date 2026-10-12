@@ -1,3 +1,4 @@
+import { brandedTitle } from "@/lib/page-metadata";
 import type { Metadata } from "next";
 
 import Image from "next/image";
@@ -599,14 +600,7 @@ export async function generateMetadata({
     );
 
   if (!destination) {
-    return {
-      title:
-        "Destination Not Found | bloggyNepal",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
+    notFound();
   }
 
   const title =
@@ -647,7 +641,7 @@ export async function generateMetadata({
         )
       ),
 
-    title,
+    title: brandedTitle(title),
 
     description,
 
