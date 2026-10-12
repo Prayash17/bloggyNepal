@@ -1,4 +1,6 @@
+import { brandedTitle } from "@/lib/page-metadata";
 import Image from "next/image";
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -258,26 +260,13 @@ function hasValidImage(
    FETCH
 ========================================================= */
 
-async function getStory(
+const getStory = cache(async function getStory(
   slug: string
 ): Promise<Story | null> {
-  try {
-    const story =
-      await client.fetch<Story | null>(
-        storyBySlugQuery,
-        { slug }
-      );
-
-    return story;
-  } catch (error) {
-    console.error(
-      "Failed to fetch story:",
-      error
-    );
-
-    return null;
-  }
-}
+  // A CMS outage is a server error, not evidence that a published URL vanished.
+  // Let failed regeneration retain the previous successful page in Next.js.
+  return client.fetch<Story | null>(storyBySlugQuery, { slug });
+});
 
 /* =========================================================
    DATE
@@ -322,17 +311,12 @@ export async function generateMetadata({
   const story = await getStory(slug);
 
   if (!story) {
-    return {
-      title:
-        "Story Not Found | bloggyNepal",
-      description:
-        "The requested blog story could not be found.",
-    };
+    notFound();
   }
 
   const title =
     story.seo?.metaTitle ||
-    `${story.title} | bloggyNepal`;
+    story.title;
 
   const description =
     story.seo?.metaDescription ||
@@ -358,7 +342,7 @@ export async function generateMetadata({
       : undefined;
 
   return {
-    title,
+    title: brandedTitle(title),
     description,
 
     robots: story.seo?.noIndex

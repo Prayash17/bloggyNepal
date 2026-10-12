@@ -103,7 +103,7 @@ const DIFFICULTIES = [
   "Strenuous",
 ] as const;
 
-const allDestinationsQuery = `*[_type == "destination"] | order(featured desc, title asc)`;
+const allDestinationsQuery = `*[_type == "destination" && defined(slug.current) && slug.current != ""] | order(featured desc, title asc)`;
 
 /* =========================================================
    HELPERS

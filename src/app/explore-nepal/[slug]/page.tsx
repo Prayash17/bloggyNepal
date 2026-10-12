@@ -1,3 +1,4 @@
+import { brandedTitle } from "@/lib/page-metadata";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -614,15 +615,7 @@ export async function generateMetadata({
     );
 
   if (!district) {
-    return {
-      title:
-        "District Not Found | BloggyNepal",
-
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
+    notFound();
   }
 
   const provinceName =
@@ -679,7 +672,7 @@ export async function generateMetadata({
     metadataBase:
       new URL(SITE_URL),
 
-    title,
+    title: brandedTitle(title),
 
     description,
 

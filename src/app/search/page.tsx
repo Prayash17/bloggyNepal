@@ -1,7 +1,12 @@
- 
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { client } from "@/sanity/lib/client";
+
+export const metadata: Metadata = {
+  title: "Search Nepal Travel Guides",
+  description: "Find destinations, districts and travel stories on BloggyNepal.",
+  robots: { index: false, follow: true },
+};
 
 type SanityResult = {
   _id: string;
@@ -45,6 +50,7 @@ async function searchSanity(query: string): Promise<SanityResult[]> {
   return client.fetch(
     `*[
       (_type == "destination" || _type == "post" || _type == "district") &&
+      defined(slug.current) && slug.current != "" &&
       (
         title match $pattern ||
         name match $pattern ||
@@ -79,10 +85,10 @@ export default async function SearchPage({
   searchParams,
 }: {
   // Next.js 16 passes searchParams as a Promise in Server Components
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string | string[] }>;
 }) {
   const { q } = await searchParams;
-  const query = q ?? "";
+  const query = (Array.isArray(q) ? q[0] : q)?.trim() ?? "";
 
   const sanityResults = query ? await searchSanity(query) : [];
   const staticResults = query ? searchStaticPages(query) : [];

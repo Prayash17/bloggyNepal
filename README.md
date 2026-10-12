@@ -103,6 +103,10 @@ npm run build
 npm start
 ```
 
+## SEO checks
+
+Run `npm run audit:seo` to check sitemap URLs, status codes, canonicals, robots directives and metadata. Python 3.10+ is required; no Python dependencies are needed. See the [indexing audit and follow-up guide](docs/seo/README.md) for the findings and Search Console workflow.
+
 ## Roadmap
 
 BloggyNepal is still being actively developed. The next areas I want to strengthen are:

@@ -12,7 +12,8 @@
     "update:provinces": "tsx scripts/update-provinces.ts --write",
     "import:district": "tsx scripts/import-district.ts",
     "import:all-districts": "tsx scripts/import-all-districts.ts",
-    "seed:sanity": "tsx scripts/seed-sanity.ts"
+    "seed:sanity": "tsx scripts/seed-sanity.ts",
+    "audit:seo": "python scripts/audit-seo.py"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.0",
