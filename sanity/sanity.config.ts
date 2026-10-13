@@ -24,7 +24,6 @@ export default defineConfig({
               .child(
                 S.documentTypeList("post")
                   .title("Stories")
-                  .filter('_type == "post"')
               ),
 
             S.divider(),
@@ -34,7 +33,10 @@ export default defineConfig({
               .child(
                 S.documentTypeList("destination")
                   .title("Published Destinations")
-                  .filter('_type == "destination" && !(_id in path("drafts.**"))')
+                  .apiVersion(apiVersion)
+                  .filter(
+                    '_type == "destination" && !(_id in path("drafts.**"))'
+                  )
               ),
 
             S.listItem()
@@ -42,7 +44,10 @@ export default defineConfig({
               .child(
                 S.documentTypeList("destination")
                   .title("Draft Destinations")
-                  .filter('_type == "destination" && _id in path("drafts.**")')
+                  .apiVersion(apiVersion)
+                  .filter(
+                    '_type == "destination" && _id in path("drafts.**")'
+                  )
               ),
 
             S.listItem()
@@ -50,7 +55,6 @@ export default defineConfig({
               .child(
                 S.documentTypeList("destination")
                   .title("All Destinations")
-                  .filter('_type == "destination"')
               ),
 
             S.divider(),
@@ -60,7 +64,6 @@ export default defineConfig({
               .child(
                 S.documentTypeList("district")
                   .title("Districts")
-                  .filter('_type == "district"')
               ),
 
             S.listItem()
@@ -68,7 +71,6 @@ export default defineConfig({
               .child(
                 S.documentTypeList("province")
                   .title("Provinces")
-                  .filter('_type == "province"')
               ),
           ]),
     }),
