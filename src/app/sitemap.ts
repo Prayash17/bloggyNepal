@@ -5,7 +5,7 @@ import { siteConfig } from "@/lib/site";
 
 const BASE_URL = siteConfig.url;
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 type SitemapDocument = {
   _id: string;
