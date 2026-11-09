@@ -20,7 +20,7 @@ const facts: Moment[] = [
     heading: "Nepal's largest lake sits high in the mountains.",
     detail: "Rara Lake, in Mugu, is Nepal's largest lake. It lies at about 2,990 metres above sea level, surrounded by forest and mountains.",
     question: "Imagine arriving there at sunrise. What would you notice first?",
-    source: { label: "Rara National Park Office", url: "https://raranationalpark.gov.np/pages/Introduction/" },
+    source: { label: "Nepal Tourism Board", url: "https://ntb.gov.np/en/rara" },
     destination: { label: "Discover Mugu", href: "/explore-nepal/mugu" },
   },
   {
