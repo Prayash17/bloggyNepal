@@ -38,3 +38,19 @@ body { background: var(--background); color: var(--foreground); font-family: var
   .animate-blob,.animate-scroll-down,.reveal-up,.editorial-enter,[class*="animate-"] { animation:none!important;transition:none!important;opacity:1!important;transform:none!important; }
   .editorial-photo img {transition:none!important;transform:none!important;}
 }
+
+/* Mobile bottom-sheet transition, with a native modal for focus management. */
+@keyframes mobile-sheet-rise {
+  from { transform: translateY(28px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.mobile-more-sheet[open] {
+  animation: mobile-sheet-rise 260ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.mobile-more-sheet::backdrop {
+  background: rgba(18, 35, 27, .55);
+  backdrop-filter: blur(3px);
+}
+@media(prefers-reduced-motion:reduce) {
+  .mobile-more-sheet[open] { animation: none !important; }
+}
