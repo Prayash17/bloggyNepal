@@ -175,17 +175,6 @@ export default async function BlogPage() {
         )
       : [];
 
-  const categories = Array.from(
-    new Set(
-      stories
-        .map(
-          (story) =>
-            story.category
-        )
-        .filter(Boolean)
-    )
-  ).slice(0, 5);
-
   const regions = Array.from(
     new Set(
       stories
