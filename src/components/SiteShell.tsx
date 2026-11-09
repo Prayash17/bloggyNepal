@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 
 import Navbar from "@/components/Navbar";
+import MobileDock from "@/components/MobileDock";
 
 export default function SiteShell({
   children,
@@ -23,9 +24,10 @@ export default function SiteShell({
     <>
       <Navbar />
 
-      <div className="pt-20">
+      <div className="pt-20 pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0">
         {children}
       </div>
+      <MobileDock />
     </>
   );
 }
