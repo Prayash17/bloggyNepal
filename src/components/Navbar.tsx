@@ -309,9 +309,9 @@ function NavbarContent({ pathname }: { pathname: string }) {
   const useLightHeader =
     scrolled ||
     pathname === "/about" ||
-    pathname.startsWith("/destinations") ||
-    pathname.startsWith("/explore-nepal") ||
-    pathname.startsWith("/blog");
+    pathname === "/destinations" ||
+    pathname === "/explore-nepal" ||
+    pathname === "/blog";
 
   return (
     <>
