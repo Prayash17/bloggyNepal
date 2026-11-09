@@ -203,78 +203,28 @@ export default async function BlogPage() {
           HERO
       ====================================================== */}
 
-      <section
-        aria-labelledby="blog-page-title"
-        className="relative isolate overflow-hidden bg-slate-950"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(185,28,28,0.34),transparent_32%),radial-gradient(circle_at_85%_85%,rgba(245,158,11,0.16),transparent_34%)]" />
-
-        <div className="absolute inset-0 opacity-[0.035] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:28px_28px]" />
-
-        <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 sm:px-8 lg:pb-32 lg:pt-28">
-          <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-amber-200 backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-amber-300" />
-              The BloggyNepal Journal
-            </div>
-
-            <h1
-              id="blog-page-title"
-              className="mt-8 max-w-5xl font-serif text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-8xl"
-            >
-              Stories from the
-              <span className="block bg-gradient-to-r from-amber-200 via-amber-300 to-orange-300 bg-clip-text text-transparent">
-                roads of Nepal.
-              </span>
+      <section aria-labelledby="blog-page-title" className="editorial-hero relative overflow-hidden border-b border-stone-200 px-6 py-20 sm:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+          <div className="editorial-enter">
+            <p className="editorial-kicker">The BloggyNepal journal</p>
+            <h1 id="blog-page-title" className="mt-7 max-w-4xl font-serif text-5xl leading-[1.03] tracking-tight text-[#243e32] sm:text-6xl lg:text-7xl">
+              Stories from <span className="italic text-[#a4533b]">the road.</span>
             </h1>
-
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-white/70 sm:text-xl">
-              First-hand journeys, unexpected
-              encounters, quiet places, local
-              experiences, and the stories behind
-              the destinations we travel to.
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-stone-700">
+              Personal journeys, quiet places and the unexpected moments that make traveling through Nepal unforgettable.
             </p>
-
+            <a href="#latest-stories" className="mt-9 inline-flex items-center gap-2 rounded-full bg-[#27483b] px-7 py-3.5 font-semibold text-white transition-colors hover:bg-[#193328]">Read the journal <span aria-hidden="true">↘</span></a>
             {stories.length > 0 && (
-              <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/55">
-                <span>
-                  <strong className="text-white">
-                    {stories.length}
-                  </strong>{" "}
-                  published{" "}
-                  {stories.length === 1
-                    ? "story"
-                    : "stories"}
-                </span>
-
-                {regions.length > 0 && (
-                  <span>
-                    <strong className="text-white">
-                      {regions.length}
-                    </strong>{" "}
-                    regions covered
-                  </span>
-                )}
-
-                <span>
-                  Real journeys · Local perspective
-                </span>
-              </div>
+              <p className="mt-6 text-sm text-stone-600">
+                {stories.length} published {stories.length === 1 ? "story" : "stories"} · {regions.length} {regions.length === 1 ? "region" : "regions"} featured
+              </p>
             )}
-
-            {categories.length > 0 && (
-              <div className="mt-8 flex flex-wrap gap-2">
-                {categories.map(
-                  (category) => (
-                    <span
-                      key={category}
-                      className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-medium text-white/65 backdrop-blur"
-                    >
-                      {category}
-                    </span>
-                  )
-                )}
-              </div>
+          </div>
+          <div className="editorial-photo relative aspect-[5/4] bg-[#d7d0bc]">
+            {featuredStory && hasValidImage(featuredStory.coverImage) ? (
+              <Image src={urlForImage(featuredStory.coverImage).width(1250).height(1000).quality(83).fit("crop").auto("format").url()} alt={featuredStory.coverImage?.alt || featuredStory.title} fill priority sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
+            ) : (
+              <Image src="/nepal-hero-poster.jpg" alt="Nepal travel landscape" fill priority sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
             )}
           </div>
         </div>

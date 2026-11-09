@@ -289,74 +289,25 @@ export default async function AllDistrictsPage({
           HERO
       ================================================= */}
 
-      <section
-        aria-labelledby="explore-nepal-title"
-        className="relative isolate overflow-hidden bg-slate-950 px-6 py-20 sm:px-8 sm:py-24 lg:py-32"
-      >
-        <div
-          aria-hidden="true"
-          className="absolute -left-32 -top-20 h-96 w-96 rounded-full bg-red-800/30 blur-3xl"
-        />
-
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-32 -right-32 h-[30rem] w-[30rem] rounded-full bg-amber-400/15 blur-3xl"
-        />
-
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 opacity-20 [background-image:radial-gradient(rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:22px_22px]"
-        />
-
-        <div className="relative mx-auto max-w-6xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-amber-200">
-            <span
-              aria-hidden="true"
-              className="h-2 w-2 motion-safe:animate-pulse rounded-full bg-amber-300"
-            />
-
-            7 provinces · 77 districts
+      <section aria-labelledby="explore-nepal-title" className="editorial-hero relative overflow-hidden border-b border-stone-200 px-6 py-20 sm:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
+          <div className="editorial-enter">
+            <p className="editorial-kicker">Seven provinces · Seventy-seven districts</p>
+            <h1 id="explore-nepal-title" className="mt-7 max-w-4xl font-serif text-5xl leading-[1.02] tracking-tight text-[#243e32] sm:text-6xl lg:text-7xl">
+              Every corner has <span className="italic text-[#a4533b]">a story.</span>
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-stone-700">
+              Discover Nepal district by district — its people, landscapes, food, history, and the little details that make a journey memorable.
+            </p>
+            <nav aria-label="Explore Nepal shortcuts" className="mt-9 flex flex-wrap gap-3">
+              <a href="#districts" className="rounded-full bg-[#27483b] px-6 py-3.5 font-semibold text-white transition-colors hover:bg-[#193328]">Browse districts ↓</a>
+              <a href="#provinces" className="rounded-full border border-[#27483b]/30 px-6 py-3.5 font-semibold text-[#27483b] transition-colors hover:bg-white">Explore provinces</a>
+            </nav>
           </div>
-
-          <h1
-            id="explore-nepal-title"
-            className="mt-7 font-serif text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-8xl"
-          >
-            Explore every corner
-            <span className="block text-amber-300">
-              of Nepal.
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-7 max-w-3xl text-base leading-relaxed text-white/75 sm:text-xl">
-            Go beyond Nepal&apos;s famous destinations.
-            Discover the landscapes, cultures,
-            communities, history, food, traditions,
-            and places that give every district
-            its own character.
-          </p>
-
-          <nav
-            aria-label="Explore Nepal shortcuts"
-            className="mt-10 flex flex-col justify-center gap-3 sm:flex-row"
-          >
-            <a
-              href="#districts"
-              className="inline-flex items-center justify-center gap-3 rounded-full bg-amber-300 px-7 py-4 font-bold text-slate-950 shadow-lg transition motion-safe:hover:-translate-y-1 hover:bg-amber-200 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-            >
-              Browse 77 districts
-              <span aria-hidden="true">
-                ↓
-              </span>
-            </a>
-
-            <a
-              href="#provinces"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-7 py-4 font-bold text-white backdrop-blur transition hover:bg-white hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-            >
-              Explore provinces
-            </a>
-          </nav>
+          <div className="editorial-photo relative aspect-[5/4] bg-[#d7d0bc]">
+            <Image src="/nepal-hero-poster.jpg" alt="Landscape scenery from Nepal" fill priority sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
+            <span className="absolute bottom-5 right-5 rounded-xl bg-[#fbfaf7]/95 px-5 py-3 font-serif text-2xl text-[#27483b] shadow-md">77 districts to explore</span>
+          </div>
         </div>
       </section>
 

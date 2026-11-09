@@ -267,64 +267,25 @@ export default async function DestinationsPage({
           HERO
       ====================================================== */}
 
-      <section className="relative isolate overflow-hidden bg-slate-950 px-6 py-24 text-white sm:px-8 lg:py-32">
-        <div
-          aria-hidden="true"
-          className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-red-700/30 blur-3xl"
-        />
-
-        <div
-          aria-hidden="true"
-          className="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-amber-300/20 blur-3xl"
-        />
-
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-size-[32px_32px] bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] opacity-[0.05]"
-        />
-
-        <div className="relative mx-auto max-w-7xl text-center">
-          <p className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-amber-200 backdrop-blur-md">
-            <span
-              aria-hidden="true"
-              className="h-2 w-2 rounded-full bg-amber-300"
-            />
-
-            Plan the journey
-          </p>
-
-          <h1 className="mx-auto mt-7 max-w-5xl font-serif text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Discover the places
-            <span className="mt-2 block bg-linear-to-r from-amber-200 via-amber-300 to-orange-300 bg-clip-text text-transparent">
-              that make Nepal.
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-7 max-w-3xl text-lg leading-relaxed text-white/75 sm:text-xl">
-            Explore practical destination guides
-            built around real journeys — routes,
-            itineraries, costs, seasons, maps,
-            culture, safety, and the details that
-            help you decide whether a place is right
-            for you.
-          </p>
-
-          <div className="mt-10 flex flex-wrap justify-center gap-3 text-sm text-white/75">
-            <span className="rounded-full border border-white/15 bg-white/5 px-4 py-2">
-              🗺️ Practical routes
-            </span>
-
-            <span className="rounded-full border border-white/15 bg-white/5 px-4 py-2">
-              📋 Real itineraries
-            </span>
-
-            <span className="rounded-full border border-white/15 bg-white/5 px-4 py-2">
-              💰 Travel costs
-            </span>
-
-            <span className="rounded-full border border-white/15 bg-white/5 px-4 py-2">
-              🎒 Local planning tips
-            </span>
+      <section className="editorial-hero relative isolate overflow-hidden border-b border-stone-200 px-6 py-20 sm:px-8 lg:py-28">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+          <div className="editorial-enter">
+            <p className="editorial-kicker">Plan the journey</p>
+            <h1 className="mt-7 max-w-3xl font-serif text-5xl leading-[1.04] tracking-tight text-[#243e32] sm:text-6xl lg:text-7xl">
+              Travel deeper.<span className="block italic text-[#a4533b]">Discover Nepal.</span>
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-stone-700">
+              Find the places worth your time, with honest routes, practical budgets, seasonal advice and journeys you can plan for yourself.
+            </p>
+            <a href="#destination-guides" className="mt-9 inline-flex items-center gap-3 rounded-full bg-[#27483b] px-7 py-3.5 font-semibold text-white transition-colors hover:bg-[#193328] focus-visible:outline-offset-4">
+              Find your next journey <span aria-hidden="true">↘</span>
+            </a>
+          </div>
+          <div className="editorial-photo relative aspect-[5/4] bg-[#d8d2c2]">
+            <Image src="/nepal-hero-poster.jpg" alt="A landscape from Nepal inviting travelers to explore its destinations" fill priority sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
+            <div className="absolute bottom-4 left-4 rounded-xl bg-[#fbfaf7]/95 px-4 py-3 text-sm font-medium text-[#27483b] shadow-sm backdrop-blur">
+              Routes · Real costs · Local insight
+            </div>
           </div>
         </div>
       </section>
@@ -534,7 +495,7 @@ export default async function DestinationsPage({
           DESTINATION GRID
       ====================================================== */}
 
-      <section className="mx-auto max-w-7xl px-6 pb-20 sm:px-8 lg:pb-28">
+      <section id="destination-guides" className="mx-auto max-w-7xl px-6 pb-20 sm:px-8 lg:pb-28">
         {filtered.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-14 text-center shadow-sm sm:p-20">
             <div

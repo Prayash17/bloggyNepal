@@ -305,6 +305,14 @@ function NavbarContent({ pathname }: { pathname: string }) {
     }
   };
 
+  // Keep the header legible over the warm interior-page backgrounds.
+  const useLightHeader =
+    scrolled ||
+    pathname === "/about" ||
+    pathname.startsWith("/destinations") ||
+    pathname.startsWith("/explore-nepal") ||
+    pathname.startsWith("/blog");
+
   return (
     <>
       {/* ======================================================
@@ -322,7 +330,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
       >
         <div
           className={`transition-all duration-500 ${
-            scrolled
+            useLightHeader
               ? "border-b border-stone-200/70 bg-[#fbfaf7]/92 shadow-[0_8px_30px_-18px_rgba(15,23,42,0.35)] backdrop-blur-2xl"
               : "border-b border-white/10 bg-slate-950/35 backdrop-blur-md"
           }`}
@@ -339,7 +347,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
             >
               <span
                 className={`relative flex items-center justify-center overflow-hidden rounded-2xl border px-2 py-1.5 transition-all duration-500 ${
-                  scrolled
+                  useLightHeader
                     ? "border-stone-200/80 bg-white/85 shadow-sm shadow-slate-900/5 group-hover:border-stone-300 group-hover:shadow-md"
                     : "border-white/15 bg-white/8 shadow-lg shadow-black/10 backdrop-blur-md group-hover:border-white/30 group-hover:bg-white/12"
                 }`}
@@ -347,7 +355,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                 {/* soft glow behind logo */}
                 <span
                   className={`pointer-events-none absolute -inset-3 rounded-3xl opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100 ${
-                    scrolled
+                    useLightHeader
                       ? "bg-amber-200/20"
                       : "bg-amber-300/15"
                   }`}
@@ -365,7 +373,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                 {/* tiny brand sparkle */}
                 <span
                   className={`pointer-events-none absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full transition-all duration-500 group-hover:scale-150 ${
-                    scrolled
+                    useLightHeader
                       ? "bg-red-800"
                       : "bg-amber-300"
                   }`}
@@ -383,7 +391,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
             >
               <div
                 className={`flex items-center gap-1 rounded-full border p-1 transition-all duration-500 ${
-                  scrolled
+                  useLightHeader
                     ? "border-stone-200 bg-white/70 shadow-sm"
                     : "border-white/10 bg-white/5 backdrop-blur-sm"
                 }`}
@@ -405,10 +413,10 @@ function NavbarContent({ pathname }: { pathname: string }) {
                         }
                         className={`relative rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-300 ${
                           active
-                            ? scrolled
+                            ? useLightHeader
                               ? "bg-red-800 text-white shadow-md shadow-red-900/20"
                               : "bg-white/15 text-white shadow-sm"
-                            : scrolled
+                            : useLightHeader
                               ? "text-slate-600 hover:bg-stone-100 hover:text-slate-950"
                               : "text-white/75 hover:bg-white/10 hover:text-white"
                         }`}
@@ -428,7 +436,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                 }
                 aria-label="Open search"
                 className={`ml-3 inline-flex h-10 items-center gap-2 rounded-full border px-3 text-sm font-medium transition-all duration-300 ${
-                  scrolled
+                  useLightHeader
                     ? "border-stone-300 bg-white text-slate-600 hover:border-red-800 hover:text-red-800"
                     : "border-white/15 bg-white/5 text-white/75 hover:border-amber-300/40 hover:text-amber-200"
                 }`}
@@ -441,7 +449,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
 
                 <kbd
                   className={`hidden rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold xl:inline ${
-                    scrolled
+                    useLightHeader
                       ? "bg-stone-100 text-slate-500"
                       : "bg-white/10 text-white/60"
                   }`}
@@ -482,7 +490,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                 )
               }
               className={`relative z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 lg:hidden ${
-                scrolled
+                useLightHeader
                   ? "border-stone-300 bg-white text-slate-900 shadow-sm"
                   : "border-white/20 bg-white/5 text-white backdrop-blur-sm"
               }`}
