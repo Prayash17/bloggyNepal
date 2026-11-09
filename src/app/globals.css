@@ -54,3 +54,15 @@ body { background: var(--background); color: var(--foreground); font-family: var
 @media(prefers-reduced-motion:reduce) {
   .mobile-more-sheet[open] { animation: none !important; }
 }
+
+/* A single restrained transition for editorial discovery cards. */
+@keyframes moment-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.moment-enter {
+  animation: moment-enter 360ms cubic-bezier(.22, 1, .36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .moment-enter { animation: none !important; }
+}
