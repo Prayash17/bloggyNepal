@@ -6,6 +6,7 @@ import { client } from "@/lib/sanity";
 import { siteConfig } from "@/lib/site";
 
 import HomeClient from "@/components/HomeClient";
+import NepalCuriosityCorner from "@/components/NepalCuriosityCorner";
 import FeaturedSection, {
   type FeaturedDestination,
   type FeaturedStory,
@@ -331,6 +332,8 @@ export default async function HomePage() {
         <HomeClient
           stats={stats}
         />
+
+        <NepalCuriosityCorner />
 
         <FeaturedSection
           destinations={
