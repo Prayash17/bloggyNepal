@@ -68,13 +68,13 @@ export function DistrictCard({
     <Link
       href={`/explore-nepal/${slug}`}
       aria-label={`Explore ${district.name} District`}
-      className="group block overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-amber-300 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+      className="group block overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-[#96b2a1] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     >
       {/* =================================================
           IMAGE
       ================================================== */}
 
-      <div className="relative h-56 overflow-hidden bg-slate-900 sm:h-60">
+      <div className="relative h-56 overflow-hidden bg-[#e6e3d9] sm:h-60">
         {coverUrl ? (
           <Image
             src={coverUrl}
@@ -92,29 +92,30 @@ export function DistrictCard({
           />
         ) : (
           <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-br from-red-900 via-slate-900 to-amber-700"
-          />
+            className="absolute inset-0 flex items-center justify-center bg-[#e6e3d9] px-6 text-center"
+          >
+            <span className="text-sm font-medium text-[#667c6c]">Photo coming soon</span>
+          </div>
         )}
 
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"
+          className={coverUrl ? "absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" : "hidden"}
         />
 
         <div className="absolute left-4 top-4">
-          <span className="rounded-full border border-white/25 bg-black/25 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white backdrop-blur-md">
+          <span className={coverUrl ? "rounded-full border border-white/25 bg-black/25 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white backdrop-blur-md" : "rounded-full border border-[#d2dacf] bg-[#fbfaf7]/95 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#27483b]"}>
             {provinceName ||
               "Nepal"}
           </span>
         </div>
 
         <div className="absolute bottom-5 left-5 right-5">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">
+          <p className={coverUrl ? "text-xs font-bold uppercase tracking-[0.2em] text-amber-300" : "text-xs font-bold uppercase tracking-[0.2em] text-[#8b5b43]"}>
             Explore
           </p>
 
-          <h3 className="mt-1 font-serif text-2xl font-bold text-white transition-colors group-hover:text-amber-200">
+          <h3 className={coverUrl ? "mt-1 font-serif text-2xl font-bold text-white transition-colors group-hover:text-amber-200" : "mt-1 font-serif text-2xl font-bold text-[#27483b]"}>
             {district.name}
           </h3>
         </div>
