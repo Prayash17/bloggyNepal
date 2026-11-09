@@ -391,6 +391,248 @@ export default async function AllDistrictsPage({
       </section>
 
       {/* =================================================
+          DISTRICT DIRECTORY
+      ================================================= */}
+
+      <section
+        id="districts"
+        aria-labelledby="district-title"
+        className="scroll-mt-24 bg-[#f4eee2] px-6 py-16 sm:px-8 lg:py-24"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10">
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-red-800">
+              The complete collection
+            </p>
+
+            <h2
+              id="district-title"
+              className="mt-2 font-serif text-4xl font-bold text-slate-900 sm:text-5xl"
+            >
+              All districts of Nepal
+            </h2>
+
+            <p className="mt-4 max-w-3xl leading-relaxed text-slate-600">
+              Search and filter the directory to
+              discover district guides covering
+              places to visit, maps, culture,
+              history, transportation, and local
+              travel ideas.
+            </p>
+          </div>
+
+          {/* =================================================
+              SEARCH
+          ================================================== */}
+
+          <div className="grid items-start gap-8 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[285px_minmax(0,1fr)]">
+            <aside className="lg:sticky lg:top-24" aria-label="District discovery filters">
+              <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+                <div className="mb-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#a4533b]">Refine your journey</p>
+                    <h3 className="mt-1 font-serif text-2xl text-[#27483b]">Find a district</h3>
+                  </div>
+                  <span aria-hidden="true" className="rounded-full bg-[#e4ece4] px-3 py-2 text-[#27483b]">⌕</span>
+                </div>
+                <form
+                  method="GET"
+                  action="/explore-nepal#districts"
+                  className="space-y-4"
+                >
+            <div className="grid gap-4">
+              <div>
+                <label
+                  htmlFor="district-search"
+                  className="sr-only"
+                >
+                  Search districts
+                </label>
+
+                <input
+                  id="district-search"
+                  type="search"
+                  name="q"
+                  defaultValue={
+                    params.q || ""
+                  }
+                  placeholder="Search districts, provinces or headquarters..."
+                  autoComplete="off"
+                  className="w-full rounded-2xl border border-stone-200 bg-[#fbfaf7] px-5 py-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-700 focus:ring-2 focus:ring-red-700/10"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="province-filter"
+                  className="sr-only"
+                >
+                  Filter districts by province
+                </label>
+
+                <select
+                  id="province-filter"
+                  name="province"
+                  defaultValue={
+                    params.province || ""
+                  }
+                  className="w-full rounded-2xl border border-stone-200 bg-[#fbfaf7] px-5 py-4 text-sm font-medium text-slate-700 outline-none focus:border-red-700 focus:ring-2 focus:ring-red-700/10"
+                >
+                  <option value="">
+                    All provinces
+                  </option>
+
+                  {provinces.map(
+                    (province) => {
+                      const slug =
+                        getProvinceSlug(
+                          province
+                        );
+
+                      if (!slug) {
+                        return null;
+                      }
+
+                      return (
+                        <option
+                          key={province._id}
+                          value={slug}
+                        >
+                          {province.name}
+                        </option>
+                      );
+                    }
+                  )}
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full rounded-2xl bg-[#27483b] px-6 py-3.5 font-bold text-white transition hover:bg-[#1b362b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#27483b] focus-visible:ring-offset-2"
+              >
+                Search districts
+              </button>
+            </div>
+
+            {hasFilters && (
+              <div className="mt-4 flex flex-col gap-3 border-t border-stone-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <p
+                  role="status"
+                  className="text-sm text-slate-500"
+                >
+                  Showing{" "}
+                  <strong className="text-slate-800">
+                    {districts.length}
+                  </strong>{" "}
+                  matching{" "}
+                  {districts.length === 1
+                    ? "district"
+                    : "districts"}
+                  .
+                </p>
+
+                <Link
+                  href="/explore-nepal#districts"
+                  className="text-sm font-bold text-red-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800 focus-visible:ring-offset-2"
+                >
+                  Clear filters
+                </Link>
+              </div>
+            )}
+                </form>
+                <div className="mt-5 border-t border-stone-100 pt-5">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Browse by province</p>
+                  <nav aria-label="Filter district results by province" className="flex flex-wrap gap-2">
+                    {provinces.map((province) => {
+                      const slug = getProvinceSlug(province);
+                      if (!slug) return null;
+                      const active = selectedProvince === slug.toLowerCase();
+                      return (
+                        <Link
+                          key={province._id}
+                          href={`/explore-nepal?province=${encodeURIComponent(slug)}#districts`}
+                          aria-current={active ? "true" : undefined}
+                          className={`rounded-full border px-3 py-2 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#27483b] ${active ? "border-[#27483b] bg-[#27483b] text-white" : "border-stone-200 bg-[#fbfaf7] text-[#27483b] hover:border-[#27483b]"}`}
+                        >
+                          {province.name}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                  <p className="mt-4 text-xs leading-5 text-stone-500">
+                    Results use district names, headquarters and province information from our directory.
+                  </p>
+                </div>
+              </div>
+            </aside>
+
+            <div className="min-w-0" aria-label="District search results">
+              {/* =================================================
+                  RESULTS
+          ================================================== */}
+
+          {districts.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-10 text-center sm:p-16">
+              <span
+                aria-hidden="true"
+                className="text-5xl"
+              >
+                🇳🇵
+              </span>
+
+              <h3 className="mt-5 font-serif text-3xl font-bold text-slate-900">
+                No districts found
+              </h3>
+
+              <p className="mx-auto mt-3 max-w-xl text-slate-600">
+                Try another district name,
+                province, headquarters, or search
+                without the current filters.
+              </p>
+
+              <Link
+                href="/explore-nepal#districts"
+                className="mt-7 inline-flex rounded-full bg-red-800 px-6 py-3 font-bold text-white transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800 focus-visible:ring-offset-2"
+              >
+                Show all districts
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm font-medium text-slate-600">
+                  Discovering{" "}
+                  <strong className="text-slate-900">
+                    {districts.length}
+                  </strong>{" "}
+                  {districts.length === 1
+                    ? "district"
+                    : "districts"}
+                </p>
+
+                <span className="rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 shadow-sm">
+                  Nepal district directory
+                </span>
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {districts.map(
+                  (district) => (
+                    <DistrictCard
+                      key={district._id}
+                      district={district}
+                    />
+                  )
+                )}
+              </div>
+            </>
+          )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =================================================
           PROVINCES
       ================================================= */}
 
@@ -540,210 +782,6 @@ export default async function AllDistrictsPage({
             </p>
           </div>
         )}
-      </section>
-
-      {/* =================================================
-          DISTRICT DIRECTORY
-      ================================================= */}
-
-      <section
-        id="districts"
-        aria-labelledby="district-title"
-        className="scroll-mt-24 bg-[#f1ede4] px-6 py-20 sm:px-8 lg:py-28"
-      >
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-red-800">
-              The complete collection
-            </p>
-
-            <h2
-              id="district-title"
-              className="mt-2 font-serif text-4xl font-bold text-slate-900 sm:text-5xl"
-            >
-              All districts of Nepal
-            </h2>
-
-            <p className="mt-4 max-w-3xl leading-relaxed text-slate-600">
-              Search and filter the directory to
-              discover district guides covering
-              places to visit, maps, culture,
-              history, transportation, and local
-              travel ideas.
-            </p>
-          </div>
-
-          {/* =================================================
-              SEARCH
-          ================================================== */}
-
-          <form
-            method="GET"
-            action="/explore-nepal"
-            className="mb-8 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm"
-          >
-            <div className="grid gap-3 md:grid-cols-[1fr_240px_auto]">
-              <div>
-                <label
-                  htmlFor="district-search"
-                  className="sr-only"
-                >
-                  Search districts
-                </label>
-
-                <input
-                  id="district-search"
-                  type="search"
-                  name="q"
-                  defaultValue={
-                    params.q || ""
-                  }
-                  placeholder="Search districts, provinces or headquarters..."
-                  autoComplete="off"
-                  className="w-full rounded-2xl border border-stone-200 bg-[#fbfaf7] px-5 py-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-700 focus:ring-2 focus:ring-red-700/10"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="province-filter"
-                  className="sr-only"
-                >
-                  Filter districts by province
-                </label>
-
-                <select
-                  id="province-filter"
-                  name="province"
-                  defaultValue={
-                    params.province || ""
-                  }
-                  className="w-full rounded-2xl border border-stone-200 bg-[#fbfaf7] px-5 py-4 text-sm font-medium text-slate-700 outline-none focus:border-red-700 focus:ring-2 focus:ring-red-700/10"
-                >
-                  <option value="">
-                    All provinces
-                  </option>
-
-                  {provinces.map(
-                    (province) => {
-                      const slug =
-                        getProvinceSlug(
-                          province
-                        );
-
-                      if (!slug) {
-                        return null;
-                      }
-
-                      return (
-                        <option
-                          key={province._id}
-                          value={slug}
-                        >
-                          {province.name}
-                        </option>
-                      );
-                    }
-                  )}
-                </select>
-              </div>
-
-              <button
-                type="submit"
-                className="rounded-2xl bg-slate-950 px-7 py-4 font-bold text-white transition hover:bg-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800 focus-visible:ring-offset-2"
-              >
-                Search districts
-              </button>
-            </div>
-
-            {hasFilters && (
-              <div className="mt-4 flex flex-col gap-3 border-t border-stone-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <p
-                  role="status"
-                  className="text-sm text-slate-500"
-                >
-                  Showing{" "}
-                  <strong className="text-slate-800">
-                    {districts.length}
-                  </strong>{" "}
-                  matching{" "}
-                  {districts.length === 1
-                    ? "district"
-                    : "districts"}
-                  .
-                </p>
-
-                <Link
-                  href="/explore-nepal#districts"
-                  className="text-sm font-bold text-red-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800 focus-visible:ring-offset-2"
-                >
-                  Clear filters
-                </Link>
-              </div>
-            )}
-          </form>
-
-          {/* =================================================
-              RESULTS
-          ================================================== */}
-
-          {districts.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-10 text-center sm:p-16">
-              <span
-                aria-hidden="true"
-                className="text-5xl"
-              >
-                🇳🇵
-              </span>
-
-              <h3 className="mt-5 font-serif text-3xl font-bold text-slate-900">
-                No districts found
-              </h3>
-
-              <p className="mx-auto mt-3 max-w-xl text-slate-600">
-                Try another district name,
-                province, headquarters, or search
-                without the current filters.
-              </p>
-
-              <Link
-                href="/explore-nepal#districts"
-                className="mt-7 inline-flex rounded-full bg-red-800 px-6 py-3 font-bold text-white transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800 focus-visible:ring-offset-2"
-              >
-                Show all districts
-              </Link>
-            </div>
-          ) : (
-            <>
-              <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm font-medium text-slate-600">
-                  Discovering{" "}
-                  <strong className="text-slate-900">
-                    {districts.length}
-                  </strong>{" "}
-                  {districts.length === 1
-                    ? "district"
-                    : "districts"}
-                </p>
-
-                <span className="rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 shadow-sm">
-                  Nepal · 77 districts
-                </span>
-              </div>
-
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {districts.map(
-                  (district) => (
-                    <DistrictCard
-                      key={district._id}
-                      district={district}
-                    />
-                  )
-                )}
-              </div>
-            </>
-          )}
-        </div>
       </section>
 
       {/* =================================================
