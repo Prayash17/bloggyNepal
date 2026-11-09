@@ -489,7 +489,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                     !value
                 )
               }
-              className={`relative z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 lg:hidden ${
+              className={`hidden ${
                 useLightHeader
                   ? "border-stone-300 bg-white text-slate-900 shadow-sm"
                   : "border-white/20 bg-white/5 text-white backdrop-blur-sm"
