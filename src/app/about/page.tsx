@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useReveal } from "@/hooks/useReveal";
 
@@ -32,39 +33,22 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#fbfaf7] text-slate-700">
       {/* ═══════ HERO ═══════ */}
-      <section className="relative isolate overflow-hidden bg-slate-950 px-6 py-24 text-white sm:px-8 lg:py-32">
-        <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-red-700/30 blur-3xl animate-blob" />
-        <div className="absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-amber-300/15 blur-3xl animate-blob animation-delay-2000" />
-        <div className="absolute inset-0 opacity-[0.05] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:32px_32px]" />
-
-        <div className="relative mx-auto max-w-4xl text-center">
-          <p className="reveal-up inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-amber-200 backdrop-blur-md">
-            <span className="h-2 w-2 rounded-full bg-amber-300 animate-pulse" />
-            About bloggyNepal
-          </p>
-
-          <h1 className="reveal-up [animation-delay:150ms] mt-7 font-serif text-5xl font-bold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-            Nepal deserves to be
-            <span className="mt-2 block bg-gradient-to-r from-amber-200 via-amber-300 to-orange-300 bg-clip-text text-transparent">
-              felt, not just seen.
-            </span>
-          </h1>
-
-          <p className="reveal-up [animation-delay:300ms] mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-white/75 sm:text-xl">
-            A personal travel journal for people everywhere who want to slow
-            down, explore Nepal, and discover a little more of the world.
-          </p>
-
-          <div className="reveal-up [animation-delay:450ms] mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-white/65">
-            <span className="flex items-center gap-2">
-              <Dot /> Honest words
-            </span>
-            <span className="flex items-center gap-2">
-              <Dot /> Local eyes
-            </span>
-            <span className="flex items-center gap-2">
-              <Dot /> Slow travel
-            </span>
+      <section className="editorial-hero relative overflow-hidden border-b border-stone-200 px-6 py-20 sm:px-8 lg:py-28">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
+          <div className="editorial-enter">
+            <p className="editorial-kicker">Our story</p>
+            <h1 className="mt-7 max-w-4xl font-serif text-5xl leading-[1.03] tracking-tight text-[#243e32] sm:text-6xl lg:text-7xl">
+              Nepal deserves to be <span className="italic text-[#a4533b]">felt, not just seen.</span>
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-stone-700">
+              BloggyNepal began with curiosity and a love of journeys that stay with us. We share thoughtful stories and practical guides for people who want to know Nepal beyond the postcard.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-5 text-sm font-medium text-[#27483b]">
+              <span>Honest words</span><span>Local perspective</span><span>Slow travel</span>
+            </div>
+          </div>
+          <div className="editorial-photo relative aspect-[4/5] max-h-[520px] bg-[#d7d0bc]">
+            <Image src="/nepal-hero-poster.jpg" alt="Landscape in Nepal, reflecting the places and stories behind BloggyNepal" fill priority sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
           </div>
         </div>
       </section>
@@ -255,8 +239,3 @@ export default function AboutPage() {
   );
 }
 
-function Dot() {
-  return (
-    <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-300" />
-  );
-}

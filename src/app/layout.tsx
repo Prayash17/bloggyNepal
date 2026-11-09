@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { Manrope, Newsreader, Noto_Sans_Devanagari } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "@/app/globals.css";
 
 import { siteConfig } from "@/lib/site";
 import SiteShell from "@/components/SiteShell";
+
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
+const newsreader = Newsreader({ subsets: ["latin"], variable: "--font-newsreader", display: "swap" });
+const nepali = Noto_Sans_Devanagari({ subsets: ["devanagari"], variable: "--font-nepali", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -87,7 +92,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="overflow-x-hidden bg-[#fbfaf7] text-slate-800 antialiased">
+      <body className={`overflow-x-hidden bg-[#fbfaf7] text-slate-800 antialiased ${manrope.variable} ${newsreader.variable} ${nepali.variable}`}>
         <SiteShell>{children}</SiteShell>
         <Analytics />
       </body>
