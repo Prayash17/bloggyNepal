@@ -13,7 +13,8 @@
     "import:district": "tsx scripts/import-district.ts",
     "import:all-districts": "tsx scripts/import-all-districts.ts",
     "seed:sanity": "tsx scripts/seed-sanity.ts",
-    "audit:seo": "python scripts/audit-seo.py"
+    "audit:seo": "python scripts/audit-seo.py",
+    "audit:day1": "node scripts/audit-day1.mjs"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.0",
