@@ -28,6 +28,44 @@ export interface Coordinates {
   lng?: number;
 }
 
+export type DestinationAccessKind =
+  | "destination"
+  | "city"
+  | "airport"
+  | "busPark"
+  | "roadhead"
+  | "trailhead"
+  | "checkpoint"
+  | "overnightStop";
+
+export type DestinationMapLocationAccuracy = "exact" | "approximate";
+
+export type DestinationTravelLegMode = "road" | "walking" | "flight" | "unknown";
+
+/** Map points are not proof that a road or trekking route is currently passable. */
+export interface DestinationAccessPoint {
+  _key?: string;
+  name: string;
+  kind: DestinationAccessKind;
+  coordinates?: Coordinates;
+  description?: string;
+  locationAccuracy?: DestinationMapLocationAccuracy;
+  sourceUrl?: string;
+  verifiedAt?: string;
+}
+
+/** Array order is the planned sequence; this is not navigable GPS geometry. */
+export interface DestinationRoutePoint {
+  _key?: string;
+  name: string;
+  coordinates?: Coordinates;
+  modeFromPrevious?: DestinationTravelLegMode;
+  description?: string;
+  locationAccuracy?: DestinationMapLocationAccuracy;
+  sourceUrl?: string;
+  verifiedAt?: string;
+}
+
 export interface PortableTextSpan {
   _key?: string;
   _type?: string;
@@ -116,6 +154,13 @@ export interface Destination {
   coordinates?: Coordinates;
 
   mapEmbedUrl?: string;
+
+  // Optional Map & Access foundation; existing destinations remain valid.
+  mapZoom?: number;
+  accessPoints?: DestinationAccessPoint[];
+  routePoints?: DestinationRoutePoint[];
+  mapAdvisory?: string;
+  lastRouteVerifiedAt?: string;
 
   coverImage?: SanityImage;
 

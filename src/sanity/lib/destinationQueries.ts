@@ -98,6 +98,29 @@ export const destinationBySlugQuery = defineQuery(`
 
     coordinates,
     mapEmbedUrl,
+    mapZoom,
+    accessPoints[]{
+      _key,
+      name,
+      kind,
+      coordinates{lat, lng},
+      description,
+      locationAccuracy,
+      sourceUrl,
+      verifiedAt
+    },
+    routePoints[]{
+      _key,
+      name,
+      coordinates{lat, lng},
+      modeFromPrevious,
+      description,
+      locationAccuracy,
+      sourceUrl,
+      verifiedAt
+    },
+    mapAdvisory,
+    lastRouteVerifiedAt,
 
     coverImage{
       asset,

@@ -118,6 +118,67 @@ const DIFFICULTY_OPTIONS = [
   },
 ] as const;
 
+
+/*
+ * Map & Access foundations (Phase 1).
+ * Optional fields only: existing destination records need no migration.
+ * Ordered route stops are reference points, NOT verified GPS track geometry.
+ */
+const MAP_ACCESS_KIND_OPTIONS = [
+  { title: "Destination", value: "destination" },
+  { title: "Gateway city / town", value: "city" },
+  { title: "Airport", value: "airport" },
+  { title: "Bus park", value: "busPark" },
+  { title: "Roadhead", value: "roadhead" },
+  { title: "Trailhead", value: "trailhead" },
+  { title: "Permit checkpoint", value: "checkpoint" },
+  { title: "Overnight stop", value: "overnightStop" },
+] as const;
+
+const MAP_ACCURACY_OPTIONS = [
+  { title: "Exact point, supported by evidence", value: "exact" },
+  { title: "Approximate area only", value: "approximate" },
+] as const;
+
+const MAP_LEG_MODE_OPTIONS = [
+  { title: "Road", value: "road" },
+  { title: "On foot", value: "walking" },
+  { title: "Flight", value: "flight" },
+  { title: "Not yet confirmed", value: "unknown" },
+] as const;
+
+// Reuse this nested field in map points. A partial coordinate pair is invalid.
+const MAP_POINT_COORDINATES = defineField({
+  name: "coordinates",
+  title: "Coordinates (optional)",
+  type: "object",
+  description:
+    "Use independently checked coordinates. For approximate locations, set the accuracy field accordingly.",
+  fields: [
+    defineField({
+      name: "lat",
+      title: "Latitude",
+      type: "number",
+      validation: (Rule) => Rule.min(-90).max(90),
+    }),
+    defineField({
+      name: "lng",
+      title: "Longitude",
+      type: "number",
+      validation: (Rule) => Rule.min(-180).max(180),
+    }),
+  ],
+  validation: (Rule) =>
+    Rule.custom((value) => {
+      const coordinates = value as { lat?: number; lng?: number } | undefined;
+      const hasLat = typeof coordinates?.lat === "number";
+      const hasLng = typeof coordinates?.lng === "number";
+      return hasLat === hasLng
+        ? true
+        : "Enter both latitude and longitude, or leave both blank.";
+    }),
+});
+
 export const destination = defineType({
   name: "destination",
   title: "Destination",
@@ -381,6 +442,165 @@ export const destination = defineType({
 
       description:
         "Optional Google Maps embed URL for the destination.",
+    }),
+
+    // ==========================================================
+    // MAP & ACCESS (OPTIONAL PHASE 1 FIELDS)
+    // ==========================================================
+
+    defineField({
+      name: "mapZoom",
+      title: "Suggested Map Zoom",
+      type: "number",
+      group: "location",
+      description:
+        "Optional display preference. Future map components must still fit all verified points appropriately.",
+      validation: (Rule) => Rule.min(4).max(17).integer(),
+    }),
+
+    defineField({
+      name: "accessPoints",
+      title: "Access Points",
+      type: "array",
+      group: "location",
+      description:
+        "Gateway towns, airports, bus parks, roadheads, trailheads and other important map points. A map marker is not a verified trail.",
+      validation: (Rule) => Rule.max(25),
+      of: [
+        {
+          type: "object",
+          name: "destinationAccessPoint",
+          title: "Access Point",
+          fields: [
+            defineField({
+              name: "name",
+              title: "Place Name",
+              type: "string",
+              validation: (Rule) => Rule.required().min(2).max(120),
+            }),
+            defineField({
+              name: "kind",
+              title: "Point Type",
+              type: "string",
+              options: { list: [...MAP_ACCESS_KIND_OPTIONS] },
+              validation: (Rule) => Rule.required(),
+            }),
+            MAP_POINT_COORDINATES,
+            defineField({
+              name: "description",
+              title: "Traveler Note",
+              type: "text",
+              rows: 3,
+              validation: (Rule) => Rule.max(500),
+            }),
+            defineField({
+              name: "locationAccuracy",
+              title: "Location Accuracy",
+              type: "string",
+              options: { list: [...MAP_ACCURACY_OPTIONS] },
+              description:
+                "Exact = confirmed point location; approximate = area only. Neither guarantees trail or road access.",
+            }),
+            defineField({
+              name: "sourceUrl",
+              title: "Coordinate / Access Source URL",
+              type: "url",
+              description:
+                "Cite the source used to check this point. Do not mark a point exact without evidence.",
+            }),
+            defineField({
+              name: "verifiedAt",
+              title: "Point Last Checked On",
+              type: "date",
+              description:
+                "Record only a date when this point's location and access note were actually checked.",
+            }),
+          ],
+          preview: {
+            select: { title: "name", subtitle: "kind" },
+          },
+        },
+      ],
+    }),
+
+    defineField({
+      name: "routePoints",
+      title: "Ordered Route Stops (not a GPS track)",
+      type: "array",
+      group: "location",
+      description:
+        "Arrange important waypoints in travel order. Order describes a journey; it must NOT be rendered as a precise trail or road polyline without verified geometry.",
+      validation: (Rule) => Rule.max(40),
+      of: [
+        {
+          type: "object",
+          name: "destinationRoutePoint",
+          title: "Route Stop",
+          fields: [
+            defineField({
+              name: "name",
+              title: "Stop Name",
+              type: "string",
+              validation: (Rule) => Rule.required().min(2).max(120),
+            }),
+            MAP_POINT_COORDINATES,
+            defineField({
+              name: "modeFromPrevious",
+              title: "Travel Mode From Previous Stop",
+              type: "string",
+              options: { list: [...MAP_LEG_MODE_OPTIONS] },
+              description:
+                "Mode description only; does not establish a navigable line or road service.",
+            }),
+            defineField({
+              name: "description",
+              title: "Route Note",
+              type: "text",
+              rows: 3,
+              validation: (Rule) => Rule.max(500),
+            }),
+            defineField({
+              name: "locationAccuracy",
+              title: "Location Accuracy",
+              type: "string",
+              options: { list: [...MAP_ACCURACY_OPTIONS] },
+            }),
+            defineField({
+              name: "sourceUrl",
+              title: "Stop / Access Source URL",
+              type: "url",
+            }),
+            defineField({
+              name: "verifiedAt",
+              title: "Stop Last Checked On",
+              type: "date",
+            }),
+          ],
+          preview: {
+            select: { title: "name", subtitle: "modeFromPrevious" },
+          },
+        },
+      ],
+    }),
+
+    defineField({
+      name: "mapAdvisory",
+      title: "Map & Access Advisory",
+      type: "text",
+      rows: 3,
+      group: "location",
+      description:
+        "Short traveler-facing warning about uncertain roadheads, seasonal access or approximate points.",
+      validation: (Rule) => Rule.max(500),
+    }),
+
+    defineField({
+      name: "lastRouteVerifiedAt",
+      title: "Route Information Last Verified",
+      type: "date",
+      group: "location",
+      description:
+        "Only set when the route information has actually been checked. This is separate from the guide's full fact-check date.",
     }),
 
     // ==========================================================
