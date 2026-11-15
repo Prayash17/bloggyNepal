@@ -1382,26 +1382,6 @@ export default async function DestinationPage({
               </Section>
             )}
 
-                  {destination.mapEmbedUrl && (
-                    <div className="overflow-hidden rounded-3xl border border-stone-200 bg-white p-2 shadow-sm">
-                      <iframe
-                        src={
-                          destination.mapEmbedUrl
-                        }
-                        width="100%"
-                        height="500"
-                        loading="lazy"
-                        allowFullScreen
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title={`Map of ${destination.title}`}
-                        className="min-h-[360px] w-full rounded-2xl border-0"
-                      />
-                    </div>
-                  )}
-                </div>
-              </Section>
-            )}
-
             {/* =================================================
                 HOW TO GET THERE
             ================================================== */}
