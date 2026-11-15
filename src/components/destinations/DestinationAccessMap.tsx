@@ -110,13 +110,17 @@ export default function DestinationAccessMap({
       stops.map((point) => point.coordinates).find(validCoordinates);
   const embed = isSafeHttpUrl(destination.mapEmbedUrl) ? destination.mapEmbedUrl : null;
   const mapSrc = embed ?? (mainPoint ? pinMapUrl(mainPoint, destination.mapZoom ?? 12) : null);
+  const searchTerms = [destination.title, destination.district?.name, "Nepal"].filter(Boolean).join(", ");
+  const mapSearchLink = `https://www.openstreetmap.org/search?query=${encodeURIComponent(searchTerms)}`;
 
   return (
     <div className="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm">
       <div className="border-b border-stone-200 bg-stone-50 px-5 py-5 sm:px-7">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-800">Where to go · how to arrive</p>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-          Locate the destination, check access points and review the suggested stop sequence. Pins and stops do not represent verified navigable trails.
+          {pins.length || stops.length
+            ? "Explore the location, access points and suggested stops. Pins are for orientation, not verified turn-by-turn trails."
+            : "Use this location reference to orient yourself. Trailheads and route stops are shown only after they have been checked."}
         </p>
       </div>
       <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-2">
@@ -132,12 +136,22 @@ export default function DestinationAccessMap({
             />
           </div>
         ) : mapUrl ? (
-          <div className="relative min-h-[260px] overflow-hidden rounded-2xl bg-stone-100">
-            <Image src={mapUrl} alt={destination.mapImage?.alt || `Location illustration for ${destination.title}`} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-contain" />
-          </div>
+          <figure className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            <Image
+              src={mapUrl}
+              alt={destination.mapImage?.alt || `Location reference image for ${destination.title}`}
+              width={1600}
+              height={1000}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="block h-auto w-full"
+            />
+            <figcaption className="px-3 py-2 text-xs leading-5 text-stone-600">
+              Reference image only. Any route lines or travel times shown may be outdated.
+            </figcaption>
+          </figure>
         ) : null}
         <div className={`flex flex-col justify-center rounded-2xl bg-[#f8f6f1] p-5 sm:p-6 ${!mapSrc && !mapUrl ? "lg:col-span-2" : ""}`}>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-800">Your travel starting point</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-800">Destination location</p>
           <h3 className="mt-3 font-serif text-2xl font-bold text-[#243e32]">{destination.title}</h3>
           {[destination.district?.name, destination.province?.name].filter(Boolean).length > 0 && (
             <p className="mt-2 text-sm text-slate-600">
@@ -154,9 +168,13 @@ export default function DestinationAccessMap({
             </p>
           )}
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            {mainPoint && (
+            {mainPoint ? (
               <a href={openStreetMapLink(mainPoint)} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-full bg-[#27483b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#193328] focus-visible:outline-2 focus-visible:outline-offset-2">
                 Open location map ↗
+              </a>
+            ) : (
+              <a href={mapSearchLink} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-full border border-[#27483b] px-5 py-3 text-sm font-semibold text-[#27483b] transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2">
+                Search map listings ↗
               </a>
             )}
             {destination.lastRouteVerifiedAt && (
@@ -182,8 +200,8 @@ export default function DestinationAccessMap({
           )}
         </div>
       )}
-      <p className="border-t border-stone-100 px-5 py-3 text-xs leading-5 text-stone-500 sm:px-7">
-        Map is for orientation only; not for emergency navigation. Source and verification dates appear next to individual points when supplied.
+      <p className="border-t border-stone-100 px-5 pb-20 pt-3 text-xs leading-5 text-stone-500 sm:px-7 sm:pb-3">
+        Map is for orientation only, not emergency navigation. Search results and old route images are not confirmed trail directions. Sources and check dates appear beside individual points when available.
         {mapSrc && !embed ? " Map data © OpenStreetMap contributors." : ""}
       </p>
     </div>
