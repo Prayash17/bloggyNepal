@@ -103,6 +103,11 @@ export interface DestinationItineraryDay {
   title: string;
   description: string;
   overnight?: string;
+  /** Only displayed when detailsVerifiedAt and detailsSourceUrl are set. */
+  walkingHours?: number;
+  sleepingAltitudeMeters?: number;
+  detailsSourceUrl?: string;
+  detailsVerifiedAt?: string;
 }
 
 export interface DestinationCostItem {
