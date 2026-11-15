@@ -878,8 +878,9 @@ export default async function DestinationPage({
     ...(destination.cultureAndHistory?.length ? [{ id: "culture", label: "Culture & History" }] : []),
     ...((destination.permits?.length || destination.packingList?.length || destination.safetyTips?.length || destination.proTips?.length) ? [{ id: "planning", label: "Planning & Safety" }] : []),
     ...(destination.faqs?.length ? [{ id: "faq", label: "FAQs" }] : []),
-    ...(destination.nearbyDestinations?.length ? [{ id: "nearby", label: "Nearby" }] : []),
+    ...(related.some((item) => item.slug?.current) ? [{ id: "nearby", label: "Nearby" }] : []),
     ...(destination.gallery?.length ? [{ id: "gallery", label: "Gallery" }] : []),
+    { id: "community", label: "Community" },
   ];
 
   const provinceSlug =
