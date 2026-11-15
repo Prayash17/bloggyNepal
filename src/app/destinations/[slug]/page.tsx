@@ -172,6 +172,83 @@ function RichText({
 }
 
 /* =========================================================
+   READER-FRIENDLY TRAVEL ROUTE
+   Actual Portable Text h3 blocks become accessible reading cards.
+========================================================= */
+function RouteGuide({
+  value,
+}: {
+  value?: Destination["howToGetThere"];
+}) {
+  if (!value?.length) return null;
+
+  type Blocks = NonNullable<Destination["howToGetThere"]>;
+  const introduction: Blocks = [];
+  const sections: Array<{ heading: string; blocks: Blocks }> = [];
+
+  for (const block of value) {
+    if (block._type === "block" && block.style === "h3") {
+      const heading = (block.children ?? [])
+        .map((child) => child.text ?? "")
+        .join("")
+        .trim();
+      if (heading) {
+        sections.push({ heading, blocks: [] });
+        continue;
+      }
+    }
+    if (sections.length) {
+      sections[sections.length - 1].blocks.push(block);
+    } else {
+      introduction.push(block);
+    }
+  }
+
+  // Existing destinations with no h3 content retain their original prose layout.
+  if (!sections.length) {
+    return (
+      <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-10">
+        <div className="max-w-3xl">
+          <RichText value={value} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {introduction.length > 0 && (
+        <div className="rounded-3xl border border-stone-200 bg-white px-6 py-7 shadow-sm sm:px-9 sm:py-8">
+          <div className="max-w-3xl">
+            <RichText value={introduction} />
+          </div>
+        </div>
+      )}
+      <div className="grid gap-5 xl:grid-cols-2">
+        {sections.map((section, index) => (
+          <article
+            key={section.heading + "-" + index}
+            className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition-colors hover:border-amber-200 sm:p-8"
+          >
+            <div className="mb-4 flex items-center gap-3">
+              <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-sm font-bold text-red-900">
+                {index + 1}
+              </span>
+              <h3 className="font-serif text-xl font-semibold leading-snug text-slate-900 sm:text-2xl">
+                {section.heading}
+              </h3>
+            </div>
+            <div className="text-sm leading-7 sm:text-base">
+              <RichText value={section.blocks} />
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
    QUICK FACT
 ========================================================= */
 
@@ -1470,13 +1547,9 @@ export default async function DestinationPage({
                   title="How to Get There"
                   icon="🚗"
                 >
-                  <div className="rounded-3xl border border-stone-200 bg-white p-7 shadow-sm sm:p-10">
-                    <RichText
-                      value={
-                        destination.howToGetThere
-                      }
-                    />
-                  </div>
+                  <RouteGuide
+                    value={destination.howToGetThere}
+                  />
                 </Section>
               )}
 
@@ -1580,12 +1653,13 @@ export default async function DestinationPage({
 
                 {destination.budgetNotes &&
                   destination.budgetNotes.length > 0 && (
-                  <div className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-7 sm:p-9">
-                    <RichText
-                      value={
-                        destination.budgetNotes
-                      }
-                    />
+                  <div className={"rounded-3xl border border-stone-200 bg-stone-50 p-6 sm:p-8 " + (destination.costBreakdown?.length ? "mt-6" : "")}>
+                    <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-red-800">
+                      Budget planning
+                    </p>
+                    <div className="max-w-3xl">
+                      <RichText value={destination.budgetNotes} />
+                    </div>
                   </div>
                 )}
               </Section>
