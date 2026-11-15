@@ -157,7 +157,11 @@ export const destinationBySlugQuery = defineQuery(`
       day,
       title,
       description,
-      overnight
+      overnight,
+      walkingHours,
+      sleepingAltitudeMeters,
+      detailsSourceUrl,
+      detailsVerifiedAt
     },
 
     costBreakdown[]{

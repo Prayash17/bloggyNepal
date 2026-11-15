@@ -31,6 +31,8 @@ import ReactionBar from "@/components/ReactionBar";
 import Comments from "@/components/Comments";
 import FeedbackForm from "@/components/FeedbackForm";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import DestinationAccessMap from "@/components/destinations/DestinationAccessMap";
+import DestinationSectionNav from "@/components/destinations/DestinationSectionNav";
 
 /* =========================================================
    REVALIDATION
@@ -117,9 +119,9 @@ function Section({
   return (
     <section
       id={id}
-      className={`mb-20 scroll-mt-28 ${className}`}
+      className={`mb-12 scroll-mt-40 sm:mb-14 sm:scroll-mt-32 lg:scroll-mt-28 ${className}`}
     >
-      <div className="mb-8">
+      <div className="mb-5 sm:mb-6">
         <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-red-800">
           <span
             aria-hidden="true"
@@ -518,12 +520,25 @@ function Itinerary({
                 </p>
 
                 {item.overnight && (
-                  <div className="mt-5 inline-flex rounded-2xl bg-stone-100 px-4 py-3 text-sm text-slate-700">
-                    <strong className="mr-2">
-                      Overnight:
-                    </strong>
-
-                    {item.overnight}
+                  <div className="mt-4 inline-flex rounded-xl bg-stone-100 px-3 py-2 text-sm text-slate-700">
+                    <strong className="mr-2">Overnight:</strong> {item.overnight}
+                  </div>
+                )}
+                {item.detailsVerifiedAt && item.detailsSourceUrl && (
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-700">
+                    {typeof item.walkingHours === "number" && (
+                      <span className="rounded-full border border-stone-200 px-3 py-1.5">
+                        Walking: {item.walkingHours} hrs (approx.)
+                      </span>
+                    )}
+                    {typeof item.sleepingAltitudeMeters === "number" && (
+                      <span className="rounded-full border border-stone-200 px-3 py-1.5">
+                        Overnight elevation: {item.sleepingAltitudeMeters.toLocaleString("en-US")} m
+                      </span>
+                    )}
+                    <a href={item.detailsSourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-red-800">
+                      Source · checked {item.detailsVerifiedAt}
+                    </a>
                   </div>
                 )}
               </div>
@@ -833,6 +848,40 @@ export default async function DestinationPage({
       1000,
       80
     );
+
+  const hasMap = Boolean(
+    mapUrl ||
+    destination.mapEmbedUrl ||
+    (typeof destination.coordinates?.lat === "number" &&
+      typeof destination.coordinates?.lng === "number") ||
+    destination.accessPoints?.some((point) =>
+      typeof point.coordinates?.lat === "number" &&
+      typeof point.coordinates?.lng === "number"
+    ) ||
+    destination.routePoints?.some((point) =>
+      typeof point.coordinates?.lat === "number" &&
+      typeof point.coordinates?.lng === "number"
+    ) ||
+    destination.mapAdvisory
+  );
+
+  // Only render links to sections that actually exist on this guide.
+  const sections: { id: string; label: string }[] = [
+    ...(destination.overview?.length ? [{ id: "overview", label: "Overview" }] : []),
+    ...(destination.thingsToDo?.length ? [{ id: "things", label: "Things to Do" }] : []),
+    ...(hasMap ? [{ id: "map", label: "Map & Access" }] : []),
+    ...(destination.howToGetThere?.length ? [{ id: "route", label: "How to Get There" }] : []),
+    ...(destination.itinerary?.length ? [{ id: "itinerary", label: "Itinerary" }] : []),
+    ...((destination.costBreakdown?.length || destination.budgetNotes?.length) ? [{ id: "cost", label: "Budget & Costs" }] : []),
+    ...(destination.bestTimeToVisit?.length ? [{ id: "season", label: "Best Time" }] : []),
+    ...(destination.accommodation?.length ? [{ id: "accommodation", label: "Accommodation" }] : []),
+    ...(destination.cultureAndHistory?.length ? [{ id: "culture", label: "Culture & History" }] : []),
+    ...((destination.permits?.length || destination.packingList?.length || destination.safetyTips?.length || destination.proTips?.length) ? [{ id: "planning", label: "Planning & Safety" }] : []),
+    ...(destination.faqs?.length ? [{ id: "faq", label: "FAQs" }] : []),
+    ...(related.some((item) => item.slug?.current) ? [{ id: "nearby", label: "Nearby" }] : []),
+    ...(destination.gallery?.length ? [{ id: "gallery", label: "Gallery" }] : []),
+    { id: "community", label: "Community" },
+  ];
 
   const provinceSlug =
     destination.province
@@ -1188,130 +1237,27 @@ export default async function DestinationPage({
           CONTENT LAYOUT
       ====================================================== */}
 
-      <section className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:py-20">
+      <section className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:py-14">
         <div className="grid gap-12 lg:grid-cols-[250px_minmax(0,1fr)]">
           {/* =================================================
               SIDEBAR
           ================================================== */}
 
           <aside className="hidden lg:block">
-            <div className="sticky top-24 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-red-800">
-                Plan your trip
-              </p>
-
-              <h2 className="mt-2 font-serif text-xl font-bold text-slate-900">
-                On this page
-              </h2>
-
-              <nav
-                aria-label="Destination sections"
-                className="mt-6 space-y-1"
-              >
-                {[
-                  [
-                    "overview",
-                    "Overview",
-                  ],
-                  [
-                    "things",
-                    "Things to Do",
-                  ],
-                  [
-                    "route",
-                    "How to Get There",
-                  ],
-                  [
-                    "itinerary",
-                    "Itinerary",
-                  ],
-                  [
-                    "cost",
-                    "Budget & Costs",
-                  ],
-                  [
-                    "season",
-                    "Best Time",
-                  ],
-                  [
-                    "accommodation",
-                    "Accommodation",
-                  ],
-                  [
-                    "culture",
-                    "Culture & History",
-                  ],
-                  [
-                    "planning",
-                    "Planning & Safety",
-                  ],
-                  [
-                    "faq",
-                    "FAQs",
-                  ],
-                  [
-                    "nearby",
-                    "Nearby",
-                  ],
-                  [
-                    "gallery",
-                    "Gallery",
-                  ],
-                  [
-                    "community",
-                    "Community",
-                  ],
-                ].map(
-                  ([id, label]) => (
-                    <a
-                      key={id}
-                      href={`#${id}`}
-                      className="block rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-amber-50 hover:text-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-                    >
-                      {label}
-                    </a>
-                  )
-                )}
-              </nav>
-
-              {(provinceSlug ||
-                districtSlug) && (
-                <div className="mt-6 space-y-2 border-t border-stone-100 pt-6">
+            <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto overscroll-contain rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-red-800">Plan your trip</p>
+              <h2 className="mt-2 font-serif text-xl font-bold text-slate-900">On this page</h2>
+              <DestinationSectionNav sections={sections} />
+              {(provinceSlug || districtSlug) && (
+                <div className="mt-5 space-y-2 border-t border-stone-100 pt-5">
                   {provinceSlug && (
-                    <Link
-                      href={`/provinces/${provinceSlug}`}
-                      className="block rounded-2xl bg-slate-950 p-4 text-white transition hover:bg-red-900"
-                    >
-                      <p className="text-xs uppercase tracking-wider text-amber-300">
-                        Province
-                      </p>
-
-                      <p className="mt-1 font-bold">
-                        {
-                          destination
-                            .province
-                            ?.name
-                        }
-                      </p>
+                    <Link href={`/provinces/${provinceSlug}`} className="block rounded-xl bg-slate-950 p-3 text-sm text-white transition hover:bg-red-900">
+                      Province · {destination.province?.name}
                     </Link>
                   )}
-
                   {districtSlug && (
-                    <Link
-                      href={`/explore-nepal/${districtSlug}`}
-                      className="block rounded-2xl border border-stone-200 p-4 transition hover:border-amber-300 hover:bg-amber-50"
-                    >
-                      <p className="text-xs uppercase tracking-wider text-red-800">
-                        District
-                      </p>
-
-                      <p className="mt-1 font-bold text-slate-900">
-                        {
-                          destination
-                            .district
-                            ?.name
-                        }
-                      </p>
+                    <Link href={`/explore-nepal/${districtSlug}`} className="block rounded-xl border border-stone-200 p-3 text-sm text-slate-900 transition hover:bg-amber-50">
+                      District · {destination.district?.name}
                     </Link>
                   )}
                 </div>
@@ -1328,68 +1274,8 @@ export default async function DestinationPage({
                 MOBILE NAV
             ================================================== */}
 
-            <div className="mb-12 overflow-x-auto lg:hidden">
-              <nav
-                aria-label="Destination section navigation"
-                className="flex min-w-max gap-2"
-              >
-                {[
-                  [
-                    "overview",
-                    "Overview",
-                  ],
-                  [
-                    "things",
-                    "Things",
-                  ],
-                  [
-                    "route",
-                    "Getting There",
-                  ],
-                  [
-                    "itinerary",
-                    "Itinerary",
-                  ],
-                  [
-                    "cost",
-                    "Costs",
-                  ],
-                  [
-                    "season",
-                    "Best Time",
-                  ],
-                  [
-                    "culture",
-                    "Culture",
-                  ],
-                  [
-                    "planning",
-                    "Safety",
-                  ],
-                  [
-                    "faq",
-                    "FAQs",
-                  ],
-                  [
-                    "nearby",
-                    "Nearby",
-                  ],
-                  [
-                    "gallery",
-                    "Gallery",
-                  ],
-                ].map(
-                  ([id, label]) => (
-                    <a
-                      key={id}
-                      href={`#${id}`}
-                      className="whitespace-nowrap rounded-full border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:border-amber-300 hover:text-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-                    >
-                      {label}
-                    </a>
-                  )
-                )}
-              </nav>
+            <div className="mb-7 lg:hidden">
+              <DestinationSectionNav sections={sections} mobile />
             </div>
 
             {/* =================================================
@@ -1485,51 +1371,14 @@ export default async function DestinationPage({
                 LOCATION & MAP
             ================================================== */}
 
-            {(mapUrl ||
-              destination.mapEmbedUrl) && (
+            {hasMap && (
               <Section
+                id="map"
                 eyebrow="Find your way"
-                title="Location & Map"
+                title="Map & Access"
                 icon="🗺️"
               >
-                <div className="grid gap-6 md:grid-cols-2">
-                  {mapUrl && (
-                    <figure className="overflow-hidden rounded-3xl border border-stone-200 bg-white p-2 shadow-sm">
-                      <div className="overflow-hidden rounded-2xl">
-                        <Image
-                          src={mapUrl}
-                          alt={
-                            destination
-                              .mapImage
-                              ?.alt ||
-                            `${destination.title} map`
-                          }
-                          width={1600}
-                          height={1000}
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                          className="h-auto w-full"
-                        />
-                      </div>
-                    </figure>
-                  )}
-
-                  {destination.mapEmbedUrl && (
-                    <div className="overflow-hidden rounded-3xl border border-stone-200 bg-white p-2 shadow-sm">
-                      <iframe
-                        src={
-                          destination.mapEmbedUrl
-                        }
-                        width="100%"
-                        height="500"
-                        loading="lazy"
-                        allowFullScreen
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title={`Map of ${destination.title}`}
-                        className="min-h-[360px] w-full rounded-2xl border-0"
-                      />
-                    </div>
-                  )}
-                </div>
+                <DestinationAccessMap destination={destination} mapUrl={mapUrl} />
               </Section>
             )}
 

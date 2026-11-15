@@ -894,12 +894,34 @@ export const destination = defineType({
               name: "overnight",
               title: "Overnight",
               type: "string",
-
-              description:
-                "Optional overnight location.",
-
-              validation: (Rule) =>
-                Rule.max(120),
+              description: "Optional overnight location.",
+              validation: (Rule) => Rule.max(120),
+            }),
+            defineField({
+              name: "walkingHours",
+              title: "Verified Walking Time (hours)",
+              type: "number",
+              description: "Estimated hours of walking; show only after citing a dated route source.",
+              validation: (Rule) => Rule.min(0).max(24),
+            }),
+            defineField({
+              name: "sleepingAltitudeMeters",
+              title: "Verified Sleeping Altitude (m)",
+              type: "number",
+              description: "Altitude of the overnight stop, not the day's highest point.",
+              validation: (Rule) => Rule.min(0).max(8849),
+            }),
+            defineField({
+              name: "detailsSourceUrl",
+              title: "Itinerary Detail Source",
+              type: "url",
+              description: "Source for the walking time and sleeping altitude.",
+            }),
+            defineField({
+              name: "detailsVerifiedAt",
+              title: "Itinerary Details Checked On",
+              type: "date",
+              description: "Only date after checking both the source and details.",
             }),
           ],
 
