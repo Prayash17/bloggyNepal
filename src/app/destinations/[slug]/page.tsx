@@ -119,7 +119,7 @@ function Section({
   return (
     <section
       id={id}
-      className={`mb-12 scroll-mt-28 sm:mb-14 ${className}`}
+      className={`mb-12 scroll-mt-40 sm:mb-14 sm:scroll-mt-32 lg:scroll-mt-28 ${className}`}
     >
       <div className="mb-5 sm:mb-6">
         <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-red-800">
