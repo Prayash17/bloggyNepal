@@ -128,7 +128,8 @@ export const destinationBySlugQuery = defineQuery(`
       caption,
       credit,
       source,
-      license
+      license,
+      licenseUrl
     },
 
     mapImage{
@@ -137,7 +138,8 @@ export const destinationBySlugQuery = defineQuery(`
       caption,
       credit,
       source,
-      license
+      license,
+      licenseUrl
     },
 
     duration,
@@ -208,7 +210,8 @@ export const destinationBySlugQuery = defineQuery(`
       caption,
       credit,
       source,
-      license
+      license,
+      licenseUrl
     },
 
     seo{
@@ -220,7 +223,8 @@ export const destinationBySlugQuery = defineQuery(`
         caption,
         credit,
         source,
-        license
+        license,
+        licenseUrl
       }
     },
 
