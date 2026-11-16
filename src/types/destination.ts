@@ -21,6 +21,7 @@ export interface SanityImage {
   credit?: string;
   source?: string;
   license?: string;
+  licenseUrl?: string;
 }
 
 export interface Coordinates {
