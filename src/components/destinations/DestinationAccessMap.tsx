@@ -1,3 +1,4 @@
+import MediaAttribution from "@/components/destinations/MediaAttribution";
 import Image from "next/image";
 import type {
   Destination,
@@ -145,8 +146,10 @@ export default function DestinationAccessMap({
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="block h-auto w-full"
             />
-            <figcaption className="px-3 py-2 text-xs leading-5 text-stone-600">
-              Reference image only. Any route lines or travel times shown may be outdated.
+            <figcaption className="space-y-1 px-3 py-2 text-xs leading-5 text-stone-600">
+              <p>Reference image only. Any route lines or travel times shown may be outdated.</p>
+              {destination.mapImage?.caption && <p>{destination.mapImage.caption}</p>}
+              <MediaAttribution image={destination.mapImage} kind="Map" />
             </figcaption>
           </figure>
         ) : null}
