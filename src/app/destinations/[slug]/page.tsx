@@ -32,6 +32,7 @@ import Comments from "@/components/Comments";
 import FeedbackForm from "@/components/FeedbackForm";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import DestinationAccessMap from "@/components/destinations/DestinationAccessMap";
+import MediaAttribution from "@/components/destinations/MediaAttribution";
 import DestinationSectionNav from "@/components/destinations/DestinationSectionNav";
 
 /* =========================================================
@@ -70,6 +71,23 @@ function buildImageUrl(
     return builder
       .quality(quality)
       .fit("crop")
+      .auto("format")
+      .url();
+  } catch {
+    return null;
+  }
+}
+
+/** Preserve the whole route diagram; scenic cover crops are handled separately. */
+function buildMapImageUrl(
+  image: Destination["mapImage"]
+) {
+  if (!image?.asset) return null;
+  try {
+    return urlForImage(image)
+      .width(1600)
+      .fit("max")
+      .quality(80)
       .auto("format")
       .url();
   } catch {
@@ -611,25 +629,12 @@ function Gallery({
                 />
               </div>
 
-              {(image.caption ||
-                image.credit) && (
-                <figcaption className="space-y-1 p-4">
+              {(image.caption || image.credit || image.source || image.license || image.licenseUrl) && (
+                <figcaption className="space-y-2 p-4">
                   {image.caption && (
-                    <p className="text-sm leading-6 text-slate-600">
-                      {
-                        image.caption
-                      }
-                    </p>
+                    <p className="text-sm leading-6 text-slate-600">{image.caption}</p>
                   )}
-
-                  {image.credit && (
-                    <p className="text-xs text-slate-400">
-                      Photo:{" "}
-                      {
-                        image.credit
-                      }
-                    </p>
-                  )}
+                  <MediaAttribution image={image} />
                 </figcaption>
               )}
             </figure>
@@ -842,11 +847,8 @@ export default async function DestinationPage({
     );
 
   const mapUrl =
-    buildImageUrl(
-      destination.mapImage,
-      1600,
-      1000,
-      80
+    buildMapImageUrl(
+      destination.mapImage
     );
 
   const hasMap = Boolean(
@@ -1136,6 +1138,16 @@ export default async function DestinationPage({
         }
         coverUrl={coverUrl}
       />
+      {(destination.coverImage?.caption || destination.coverImage?.credit || destination.coverImage?.source || destination.coverImage?.license || destination.coverImage?.licenseUrl) && (
+        <div className="border-b border-stone-200 bg-white px-6 py-3 sm:px-8">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-1">
+            {destination.coverImage?.caption && (
+              <span className="text-xs text-stone-600">{destination.coverImage.caption}</span>
+            )}
+            <MediaAttribution image={destination.coverImage} />
+          </div>
+        </div>
+      )}
 
       {/* =====================================================
           BREADCRUMB

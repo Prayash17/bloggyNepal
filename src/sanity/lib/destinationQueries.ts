@@ -128,16 +128,19 @@ export const destinationBySlugQuery = defineQuery(`
       caption,
       credit,
       source,
-      license
+      license,
+      licenseUrl
     },
 
     mapImage{
       asset,
+      "dimensions": asset->metadata.dimensions,
       alt,
       caption,
       credit,
       source,
-      license
+      license,
+      licenseUrl
     },
 
     duration,
@@ -208,7 +211,8 @@ export const destinationBySlugQuery = defineQuery(`
       caption,
       credit,
       source,
-      license
+      license,
+      licenseUrl
     },
 
     seo{
@@ -220,7 +224,8 @@ export const destinationBySlugQuery = defineQuery(`
         caption,
         credit,
         source,
-        license
+        license,
+        licenseUrl
       }
     },
 

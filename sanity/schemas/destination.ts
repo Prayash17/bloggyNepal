@@ -672,6 +672,12 @@ export const destination = defineType({
           description:
             "Original source page when externally sourced.",
         }),
+        defineField({
+          name: "licenseUrl",
+          title: "License / Terms URL",
+          type: "url",
+          description: "Link verified reuse terms when relevant.",
+        }),
       ],
     }),
 
@@ -1294,6 +1300,12 @@ export const destination = defineType({
                 list: [...LICENSE_OPTIONS],
               },
             }),
+            defineField({
+              name: "licenseUrl",
+              title: "License / Terms URL",
+              type: "url",
+              description: "Link the verified license terms when available.",
+            }),
           ],
         },
       ],
@@ -1324,6 +1336,37 @@ export const destination = defineType({
 
           validation: (Rule) =>
             Rule.max(160),
+        }),
+        defineField({
+          name: "caption",
+          title: "Map Caption",
+          type: "string",
+          description: "Describe the map coverage; do not claim route conditions are currently safe.",
+          validation: (Rule) => Rule.max(250),
+        }),
+        defineField({
+          name: "credit",
+          title: "Map Creator / Attribution",
+          type: "string",
+          description: "Record the actual map author or required attribution.",
+        }),
+        defineField({
+          name: "source",
+          title: "Original Map Source URL",
+          type: "url",
+        }),
+        defineField({
+          name: "license",
+          title: "Map License or Usage Basis",
+          type: "string",
+          options: { list: [...LICENSE_OPTIONS] },
+          description: "Only choose a license after verifying reuse rights.",
+        }),
+        defineField({
+          name: "licenseUrl",
+          title: "Map License / Terms URL",
+          type: "url",
+          description: "Optional evidence link; does not itself prove permission.",
         }),
       ],
     }),
