@@ -134,6 +134,7 @@ export const destinationBySlugQuery = defineQuery(`
 
     mapImage{
       asset,
+      "dimensions": asset->metadata.dimensions,
       alt,
       caption,
       credit,
