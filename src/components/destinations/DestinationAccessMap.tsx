@@ -114,6 +114,11 @@ export default function DestinationAccessMap({
   const searchTerms = [destination.title, destination.district?.name, "Nepal"].filter(Boolean).join(", ");
   const mapSearchLink = `https://www.openstreetmap.org/search?query=${encodeURIComponent(searchTerms)}`;
 
+  const fullMapImageWidth = destination.mapImage?.dimensions?.width;
+  const fullMapImageHeight = destination.mapImage?.dimensions?.height;
+  const width = typeof fullMapImageWidth === "number" && Number.isFinite(fullMapImageWidth) && fullMapImageWidth > 0 ? fullMapImageWidth : 1600;
+  const height = typeof fullMapImageHeight === "number" && Number.isFinite(fullMapImageHeight) && fullMapImageHeight > 0 ? fullMapImageHeight : 1000;
+
   return (
     <div className="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm">
       <div className="border-b border-stone-200 bg-stone-50 px-5 py-5 sm:px-7">
@@ -138,16 +143,18 @@ export default function DestinationAccessMap({
           </div>
         ) : mapUrl ? (
           <figure className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-            <Image
-              src={mapUrl}
-              alt={destination.mapImage?.alt || `Location reference image for ${destination.title}`}
-              width={1600}
-              height={1000}
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="block h-auto w-full"
-            />
+            <a href={mapUrl} target="_blank" rel="noopener noreferrer" aria-label={`Open full-size reference map for ${destination.title}`} className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800">
+              <Image
+                src={mapUrl}
+                alt={destination.mapImage?.alt || `Location reference image for ${destination.title}`}
+                width={width}
+                height={height}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="block h-auto w-full"
+              />
+            </a>
             <figcaption className="space-y-1 px-3 py-2 text-xs leading-5 text-stone-600">
-              <p>Reference image only. Any route lines or travel times shown may be outdated.</p>
+              <p>Reference image only. Any route lines or travel times shown may be outdated. <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2 hover:text-stone-900">View full map</a></p>
               {destination.mapImage?.caption && <p>{destination.mapImage.caption}</p>}
               <MediaAttribution image={destination.mapImage} kind="Map" />
             </figcaption>
