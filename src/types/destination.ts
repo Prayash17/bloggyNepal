@@ -22,6 +22,7 @@ export interface SanityImage {
   source?: string;
   license?: string;
   licenseUrl?: string;
+  dimensions?: { width?: number; height?: number };
 }
 
 export interface Coordinates {
