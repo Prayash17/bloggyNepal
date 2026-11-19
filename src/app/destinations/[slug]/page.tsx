@@ -78,6 +78,23 @@ function buildImageUrl(
   }
 }
 
+/** Preserve the whole route diagram; scenic cover crops are handled separately. */
+function buildMapImageUrl(
+  image: Destination["mapImage"]
+) {
+  if (!image?.asset) return null;
+  try {
+    return urlForImage(image)
+      .width(1600)
+      .fit("max")
+      .quality(80)
+      .auto("format")
+      .url();
+  } catch {
+    return null;
+  }
+}
+
 function absoluteUrl(
   path: string
 ) {
@@ -830,11 +847,8 @@ export default async function DestinationPage({
     );
 
   const mapUrl =
-    buildImageUrl(
-      destination.mapImage,
-      1600,
-      1000,
-      80
+    buildMapImageUrl(
+      destination.mapImage
     );
 
   const hasMap = Boolean(
